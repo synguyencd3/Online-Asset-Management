@@ -20,14 +20,14 @@ export const TableComponent = () => {
                     <th key={h.name}>
                       <div className='table-header'>
                         {h.name}
-                        <FontAwesomeIcon values={h.name} icon={h.sort ? faSortDown : faSortUp} style={{ color: "#ff0000", }} onClick={(e) => { h.sort = !h.sort; header[index] = h; setHeader([...header]) }} />
+                        <FontAwesomeIcon values={h.name} icon={h.sort ? faSortDown : faSortUp} style={{ color: "#ff0000", }} onClick={() => { h.sort = !h.sort; header[index] = h; setHeader([...header]) }} />
                       </div>
                     </th>
                   ))}
                 </tr>
               </thead>
               <tbody>
-                {assignments?.map((a, index) => (
+                {assignments?.map((a) => (
                   <tr key={a.id}>
                     <td>{a.id}</td>
                     <td>{a.assetCode}</td>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import './App.css';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { HeaderComponent } from './components/commons/HeaderComponent';
@@ -8,8 +8,8 @@ import { ManageAssetComponent } from './components/admin/asset/ManageAssetCompon
 import { ManageAssignmentComponent } from './components/admin/assignment/ManageAssignmentComponent';
 import { RequestReturningConponent } from './components/admin/returning/RequestReturningConponent';
 import { ReportComponent } from './components/admin/report/ReportComponent';
-import { SidebarComponent } from './components/commons/SidebarComponent';
 import { PermissionCheck } from './components/auth/PermissionCheck';
+import { SidebarComponent } from './components/commons/SideBarComponent';
 
 function App() {
   const [headerTitle, setHeaderTitle] = useState<string>('HOME');
@@ -23,7 +23,7 @@ function App() {
           <main className="container-fluid" style={{ flexFlow: 'column', height: '100%' }}>
             <Routes>
               <Route element={<PermissionCheck />}>
-                <Route path="/admin/home" element={<AdminHomeComponent />} />
+                <Route path="/" element={<AdminHomeComponent />} />
                 <Route path="/admin/manage-users" element={<ManageUserComponent />} />
                 <Route path="/admin/manage-assets" element={<ManageAssetComponent />} />
                 <Route path="/admin/manage-assignments" element={<ManageAssignmentComponent />} />
