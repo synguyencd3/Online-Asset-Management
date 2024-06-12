@@ -5,8 +5,9 @@
 }
 
 .logo {
+  text-align: left;
+  margin-bottom: 20px;
   height: 6em;
-  padding: 1.5em;
   will-change: filter;
   transition: filter 300ms;
 }

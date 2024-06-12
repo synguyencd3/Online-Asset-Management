@@ -3,19 +3,12 @@ import { Navbar, Container } from 'react-bootstrap'
 
 export const HeaderComponent: React.FC<{ title: string }> = ({ title }) => {
   return (
-    <Navbar className="bg-body-tertiary">
-        <Container>
-          <Navbar.Brand href="#" className='d-flex align-items-center'>
-            <img
-              src="public/nashtech_logo.png"
-              width="70"
-              height="70"
-              className="d-inline-block align-top"
-              alt="React Bootstrap logo"
-            />
-            <span className="m-3">{title}</span>
-          </Navbar.Brand>
-        </Container>
-      </Navbar>
+    <Navbar className="navbar" style={{ backgroundColor: '#cf2338' }}>
+      <Container>
+        <Navbar.Brand href="#" className='d-flex align-items-center'>
+          <h3 className="mx-5 my-2" style={{ color: '#ffffff', fontWeight: '700' }}>{title}</h3>
+        </Navbar.Brand>
+      </Container>
+    </Navbar>
   )
 }

@@ -1,12 +1,11 @@
 import React from 'react'
 import { Outlet } from 'react-router-dom'
-import { HeaderComponent } from '../commons/HeaderComponent'
+import { Container } from 'react-bootstrap'
 
 export const PermissionCheck: React.FC = () => {
   return (
-    <>
-      <HeaderComponent title={'TEST'} />
+    <Container style={{ maxWidth: '100%' }} >
       <Outlet />
-    </>
+    </Container>
   )
 }
