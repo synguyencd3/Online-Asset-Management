@@ -37,30 +37,23 @@ h1 {
   line-height: 1.1;
 }
 
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
+/* button {
+  border: 1px solid #1a1a1a;
+  border-radius: 10px;
   padding: 0.6em 1.2em;
   font-size: 1em;
-  font-weight: 500;
+  font-weight: bold;
   font-family: inherit;
   background-color: #1a1a1a;
   cursor: pointer;
-  font-weight: bold;
   transition: border-color 0.25s;
 }
 
-button:hover,
-svg:hover {
-  border-color: #E30613;
-  color: #E30613;
-  background-color: white;
-}
 
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
-}
+} */
 
 @media (prefers-color-scheme: light) {
   :root {
@@ -77,6 +70,10 @@ button:focus-visible {
   }
 }
 
+svg:hover{
+  cursor: pointer;
+}
+
 /*------------------------------*/
 table {
   font-family: arial, sans-serif;
@@ -91,6 +88,11 @@ th {
   border: 1px solid #dddddd;
   text-align: left;
   padding: 8px;
+  vertical-align: middle;
+}
+
+th {
+  border-left: 1px solid black;
 }
 
 td {
@@ -102,21 +104,9 @@ tr:nth-child(even) {
   background-color: #dddddd;
 }
 
-.button-container {
-  max-width: 300px;
-}
-
-svg:hover {
-  cursor: pointer;
-}
-
-.last-cell {
-  border: 0px solid transparent;
-}
-
 .table-header {
   display: flex;
   justify-content: space-between;
   padding: 0;
-  align-items: center
+  align-items: center;
 }
