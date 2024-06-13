@@ -15,7 +15,7 @@ interface Assignment {
 }
 
 export const header = [
-    { name: 'No.', sort: true },
+    { name: 'No.    ', sort: true },
     { name: 'Asset Code', sort: true },
     { name: 'Asset Name', sort: true },
     { name: 'Assigned To', sort: true },
