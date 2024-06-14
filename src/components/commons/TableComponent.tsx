@@ -1,4 +1,4 @@
-import { faArrowRotateLeft, faCheck, faFilter, faMagnifyingGlass, faPencil, faRectangleXmark, faRotate, faRotateBack, faRotateBackward, faSortDown, faSortUp, faUserPen, faXmark } from '@fortawesome/free-solid-svg-icons'
+import { faArrowRotateLeft, faCheck, faFilter, faMagnifyingGlass, faPencil, faRectangleXmark, faRotate, faSortDown, faSortUp, faUserPen, faXmark } from '@fortawesome/free-solid-svg-icons'
 import '../../App.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCircleXmark } from '@fortawesome/free-regular-svg-icons'
@@ -7,17 +7,9 @@ import { Button, Col, Container, Row, Table } from "react-bootstrap";
 
 import { header as headers, assignments, AssignmentState } from "../../utils/MockData";
 
-type Props = {
-    options:string[];
-}
 
-export const TableComponent = ({ options}: Props) => {
+export const TableComponent: React.FC = () => {
     const [header, setHeader] = useState(headers);
-
-    
-
-
-
     return (
         <>
             <></>
@@ -31,14 +23,14 @@ export const TableComponent = ({ options}: Props) => {
                                         <th key={h.name}>
                                             <div className='table-header'>
                                                 {h.name}
-                                                <FontAwesomeIcon values={h.name} icon={h.sort ? faSortDown : faSortUp} style={{ color: "#ff0000", }} onClick={(e) => { h.sort = !h.sort; header[index] = h; setHeader([...header]) }} />
+                                                <FontAwesomeIcon values={h.name} icon={h.sort ? faSortDown : faSortUp} style={{ color: "#ff0000", }} onClick={() => { h.sort = !h.sort; header[index] = h; setHeader([...header]) }} />
                                             </div>
                                         </th>
                                     ))}
                                 </tr>
                             </thead>
                             <tbody>
-                                {assignments?.map((a, index) => (
+                                {assignments?.map((a) => (
                                     <tr key={a.id}>
                                         <td>{a.id}</td>
                                         <td>{a.assetCode}</td>
