@@ -1,28 +1,15 @@
-export enum AssignmentState {
-    ACCEPTED = "Accepted",
-    WAITING_ACCEPTANCE = "Waiting Acceptance",
-    DECLINED = "Declined"
-}
+import { Assignment } from "../models/UserModel";
+import { AssignmentState } from "./Enum";
 
-interface Assignment {
-    id: number;
-    assetCode: string;
-    assetName: string;
-    assignedTo: string;
-    assignedBy: string;
-    assignedDate: string;
-    state: AssignmentState;
-}
 
 export const header = [
-    { name: 'No.    ', sort: true },
+    { name: 'No.', sort: true },
     { name: 'Asset Code', sort: true },
     { name: 'Asset Name', sort: true },
     { name: 'Assigned To', sort: true },
     { name: 'Assigned By', sort: true },
     { name: 'Assigned Date', sort: true },
     { name: 'State', sort: true },
-    { name: 'Actions', sort: false }
 ]
 
 export const assignments: Array<Assignment> = [

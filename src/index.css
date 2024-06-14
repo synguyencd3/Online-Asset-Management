@@ -80,22 +80,27 @@ table {
   border-collapse: collapse;
   width: 100%;
   table-layout: auto;
+  border-spacing: 10px;
 }
 
 tr,
 td,
 th {
-  border: 1px solid #dddddd;
+  border: 0;
   text-align: left;
-  padding: 8px;
   vertical-align: middle;
 }
 
-th {
-  border-left: 1px solid black;
+.header-border {
+  border-bottom: 2px solid black;
+}
+
+.cell {
+  border-bottom: 1px solid rgb(142, 142, 142);
 }
 
 td {
+  margin-left: 8px;
   max-width: 200px;
   width: auto;
 }
@@ -104,9 +109,33 @@ tr:nth-child(even) {
   background-color: #dddddd;
 }
 
+tr:hover {
+  cursor: pointer;
+}
+
 .table-header {
   display: flex;
   justify-content: space-between;
   padding: 0;
   align-items: center;
+}
+
+.form-check-input:checked {
+  background-color: red;
+  border-color: red;
+}
+
+.nashtech-red {
+  color: #cf2338;
+}
+
+.dropdown-toggle::after {
+  display: none !important;
+}
+
+.form-check-input:focus,
+.form-control:focus {
+  border-color: #dd7c88;
+  outline: 0;
+  box-shadow: 0 0 0 .25rem transparent;
 }
