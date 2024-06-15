@@ -15,7 +15,7 @@ export const MainApp: React.FC<{ setHeaderTitle: (title: string) => void }> = ({
     useEffect(() => {
         setHeaderTitle('HOME');
         navigate('/admin/home');
-    }, [navigate, setHeaderTitle]);
+    }, []);
 
     return (
         <div className="d-flex container-fluid mt-5">

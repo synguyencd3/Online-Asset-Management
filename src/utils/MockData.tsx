@@ -29,7 +29,7 @@ export const assignments: Array<Assignment> = [
         assignedTo: 'Alice Brown',
         assignedBy: 'Bob Johnson',
         assignedDate: '2023-01-02',
-        state: AssignmentState.WAITING_ACCEPTANCE
+        state: AssignmentState.WATING_FOR_ACCEPTANCE
     },
     {
         id: 3,
@@ -56,7 +56,7 @@ export const assignments: Array<Assignment> = [
         assignedTo: 'George Harris',
         assignedBy: 'Helen Martin',
         assignedDate: '2023-01-05',
-        state: AssignmentState.WAITING_ACCEPTANCE
+        state: AssignmentState.WATING_FOR_ACCEPTANCE
     },
     {
         id: 6,
@@ -83,7 +83,7 @@ export const assignments: Array<Assignment> = [
         assignedTo: 'Michael Young',
         assignedBy: 'Nancy King',
         assignedDate: '2023-01-08',
-        state: AssignmentState.WAITING_ACCEPTANCE
+        state: AssignmentState.WATING_FOR_ACCEPTANCE
     },
     {
         id: 9,
