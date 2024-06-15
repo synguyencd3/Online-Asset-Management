@@ -18,7 +18,7 @@ export const SidebarComponent: React.FC<{ setHeaderTitle: (title: string) => voi
       </div>
       <ul className="menu">
         <li className={activeIndex === 0 ? 'active' : 'bg-light'} onClick={() => handleOnClick(0, 'HOME')}>
-          <Link className='fs-5' to="/admin/home">Home</Link>
+          <Link className='fs-5' to="/">Home</Link>
         </li>
         <li className={activeIndex === 1 ? 'active' : 'bg-light'} onClick={() => handleOnClick(1, 'MANAGE USER')}>
           <Link className='fs-5' to="/admin/manage-users">Manage User</Link>

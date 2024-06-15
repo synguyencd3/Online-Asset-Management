@@ -1,74 +1,56 @@
-import React, { FormEvent, useRef, useState } from 'react';
+import React, { FormEvent, useRef } from 'react';
 import { ColorPalette } from '../../utils/ColorPalette';
-import { useNavigate } from 'react-router-dom';
-// import axios from 'axios';
-// import { LogInModel } from '../../models/LogInModel';
+import { message } from 'antd';
+import { LogInModel } from '../../models/LogInModel';
+import { login } from '../../services/AuthService';
 
 export const LogInComponent: React.FC<{ setIsLoggedIn: (state: boolean) => void }> = ({ setIsLoggedIn }) => {
     const usernameRef = useRef<HTMLInputElement>(null);
     const passwordRef = useRef<HTMLInputElement>(null);
-    const [alertMessage, setAlertMessage] = useState<string | null>(null);
-    const [alertType, setAlertType] = useState<'success' | 'danger' | null>(null);
-    const navigate = useNavigate();
-
-    // const logIn = async (data: LogInModel) => {
-    //     try {
-    //         const response = await axios.post('/api/login', data);
-    //         return response.data;
-    //     } catch (error) {
-    //         console.error('Login error:', error);
-    //         throw new Error('Login failed');
-    //     }
-    // };
+    const [messageApi, contextHolder] = message.useMessage();
 
     const handleLoginSubmit = async (event: FormEvent) => {
         event.preventDefault();
+        messageApi
+            .open({
+                type: 'loading',
+                content: 'Checking log in...',
+                duration: 3
+            })
+            .then(async () => {
+                const logInData: LogInModel = {
+                    username: usernameRef.current?.value ?? '',
+                    password: passwordRef.current?.value ?? '',
+                };
 
-        const logInData = {
-            username: usernameRef.current?.value ?? '',
-            password: passwordRef.current?.value ?? '',
-        };
+                if (!logInData.username) {
+                    message.warning('Username is required!');
+                    return;
+                }
 
-        if (!logInData.username) {
-            setAlertMessage('Username is required!');
-            setAlertType('danger');
-            return;
-        }
+                if (!logInData.password) {
+                    message.warning('Password is required!');
+                    return;
+                }
 
-        if (!logInData.password) {
-            setAlertMessage('Password is required!');
-            setAlertType('danger');
-            return;
-        }
-
-        try {
-            // const res = await logIn(logInData);
-
-            if (true) {
-                setAlertMessage('Login Successful!');
-                setAlertType('success');
-                setTimeout(() => {
-                    setIsLoggedIn(true);
-                    navigate('/admin/home');
-                }, 1000);
-            } else {
-                setAlertMessage('Invalid username or password.');
-                setAlertType('danger');
-            }
-        } catch (error) {
-            setAlertMessage('Login failed. Please try again.');
-            setAlertType('danger');
-        }
+                await login(logInData)
+                    .then((res) => {
+                        console.log(res);
+                        if (res.status == 200) {
+                            setIsLoggedIn(true);
+                            localStorage.setItem('isLoggedIn', 'true');
+                            message.success('Sign in successful', 2);
+                        }
+                    })
+                    .catch((err) => {
+                        message.error(`${err.response.status}: ${err.response.data.message}`)
+                    });
+            });
     };
 
     return (
         <div className="container">
-            {alertMessage && (
-                <div className={`alert alert-${alertType} alert-dismissible fade show`} role="alert">
-                    {alertMessage}
-                    <button type="button" className="btn-close" onClick={() => setAlertMessage(null)} aria-label="Close"></button>
-                </div>
-            )}
+            {contextHolder}
             <div className="row justify-content-center">
                 <div className="col-xs-4 col-5">
                     <div className="card mt-5">

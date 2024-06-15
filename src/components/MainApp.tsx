@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import { SidebarComponent } from './commons/SideBarComponent';
-import { useNavigate, Routes, Route } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import { ManageAssetComponent } from './admin/asset/ManageAssetComponent';
 import { ManageAssignmentComponent } from './admin/assignment/ManageAssignmentComponent';
 import { AdminHomeComponent } from './admin/home/AdminHomeComponent';
@@ -10,12 +10,9 @@ import { ManageUserComponent } from './admin/user/ManageUserComponent';
 import { PermissionCheck } from './auth/PermissionCheck';
 
 export const MainApp: React.FC<{ setHeaderTitle: (title: string) => void }> = ({ setHeaderTitle }) => {
-    const navigate = useNavigate();
-
     useEffect(() => {
         setHeaderTitle('HOME');
-        navigate('/admin/home');
-    }, []);
+    }, [setHeaderTitle]);
 
     return (
         <div className="d-flex container-fluid mt-5">
@@ -23,12 +20,12 @@ export const MainApp: React.FC<{ setHeaderTitle: (title: string) => void }> = ({
             <main className="container-fluid" style={{ flexFlow: 'column', height: '100%' }}>
                 <Routes>
                     <Route element={<PermissionCheck />}>
-                        <Route path="/admin/home" element={<AdminHomeComponent />} />
-                        <Route path="/admin/manage-users" element={<ManageUserComponent />} />
-                        <Route path="/admin/manage-assets" element={<ManageAssetComponent />} />
-                        <Route path="/admin/manage-assignments" element={<ManageAssignmentComponent />} />
-                        <Route path="/admin/request-returning" element={<RequestReturningConponent />} />
-                        <Route path="/admin/reports" element={<ReportComponent />} />
+                        <Route path="home" element={<AdminHomeComponent />} />
+                        <Route path="manage-users" element={<ManageUserComponent />} />
+                        <Route path="manage-assets" element={<ManageAssetComponent />} />
+                        <Route path="manage-assignments" element={<ManageAssignmentComponent />} />
+                        <Route path="request-returning" element={<RequestReturningConponent />} />
+                        <Route path="reports" element={<ReportComponent />} />
                     </Route>
                 </Routes>
             </main>
