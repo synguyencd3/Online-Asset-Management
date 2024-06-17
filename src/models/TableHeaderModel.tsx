@@ -1,0 +1,1 @@
+export type TableHeaderModel = { name: string, sort: boolean }

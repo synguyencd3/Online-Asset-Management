@@ -1,26 +1,28 @@
-import { Gender, Location, StaffState, StaffType, AssignmentState } from "../utils/Enum";
+import { Roles } from "../utils/Enum";
 
-export type Assignment = {
-    id: number;
-    assetCode: string;
-    assetName: string;
-    assignedTo: string;
-    assignedBy: string;
-    assignedDate: string;
-    state: AssignmentState;
-}
 
 export type UserModel = {
     id: number;
+
+    roleId: Roles;
+
     staffCode: string;
+
     firstName: string;
+
     lastName: string;
-    dateOfBirth: Date;
+
     username: string;
-    password: string;
-    location: Location;
-    gender: Gender;
-    joinDate: Date;
-    type: StaffType;
-    state: StaffState;
+
+    gender: string;
+
+    location: string;
+
+    joinedDate: string;
+
+    dateOfBirth: string;
+    
+    isChangePassword: boolean;
+
+    status: string;
 }

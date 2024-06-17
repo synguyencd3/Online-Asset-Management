@@ -1,7 +1,7 @@
-import { faFilter, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
+import { faFilter } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React, { ChangeEvent, useState } from 'react';
-import { Button, ButtonGroup, Dropdown, DropdownButton, Form } from 'react-bootstrap'
+import { ChangeEvent, useState } from 'react';
+import { Button, ButtonGroup, Dropdown, Form } from 'react-bootstrap'
 
 type Props = {
 	title: string | null
@@ -35,8 +35,8 @@ export const DropdownFilterComponent = ({ title }: Props) => {
 					{/* Select Datas here */}
 					<Form.Check
 						type="checkbox"
-						label="Option 1"
-						value="Option 1"
+						label="All"
+						value="All"
 						onChange={handleCheckboxChange}
 					/>
 					<Form.Check
@@ -49,6 +49,24 @@ export const DropdownFilterComponent = ({ title }: Props) => {
 						type="checkbox"
 						label="Option 3"
 						value="Option 3"
+						onChange={handleCheckboxChange}
+					/>
+					<Form.Check
+						type="checkbox"
+						label="Option 4"
+						value="Option 4"
+						onChange={handleCheckboxChange}
+					/>
+					<Form.Check
+						type="checkbox"
+						label="Option 5"
+						value="Option 5"
+						onChange={handleCheckboxChange}
+					/>
+					<Form.Check
+						type="checkbox"
+						label="Option 6"
+						value="Option 6"
 						onChange={handleCheckboxChange}
 					/>
 				</Form>

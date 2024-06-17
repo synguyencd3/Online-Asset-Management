@@ -10,7 +10,7 @@ import { ErrorResponse } from '../../exceptions/ErrorResponse'
 
 export const HeaderComponent: React.FC<{ title: string, handleLogout: (state: boolean, headerTitle: string) => void }> = ({ title, handleLogout }) => {
     const navigator = useNavigate();
-    const [messageApi, contextHolder] = message.useMessage();
+    // const [messageApi, contextHolder] = message.useMessage();
     
     const handleLogOut = async () => {
         await logout()

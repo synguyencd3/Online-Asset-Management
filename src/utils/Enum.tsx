@@ -36,3 +36,7 @@ export enum AssetState {
     NOT_AVAILABLE,
     ASSIGNED
 }
+
+export enum Roles {
+    ADMIN = 1, STAFF = 2
+}

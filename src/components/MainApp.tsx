@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import { SidebarComponent } from './commons/SideBarComponent';
-import { Routes, Route } from 'react-router-dom';
+import { useNavigate, Routes, Route } from 'react-router-dom';
 import { ManageAssetComponent } from './admin/asset/ManageAssetComponent';
 import { ManageAssignmentComponent } from './admin/assignment/ManageAssignmentComponent';
 import { AdminHomeComponent } from './admin/home/AdminHomeComponent';
@@ -10,9 +10,12 @@ import { ManageUserComponent } from './admin/user/ManageUserComponent';
 import { PermissionCheck } from './auth/PermissionCheck';
 
 export const MainApp: React.FC<{ setHeaderTitle: (title: string) => void }> = ({ setHeaderTitle }) => {
+    const navigate = useNavigate();
+
     useEffect(() => {
         setHeaderTitle('HOME');
-    }, [setHeaderTitle]);
+        navigate('/admin/home');
+    }, []);
 
     return (
         <div className="d-flex container-fluid mt-5">
@@ -21,7 +24,7 @@ export const MainApp: React.FC<{ setHeaderTitle: (title: string) => void }> = ({
                 <Routes>
                     <Route element={<PermissionCheck />}>
                         <Route path="home" element={<AdminHomeComponent />} />
-                        <Route path="manage-users" element={<ManageUserComponent />} />
+                        <Route path="manage-users" element={<ManageUserComponent url={'http://localhost:8080/api/v1/'} />} />
                         <Route path="manage-assets" element={<ManageAssetComponent />} />
                         <Route path="manage-assignments" element={<ManageAssignmentComponent />} />
                         <Route path="request-returning" element={<RequestReturningConponent />} />
