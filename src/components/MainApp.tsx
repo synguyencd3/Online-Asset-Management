@@ -8,6 +8,7 @@ import { ReportComponent } from './admin/report/ReportComponent';
 import { RequestReturningConponent } from './admin/returning/RequestReturningConponent';
 import { ManageUserComponent } from './admin/user/ManageUserComponent';
 import { PermissionCheck } from './auth/PermissionCheck';
+import { CreateUserComponent } from './admin/user/CreateUserComponent';
 
 export const MainApp: React.FC<{ setHeaderTitle: (title: string) => void }> = ({ setHeaderTitle }) => {
     const navigate = useNavigate();
@@ -25,6 +26,7 @@ export const MainApp: React.FC<{ setHeaderTitle: (title: string) => void }> = ({
                     <Route element={<PermissionCheck />}>
                         <Route path="home" element={<AdminHomeComponent />} />
                         <Route path="manage-users" element={<ManageUserComponent url={'http://localhost:8080/api/v1/'} />} />
+                        <Route path="manage-users/new" element={<CreateUserComponent url={'http://localhost:8080/api/v1/'} />} />
                         <Route path="manage-assets" element={<ManageAssetComponent />} />
                         <Route path="manage-assignments" element={<ManageAssignmentComponent />} />
                         <Route path="request-returning" element={<RequestReturningConponent />} />

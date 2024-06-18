@@ -19,7 +19,7 @@ export enum StaffState {
     ACTIVE,
     INACTIVE,
 }
-
+// should change to number ?
 export enum AssignmentState {
     ACCEPTED = 'Accepted',
     WATING_FOR_ACCEPTANCE = 'Wating for Acceptance',

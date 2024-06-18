@@ -11,6 +11,7 @@ import { Roles } from "../../../utils/Enum";
 import { FunctionalIconModel } from "../../../models/FunctionalIconModel";
 import { faPencil } from "@fortawesome/free-solid-svg-icons";
 import { faCircleXmark } from "@fortawesome/free-regular-svg-icons/faCircleXmark";
+import { useNavigate } from "react-router-dom";
 
 type Props = {
 	url: string
@@ -23,7 +24,8 @@ export const ManageUserComponent = (props: Props) => {
 
 	const [tableUser, setTableUser] = useState<UserForTableModel[]>([]);
 
-
+	const navigate = useNavigate();
+	
 	const url = props.url + 'users';
 
 
@@ -104,7 +106,7 @@ export const ManageUserComponent = (props: Props) => {
 					<SearchComponent placeholder={null}></SearchComponent>
 				</Col>
 				<Col className="d-flex justify-content-center align-items-center">
-					<Button variant="danger"> Create New User</Button>
+					<Button variant="danger" onClick={() => { return navigate('./new') }}>Create New User</Button>
 				</Col>
 			</Row>
 			<Row>
