@@ -10,11 +10,6 @@ export enum Gender {
     FEMALE,
 }
 
-export enum StaffType {
-    ADMIN,
-    STAFF,
-}
-
 export enum StaffState {
     ACTIVE,
     INACTIVE,
