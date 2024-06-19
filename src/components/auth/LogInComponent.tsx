@@ -43,7 +43,7 @@ export const LogInComponent: React.FC<{ setIsLoggedIn: (state: boolean) => void 
                     await login(logInData)
                         .then((res) => {
                             console.log(res);
-                            if (res.status === 200) {
+                            if (res.status == 200) {
                                 setIsLoggedIn(true);
                                 const loginResponse: LogInResponseModel = {
                                     username: res.data.data.username ?? 'username',
@@ -54,16 +54,17 @@ export const LogInComponent: React.FC<{ setIsLoggedIn: (state: boolean) => void 
                                 localStorage.setItem('isFirstLogin', res.data.data.isChangePassword);
                                 localStorage.setItem('loginResponse', JSON.stringify(loginResponse));
                                 message.success(res.data.message);
-                            } else if (res.status === 401) {
-                                message.error('The session has expired. Please log in again.');
-                            } else if (res.status === 403) {
-                                message.error('You do not have permission to access this page!');
-                            } else {
-                                message.error('Username or password is incorrect. Please try again.')
                             }
                         })
                         .catch((err) => {
-                            message.error(err)
+                            console.log(err.response.status);
+                            if (err.response.status === 401) {
+                                console.log(err.response.data.message);
+                                message.error('Username or password is incorrect. Please try again');
+                            }
+                            if (err.response.status == 403) {
+                                message.error('You do not have permission to access this page!');
+                            }
                         });
                 });
         }

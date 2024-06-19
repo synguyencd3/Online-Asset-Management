@@ -29,7 +29,7 @@ interface ChangePasswordModalProps {
 
 export const PasswordModalComponent: React.FC<ChangePasswordModalProps> = ({ show, isFirstLoggedIn, onClose }) => {
     // const [apiError, setApiError] = useState<string>('');
-    const [isFirstLogIn, setIsFirstLogIn] = useState<boolean>(false);
+    const [isFirstLogIn, setIsFirstLogIn] = useState<boolean>(Boolean(localStorage.getItem('isFirstLogin')));
     const [successMessage, setSuccessMessage] = useState<string>('');
     const [messageApi, contextHolder] = message.useMessage();
     const [showOld, setShowOld] = useState<boolean>(false);
@@ -60,20 +60,16 @@ export const PasswordModalComponent: React.FC<ChangePasswordModalProps> = ({ sho
 
                 await changePassword(changePswrdData)
                     .then((res) => {
-                        if (res.data.isSame) {
-                            // setApiError('The new password must not be the same as the old password');
-                            message.error('The new password must not be the same as the old password');
-                        } else {
+                        console.log(res.data.message);
+                        if (res.status == 200) {
                             resetForm();
                             setIsFirstLogIn(false);
                             localStorage.removeItem('isFirstLogin');
                             setSuccessMessage('Your password has been changed successfully!');
-                            message.success('Your password has been changed successfully!');
                         }
                     }).catch((err) => {
-                        console.error('Error checking password:', err);
-                        // setApiError('An error occurred. Please try again.');
-                        message.error('An error occurred. Please try again.');
+                        console.log(String(err.response.data.message));
+                        message.error(String(err.response.data.message));
                     });
             });
 
@@ -106,7 +102,7 @@ export const PasswordModalComponent: React.FC<ChangePasswordModalProps> = ({ sho
                 <Modal.Title style={{ color: ColorPalette.PRIMARY_COLOR }}>Change password</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                {isFirstLogIn !== true ? <p className="change-pswr-content mx-2">This is the first time you logged in. <br /> You have to change your password to continue</p> : null}
+                {!isFirstLoggedIn ? <p className="change-pswr-content mx-2">This is the first time you logged in. <br /> You have to change your password to continue</p> : null}
                 {successMessage ? (
                     <div>
                         <div className="success-message mx-2">{successMessage}</div>

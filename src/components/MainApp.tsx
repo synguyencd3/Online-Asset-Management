@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import { SidebarComponent } from './commons/SideBarComponent';
-import { useNavigate, Routes, Route } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import { ManageAssetComponent } from './admin/asset/ManageAssetComponent';
 import { ManageAssignmentComponent } from './admin/assignment/ManageAssignmentComponent';
 import { AdminHomeComponent } from './admin/home/AdminHomeComponent';
@@ -12,8 +12,6 @@ import { CreateUserComponent } from './admin/user/CreateUserComponent';
 import { EditUserComponent } from './admin/user/EditUserComponent';
 
 export const MainApp: React.FC<{ setHeaderTitle: (title: string) => void }> = ({ setHeaderTitle }) => {
-    const navigate = useNavigate();
-
     useEffect(() => {
         setHeaderTitle('Home');
     }, [setHeaderTitle]);
