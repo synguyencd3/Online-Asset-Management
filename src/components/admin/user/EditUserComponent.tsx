@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { BASE_URL, CORS_CONFIG } from "../../../configs/CorsConfig";
+import { CORS_CONFIG, LOCAL_SERVICE_API } from "../../../utils/Config";
 import { Button, Col, Container, Form, Row } from "react-bootstrap";
 import { ColorPalette } from "../../../utils/ColorPalette";
 import { useEffect, useState } from "react";
@@ -9,7 +9,6 @@ import * as Yup from 'yup';
 import { ModalUserModel } from "../../../models/ModalUserModel";
 
 type Props = {
-    url: string;
 }
 const eighteenYearsAgo = new Date(new Date().setFullYear(new Date().getFullYear() - 18));
 
@@ -29,7 +28,7 @@ const createUserValidationSchema = Yup.object({
 export const EditUserComponent = (props: Props) => {
     console.log(props);
     
-    const url = BASE_URL + "users/"
+    const url = LOCAL_SERVICE_API + "/users/"
 
     const location = useLocation();
     const [user] = useState<ModalUserModel>(location.state.user);

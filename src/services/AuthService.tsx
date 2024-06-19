@@ -1,6 +1,6 @@
 import axios from "axios";
 import { LogInModel } from "../models/LogInModel";
-import { AZURE_SERVICE_API, CORS_CONFIG } from "../configs/CorsConfig";
+import { AZURE_SERVICE_API, CORS_CONFIG } from "../utils/Config";
 import { ChangePasswordModel } from "../models/ChangePasswordModel";
 
 export const login = async (data: LogInModel) => await axios.post(`${AZURE_SERVICE_API}/signIn`, data, CORS_CONFIG);

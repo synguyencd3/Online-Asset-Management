@@ -11,23 +11,30 @@ import { Roles } from "../../../utils/Enum";
 import { FunctionalIconModel } from "../../../models/FunctionalIconModel";
 import { faPencil } from "@fortawesome/free-solid-svg-icons";
 import { faCircleXmark } from "@fortawesome/free-regular-svg-icons/faCircleXmark";
-import { useNavigate } from "react-router-dom";
-import { CORS_CONFIG } from "../../../configs/CorsConfig";
+import { useLocation, useNavigate } from "react-router-dom";
+import { CORS_CONFIG, LOCAL_SERVICE_API } from "../../../utils/Config";
 
 type Props = {
-	url: string
 }
 const header = [{ name: 'Staff Code', sort: true }, { name: 'Full Name', sort: true }, { name: 'Username', sort: true }, { name: 'Join Date', sort: true }, { name: 'Type', sort: true },]
 const modalHeader = ["Staff Code", "Full Name", "Username", "Date of Birth", "Gender", "Joined Date", "Type", "Location"]
-export const ManageUserComponent = (props: Props) => {
+export const ManageUserComponent = (/*props: Props*/) => {
+
+	const navigate = useNavigate();
 
 	const [modalUsers, setModalUsers] = useState<ModalUserModel[]>([]);
 
 	const [tableUser, setTableUser] = useState<UserForTableModel[]>([]);
 
-	const navigate = useNavigate();
+	const location = useLocation();
 
-	const url = props.url + 'users';
+	const [newUser] = useState<UserModel>(location.state?.newUser);
+
+	console.log(location.state?.newUser);
+
+
+
+	let url = LOCAL_SERVICE_API + '/users';
 	// const url = "https://thanhlongbinhthuan.azurewebsites.net/api/v1/users";
 
 
@@ -42,42 +49,63 @@ export const ManageUserComponent = (props: Props) => {
 		).then((response) => {
 			// check status
 			let data = response.data.data;
-			let u: UserModel[] = data.content;
-			console.log(u);
-			
+			let users: UserModel[] = data.content;
 
 			let tableDatas: UserForTableModel[] = [];
 
 			let modalDatas: ModalUserModel[] = [];
-
-			u.map(user => {
-
+			if (newUser) {
 				let data: UserForTableModel = {
-					staffCode: user.staffCode,
-					// staffCode: user.id.toString(),
-					fullname: user.firstName + " " + user.lastName,
-					username: user.username,
-					joinedDate: user.joinedDate,
-					type: user.roleId,
+					staffCode: newUser.staffCode,
+					// staffCode: newUser.id.toString(),
+					fullname: newUser.firstName + " " + newUser.lastName,
+					username: newUser.username,
+					joinedDate: newUser.joinedDate,
+					type: newUser.roleId,
 				};
 
 				tableDatas.push(data);
 				let modal: ModalUserModel = {
-					staffCode: user.staffCode,
-					fullName: user.firstName + " " + user.lastName,
-					username: user.username,
-					dateOfBirth: user.dateOfBirth,
-					gender: user.gender,
-					joinedDate: user.joinedDate,
-					roleId: Roles[user.roleId],
-					location: user.location,
+					staffCode: newUser.staffCode,
+					fullName: newUser.firstName + " " + newUser.lastName,
+					username: newUser.username,
+					dateOfBirth: newUser.dateOfBirth,
+					gender: newUser.gender,
+					joinedDate: newUser.joinedDate,
+					roleId: Roles[newUser.roleId],
+					location: newUser.location,
 				}
-
 				modalDatas.push(modal);
+			}
+			users.map(user => {
+				if (newUser && newUser.id === user.id) { } else {
+					let data: UserForTableModel = {
+						staffCode: user.staffCode,
+						// staffCode: user.id.toString(),
+						fullname: user.firstName + " " + user.lastName,
+						username: user.username,
+						joinedDate: user.joinedDate,
+						type: user.roleId,
+					};
+
+					tableDatas.push(data);
+					let modal: ModalUserModel = {
+						staffCode: user.staffCode,
+						fullName: user.firstName + " " + user.lastName,
+						username: user.username,
+						dateOfBirth: user.dateOfBirth,
+						gender: user.gender,
+						joinedDate: user.joinedDate,
+						roleId: Roles[user.roleId],
+						location: user.location,
+					}
+					modalDatas.push(modal);
+				}
 			})
 			setModalUsers([...modalDatas]);
 			setTableUser([...tableDatas]);
 		}).catch(e => { console.log(e); window.alert(e) });
+		window.history.replaceState({}, '')
 	}
 
 	// button
@@ -112,16 +140,17 @@ export const ManageUserComponent = (props: Props) => {
 					<DropdownFilterComponent title={"Type"}></DropdownFilterComponent>
 				</Col>
 				<Col className="d-flex justify-content-center align-items-center">
-					<SearchComponent placeholder={null}></SearchComponent>
+					<SearchComponent placeholder={null} url={url}></SearchComponent>
 				</Col>
 				<Col className="d-flex justify-content-center align-items-center">
-					<Button variant="danger" onClick={() => { return navigate('./new') }}>Create New User</Button>
 					<Button variant="danger" onClick={() => { return navigate('./new') }}>Create New User</Button>
 				</Col>
 			</Row>
 			<Row>
 				<TableComponent headers={header} datas={tableUser} url={url} auxData={modalUsers} auxHeader={modalHeader} buttons={buttons}  ></TableComponent>
-				<TableComponent headers={header} datas={tableUser} url={url} auxData={modalUsers} auxHeader={modalHeader} buttons={buttons}  ></TableComponent>
+			</Row>
+			<Row>
+				{/* Pagination */}
 			</Row>
 		</Container>
 	);

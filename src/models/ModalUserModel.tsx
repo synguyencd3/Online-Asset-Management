@@ -16,6 +16,4 @@ export type ModalUserModel = {
 
     location: string;
 
-
-
 }
