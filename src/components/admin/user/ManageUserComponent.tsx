@@ -26,23 +26,26 @@ export const ManageUserComponent = (/*props: Props*/) => {
 
 	const [tableUser, setTableUser] = useState<UserForTableModel[]>([]);
 
+	const [searchParam, setSearchParam] = useState("");
+
+	const [filterParam, setFilterParam] = useState([Roles.ADMIN.toString(), Roles.STAFF.toString()]);
+
+	const [pageParam, setPageParam] = useState([]);
+
+
 	const location = useLocation();
 
 	const [newUser] = useState<UserModel>(location.state?.newUser);
 
-	console.log(location.state?.newUser);
-
-
-
 	let url = LOCAL_SERVICE_API + '/users';
-	// const url = "https://thanhlongbinhthuan.azurewebsites.net/api/v1/users";
 
+	// 'http://localhost:8080/api/v1/users?search=Nhat%20Tran&types=1,2&page=0&size=10&sort=id,desc' 
 
 	useEffect(() => {
-		getUser()
+		getUser(url)
 	}, [])
 
-	async function getUser() {
+	async function getUser(url: string) {
 		await axios.get(
 			url,
 			CORS_CONFIG
@@ -57,7 +60,6 @@ export const ManageUserComponent = (/*props: Props*/) => {
 			if (newUser) {
 				let data: UserForTableModel = {
 					staffCode: newUser.staffCode,
-					// staffCode: newUser.id.toString(),
 					fullname: newUser.firstName + " " + newUser.lastName,
 					username: newUser.username,
 					joinedDate: newUser.joinedDate,
@@ -81,7 +83,6 @@ export const ManageUserComponent = (/*props: Props*/) => {
 				if (newUser && newUser.id === user.id) { } else {
 					let data: UserForTableModel = {
 						staffCode: user.staffCode,
-						// staffCode: user.id.toString(),
 						fullname: user.firstName + " " + user.lastName,
 						username: user.username,
 						joinedDate: user.joinedDate,
@@ -108,7 +109,14 @@ export const ManageUserComponent = (/*props: Props*/) => {
 		window.history.replaceState({}, '')
 	}
 
+	function InitializeQuery() {
+		url = url + "?" + "search=" + encodeURIComponent(searchParam) + "&" + "types=" + filterParam.join() + "&" + "page=0" + "&" + "size=10" + "&" + "sort=id,desc";
+		getUser(url);
+	}
+
 	// button
+	const buttons: FunctionalIconModel[] = [];
+
 	function editUser(...data: any[]) {
 		navigate('/admin/manage-users/edit', { state: { user: data[1] } })
 	}
@@ -117,7 +125,6 @@ export const ManageUserComponent = (/*props: Props*/) => {
 		window.alert(data)
 	}
 
-	const buttons: FunctionalIconModel[] = [];
 	const editIcon: FunctionalIconModel = {
 		icon: faPencil,
 		style: "",
@@ -128,19 +135,27 @@ export const ManageUserComponent = (/*props: Props*/) => {
 		style: { color: 'red' },
 		onClickfunction: deleteUser
 	};
-	buttons.push(editIcon);
-	buttons.push(deleteIcon);
-	///
 
+	buttons.push(editIcon, deleteIcon);
+
+	//--------------------------- 
+
+	// Dropdown Filter
+	let filterdata = [];
+	let data1 = { label: "Admin", value: Roles.ADMIN.toString() }
+	let data2 = { label: "Staff", value: Roles.STAFF.toString() }
+	filterdata.push(data1, data2);
+
+	//---------------------------
 
 	return (
 		<Container style={{ maxWidth: "100%" }} className="p-4">
 			<Row className="py-4 ">
 				<Col className="d-flex justify-content-center align-items-center">
-					<DropdownFilterComponent title={"Type"}></DropdownFilterComponent>
+					<DropdownFilterComponent title={"Type"} data={filterdata} params={filterParam} setParamsFunction={setFilterParam} initFunction={InitializeQuery}></DropdownFilterComponent>
 				</Col>
 				<Col className="d-flex justify-content-center align-items-center">
-					<SearchComponent placeholder={null} ></SearchComponent>
+					<SearchComponent placeholder={""} url={url} params={searchParam} setParamsFunction={setSearchParam} initFunction={InitializeQuery}></SearchComponent>
 				</Col>
 				<Col className="d-flex justify-content-center align-items-center">
 					<Button variant="danger" onClick={() => { return navigate('./new') }}>Create New User</Button>
