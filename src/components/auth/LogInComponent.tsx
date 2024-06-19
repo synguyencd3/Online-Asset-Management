@@ -13,11 +13,27 @@ import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 const validationSchema = Yup.object({
     username: Yup.string()
         .required('Username is required')
-        .matches(/^[\x00-\x7F]*$/, 'Username must not contain Unicode characters'),
-    password: Yup.string()
-        .required('Password is required')
-        .matches(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]{8,}$/, 'Password must have at least 8 characters, including letters (or special characters) and numbers')
+        .matches(/^[\x00-\x7F]*$/)
 });
+
+const validate = (values: { username: string, password: string }) => {
+    const errors: { username?: string, password?: string } = {};
+    const usernameRegex = /^[\x00-\x7F]*$/;
+    const passwordRegex = /^(?=.*[A-Za-z@$!%*#?&])(?=.*\d)[A-Za-z\d@$!%*#?&]{8,}$/;
+    
+    if (!values.username) {
+        errors.username = 'Username is required';
+    } else if (!usernameRegex.test(values.username)) {
+    }
+
+    if (!values.password) {
+        errors.password = 'Password is required';
+    } else if (!passwordRegex.test(values.password)) {
+        
+    }
+
+    return errors;
+};
 
 export const LogInComponent: React.FC<{ setIsLoggedIn: (state: boolean) => void }> = ({ setIsLoggedIn }) => {
     const [messageApi, contextHolder] = message.useMessage();
@@ -29,6 +45,7 @@ export const LogInComponent: React.FC<{ setIsLoggedIn: (state: boolean) => void 
             password: ''
         },
         validationSchema: validationSchema,
+        validate,
         onSubmit: async (values) => {
             const logInData: LogInModel = {
                 username: values.username,

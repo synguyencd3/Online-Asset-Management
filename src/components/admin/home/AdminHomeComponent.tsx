@@ -5,12 +5,15 @@ import { PasswordModalComponent } from '../../auth/PasswordModalComponent';
 export const AdminHomeComponent: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
   const [firstLogin, setFirstLogin] = useState<boolean>(false);
-
+  
+  
   useEffect(() => {
-    const isLoggedInFirst = Boolean(localStorage.getItem('isFirstLogin'));
-    if (isLoggedInFirst) {
+    const isLoggedInFirst = localStorage.getItem('isFirstLogin') ? localStorage.getItem('isFirstLogin') : 'true';
+    if (isLoggedInFirst === 'true') {
       setShowModal(false);
-      setFirstLogin(isLoggedInFirst);
+      setFirstLogin(false);
+    } else {
+      setShowModal(true);
     }
   }, []);
 

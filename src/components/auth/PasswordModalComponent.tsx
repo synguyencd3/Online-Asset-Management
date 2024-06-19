@@ -15,10 +15,10 @@ const getValidationSchema = (isFirstLoggedIn: boolean) => Yup.object({
         ? Yup.string().notRequired()
         : Yup.string()
             .required('Old password is required')
-            .matches(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]{8,}$/, 'Password must have at least 8 characters, including letters and numbers'),
+            .matches(/^(?=.*[A-Za-z@$!%*#?&])(?=.*\d)[A-Za-z\d@$!%*#?&]{8,}$/, 'Password must have at least 8 characters, including letters and numbers'),
     newPassword: Yup.string()
         .required('New password is required')
-        .matches(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]{8,}$/, 'Password must have at least 8 characters, including letters (or special characters) and numbers')
+        .matches(/^(?=.*[A-Za-z@$!%*#?&])(?=.*\d)[A-Za-z\d@$!%*#?&]{8,}$/, 'Password must have at least 8 characters, including letters (or special characters) and numbers')
 });
 
 interface ChangePasswordModalProps {
@@ -29,15 +29,13 @@ interface ChangePasswordModalProps {
 
 export const PasswordModalComponent: React.FC<ChangePasswordModalProps> = ({ show, isFirstLoggedIn, onClose }) => {
     // const [apiError, setApiError] = useState<string>('');
-    const [isFirstLogIn, setIsFirstLogIn] = useState<boolean>(Boolean(localStorage.getItem('isFirstLogin')));
+    const [isFirstLogIn, setIsFirstLogIn] = useState<boolean>(isFirstLoggedIn);
     const [successMessage, setSuccessMessage] = useState<string>('');
     const [messageApi, contextHolder] = message.useMessage();
     const [showOld, setShowOld] = useState<boolean>(false);
     const [showNew, setShowNew] = useState<boolean>(false);
 
-    useEffect(() => {
-        setIsFirstLogIn(isFirstLoggedIn);
-    }, [isFirstLoggedIn]);
+console.log(isFirstLogIn);
 
     const formik = useFormik({
         initialValues: {
@@ -60,10 +58,10 @@ export const PasswordModalComponent: React.FC<ChangePasswordModalProps> = ({ sho
 
                 await changePassword(changePswrdData)
                     .then((res) => {
-                        console.log(res.data.message);
+                        console.log(res);
                         if (res.status == 200) {
                             resetForm();
-                            setIsFirstLogIn(false);
+                            setIsFirstLogIn(true);
                             localStorage.removeItem('isFirstLogin');
                             setSuccessMessage('Your password has been changed successfully!');
                         }
@@ -102,7 +100,7 @@ export const PasswordModalComponent: React.FC<ChangePasswordModalProps> = ({ sho
                 <Modal.Title style={{ color: ColorPalette.PRIMARY_COLOR }}>Change password</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                {!isFirstLoggedIn ? <p className="change-pswr-content mx-2">This is the first time you logged in. <br /> You have to change your password to continue</p> : null}
+                {!isFirstLogIn ? <p className="change-pswr-content mx-2">This is the first time you logged in. <br /> You have to change your password to continue</p> : null}
                 {successMessage ? (
                     <div>
                         <div className="success-message mx-2">{successMessage}</div>
