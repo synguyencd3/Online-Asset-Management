@@ -12,28 +12,13 @@ import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 // Define the validation schema with Yup
 const validationSchema = Yup.object({
     username: Yup.string()
-        .required('Username is required')
-        .matches(/^[\x00-\x7F]*$/)
+        .required()
+        .matches(/^[\x00-\x7F]*$/),
+    password: Yup.string()
+        .required()
+        .matches(/^(?=.*[A-Za-z@$!%*#?&])(?=.*\d)[A-Za-z\d@$!%*#?&]{8,}$/)
 });
 
-const validate = (values: { username: string, password: string }) => {
-    const errors: { username?: string, password?: string } = {};
-    const usernameRegex = /^[\x00-\x7F]*$/;
-    const passwordRegex = /^(?=.*[A-Za-z@$!%*#?&])(?=.*\d)[A-Za-z\d@$!%*#?&]{8,}$/;
-    
-    if (!values.username) {
-        errors.username = 'Username is required';
-    } else if (!usernameRegex.test(values.username)) {
-    }
-
-    if (!values.password) {
-        errors.password = 'Password is required';
-    } else if (!passwordRegex.test(values.password)) {
-        
-    }
-
-    return errors;
-};
 
 export const LogInComponent: React.FC<{ setIsLoggedIn: (state: boolean) => void }> = ({ setIsLoggedIn }) => {
     const [messageApi, contextHolder] = message.useMessage();
@@ -45,7 +30,6 @@ export const LogInComponent: React.FC<{ setIsLoggedIn: (state: boolean) => void 
             password: ''
         },
         validationSchema: validationSchema,
-        validate,
         onSubmit: async (values) => {
             const logInData: LogInModel = {
                 username: values.username,
@@ -110,9 +94,9 @@ export const LogInComponent: React.FC<{ setIsLoggedIn: (state: boolean) => void 
                             {...formik.getFieldProps('username')}
                             aria-required
                         />
-                        {formik.touched.username && formik.errors.username ? (
+                        {/* {formik.touched.username && formik.errors.username ? (
                             <div className="error-message">{formik.errors.username}</div>
-                        ) : null}
+                        ) : null} */}
                     </Col>
                 </Form.Group>
                 <Form.Group as={Row} className="mb-3 px-4">
@@ -132,9 +116,9 @@ export const LogInComponent: React.FC<{ setIsLoggedIn: (state: boolean) => void 
                                 <FontAwesomeIcon icon={show ? faEye : faEyeSlash} onClick={handleShowPassword}></FontAwesomeIcon>
                             </InputGroup.Text>
                         </InputGroup>
-                        {formik.touched.password && formik.errors.password ? (
+                        {/* {formik.touched.password && formik.errors.password ? (
                             <div className="error-message">{formik.errors.password}</div>
-                        ) : null}
+                        ) : null} */}
                     </Col>
                 </Form.Group>
                 <Row>
