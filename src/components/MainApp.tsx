@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import { SidebarComponent } from './commons/SideBarComponent';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { ManageAssetComponent } from './admin/asset/ManageAssetComponent';
 import { ManageAssignmentComponent } from './admin/assignment/ManageAssignmentComponent';
 import { AdminHomeComponent } from './admin/home/AdminHomeComponent';
@@ -30,6 +30,7 @@ export const MainApp: React.FC<{ setHeaderTitle: (title: string) => void }> = ({
                         <Route path="manage-assignments" element={<ManageAssignmentComponent />} />
                         <Route path="request-returning" element={<RequestReturningConponent />} />
                         <Route path="reports" element={<ReportComponent />} />
+                        <Route path="*" element={<Navigate to={'home'} />} />
                     </Route>
                 </Routes>
             </main>
