@@ -25,9 +25,9 @@ export const MainApp: React.FC<{ setHeaderTitle: (title: string) => void }> = ({
                 <Routes>
                     <Route element={<PermissionCheck />}>
                         <Route path="home" element={<AdminHomeComponent />} />
-                        <Route path="manage-users" element={<ManageUserComponent url={'http://localhost:8080/api/v1/'} />} />
-                        <Route path="manage-users/new" element={<CreateUserComponent url={'http://localhost:8080/api/v1/'} />} />
-                        <Route path="manage-users/edit" element={<EditUserComponent url={'http://localhost:8080/api/v1/'} />} />
+                        <Route path="manage-users" element={<ManageUserComponent />} />
+                        <Route path="manage-users/new" element={<CreateUserComponent />} />
+                        <Route path="manage-users/edit" element={<EditUserComponent />} />
                         <Route path="manage-assets" element={<ManageAssetComponent />} />
                         <Route path="manage-assignments" element={<ManageAssignmentComponent />} />
                         <Route path="request-returning" element={<RequestReturningConponent />} />

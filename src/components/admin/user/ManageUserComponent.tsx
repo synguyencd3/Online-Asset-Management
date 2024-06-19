@@ -140,7 +140,7 @@ export const ManageUserComponent = (/*props: Props*/) => {
 					<DropdownFilterComponent title={"Type"}></DropdownFilterComponent>
 				</Col>
 				<Col className="d-flex justify-content-center align-items-center">
-					<SearchComponent placeholder={null} url={url}></SearchComponent>
+					<SearchComponent placeholder={null} ></SearchComponent>
 				</Col>
 				<Col className="d-flex justify-content-center align-items-center">
 					<Button variant="danger" onClick={() => { return navigate('./new') }}>Create New User</Button>
