@@ -5,5 +5,6 @@ export type LogInModel = {
 
 export type LogInResponseModel = {
     username: string,
+    location: string,
     roleId: number
 }

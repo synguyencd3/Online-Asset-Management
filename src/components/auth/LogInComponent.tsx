@@ -48,7 +48,8 @@ export const LogInComponent: React.FC<{ setIsLoggedIn: (state: boolean) => void 
                                 setIsLoggedIn(true);
                                 const loginResponse: LogInResponseModel = {
                                     username: res.data.data.username ?? 'username',
-                                    roleId: res.data.data.roleId
+                                    roleId: res.data.data.roleId,
+                                    location: res.data.data.location
                                 }
                                 console.log(loginResponse);
                                 localStorage.setItem('isLoggedIn', 'true');

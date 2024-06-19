@@ -42,6 +42,7 @@ export const HeaderComponent: React.FC<HeaderComponentProps> = ({ title, logo, h
                             handleLogout(true, 'Online Asset Management');
                             localStorage.removeItem('loginResponse');
                             localStorage.removeItem('isLoggedIn');
+                            localStorage.removeItem('isFirstLogin');
                             navigator('/');
                             console.log(res.data);
                             console.log(res.status);
