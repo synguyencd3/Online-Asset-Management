@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { ColorPalette } from '../../utils/ColorPalette';
@@ -170,7 +170,8 @@ console.log(isFirstLogIn);
                                     variant='danger'
                                     className="mx-2 fw-semibold"
                                     type="submit"
-                                    style={{ minWidth: "90px" }}>
+                                    style={{ minWidth: "90px" }}
+                                    disabled={!formik.isValid || !formik.dirty}>
                                     Save
                                 </Button>
                                 {isFirstLogIn !== false && (
