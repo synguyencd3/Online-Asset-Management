@@ -26,15 +26,14 @@ export const TableComponent = ({ headers, datas, url, auxData, auxHeader, button
 	const [header, setHeader] = useState(headers);
 
 	const [modalShow, setModalShow] = useState(false);
-	
+
 	const [modalData, setModalData] = useState<Object>({});
 
-	
-	const handleClick = (e: React.MouseEvent<HTMLTableRowElement>, key: object) => {
+	const handleClick = (e: React.MouseEvent<any>, key: object) => {
 		const targetElement = e.target as HTMLElement;
 		const className = targetElement.className;
+		setModalData(key);
 		if (className === "cell" || className === "modalClick") {
-			setModalData(key);
 			setModalShow(true);
 		}
 	};
@@ -81,9 +80,9 @@ export const TableComponent = ({ headers, datas, url, auxData, auxHeader, button
 										<td className='last-cell'>
 											<Container>
 												<Row className='g-3'>
-													{buttons?.map((data: FunctionalIconModel) => (
-														<Col lg={3}>
-															<FontAwesomeIcon size='lg' icon={data.icon} onClick={data.onClickfunction} style={data.style} />
+													{buttons?.map((button: FunctionalIconModel, bIndex) => (
+														<Col key={bIndex} lg={3}>
+															<FontAwesomeIcon size='lg' icon={button.icon} onClick={(e) => {button.onClickfunction(e, auxData[index], data) }} style={button.style} />
 														</Col>
 													))}
 												</Row>

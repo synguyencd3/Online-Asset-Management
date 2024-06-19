@@ -12,6 +12,7 @@ import { FunctionalIconModel } from "../../../models/FunctionalIconModel";
 import { faPencil } from "@fortawesome/free-solid-svg-icons";
 import { faCircleXmark } from "@fortawesome/free-regular-svg-icons/faCircleXmark";
 import { useNavigate } from "react-router-dom";
+import { CORS_CONFIG } from "../../../configs/CorsConfig";
 
 type Props = {
 	url: string
@@ -25,28 +26,32 @@ export const ManageUserComponent = (props: Props) => {
 	const [tableUser, setTableUser] = useState<UserForTableModel[]>([]);
 
 	const navigate = useNavigate();
-	
+
 	const url = props.url + 'users';
+	// const url = "https://thanhlongbinhthuan.azurewebsites.net/api/v1/users";
 
 
 	useEffect(() => {
 		getUser()
 	}, [])
 
-	function getUser() {
-		axios({
-			method: 'get',
-			url: url,
-		}).then((response) => {
+	async function getUser() {
+		await axios.get(
+			url,
+			CORS_CONFIG
+		).then((response) => {
 			// check status
 			let data = response.data.data;
 			let u: UserModel[] = data.content;
-
+			console.log(u);
+			
 
 			let tableDatas: UserForTableModel[] = [];
+
 			let modalDatas: ModalUserModel[] = [];
 
 			u.map(user => {
+
 				let data: UserForTableModel = {
 					staffCode: user.staffCode,
 					// staffCode: user.id.toString(),
@@ -55,6 +60,7 @@ export const ManageUserComponent = (props: Props) => {
 					joinedDate: user.joinedDate,
 					type: user.roleId,
 				};
+
 				tableDatas.push(data);
 				let modal: ModalUserModel = {
 					staffCode: user.staffCode,
@@ -66,20 +72,23 @@ export const ManageUserComponent = (props: Props) => {
 					roleId: Roles[user.roleId],
 					location: user.location,
 				}
+
 				modalDatas.push(modal);
 			})
 			setModalUsers([...modalDatas]);
 			setTableUser([...tableDatas]);
 		}).catch(e => { console.log(e); window.alert(e) });
 	}
-	// button
-	function editUser(e: React.MouseEvent<SVGElement>) {
-		window.alert(e.target)
-	}
-	function deleteUser(e: React.MouseEvent<SVGElement>) {
-		window.alert(e.target)
 
+	// button
+	function editUser(...data: any[]) {
+		navigate('/admin/manage-users/edit', { state: { user: data[1] } })
 	}
+
+	function deleteUser(...data: any[]) {
+		window.alert(data)
+	}
+
 	const buttons: FunctionalIconModel[] = [];
 	const editIcon: FunctionalIconModel = {
 		icon: faPencil,
