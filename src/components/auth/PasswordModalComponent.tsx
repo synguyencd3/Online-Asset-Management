@@ -14,8 +14,7 @@ const getValidationSchema = (isFirstLoggedIn: boolean) => Yup.object({
     oldPassword: !isFirstLoggedIn
         ? Yup.string().notRequired()
         : Yup.string()
-            .required('Old password is required')
-            .matches(/^(?=.*[A-Za-z@$!%*#?&])(?=.*\d)[A-Za-z\d@$!%*#?&]{8,}$/, 'Password must have at least 8 characters, including letters and numbers'),
+            .required('Old password is required'),
     newPassword: Yup.string()
         .required('New password is required')
         .matches(/^(?=.*[A-Za-z@$!%*#?&])(?=.*\d)[A-Za-z\d@$!%*#?&]{8,}$/, 'Password must have at least 8 characters, including letters (or special characters) and numbers')
