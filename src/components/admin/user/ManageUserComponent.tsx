@@ -116,9 +116,11 @@ export const ManageUserComponent = (props: Props) => {
 				</Col>
 				<Col className="d-flex justify-content-center align-items-center">
 					<Button variant="danger" onClick={() => { return navigate('./new') }}>Create New User</Button>
+					<Button variant="danger" onClick={() => { return navigate('./new') }}>Create New User</Button>
 				</Col>
 			</Row>
 			<Row>
+				<TableComponent headers={header} datas={tableUser} url={url} auxData={modalUsers} auxHeader={modalHeader} buttons={buttons}  ></TableComponent>
 				<TableComponent headers={header} datas={tableUser} url={url} auxData={modalUsers} auxHeader={modalHeader} buttons={buttons}  ></TableComponent>
 			</Row>
 		</Container>

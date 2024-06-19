@@ -1,13 +1,12 @@
 #root {
   margin: 0 auto;
-  text-align: center;
   width: 100%;
 }
 
 .logo {
   text-align: left;
   margin-bottom: 20px;
-  height: 6em;
+  height: 4.5em;
   will-change: filter;
   transition: filter 300ms;
 }
@@ -15,7 +14,29 @@
   filter: drop-shadow(0 0 2em #646cffaa);
 }
 .logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+  filter: drop-shadow(0 0 5em #61dafbaa);
+}
+
+#btn-logout:hover {
+  filter: drop-shadow(0 0 2em #ffffffaa);
+}
+
+/* .form-group {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.form-control-container {
+  display: flex;
+  align-items: center;
+} */
+
+.error-message {
+  max-width: 23em;
+  margin-top: 2px;
+  color: var(--PRIMARY-COLOR);
+  font-size: 0.8em;
 }
 
 @keyframes logo-spin {

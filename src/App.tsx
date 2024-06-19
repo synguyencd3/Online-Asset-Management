@@ -6,11 +6,11 @@ import { LogInComponent } from './components/auth/LogInComponent';
 import { MainApp } from './components/MainApp';
 
 function App() {
-    const [headerTitle, setHeaderTitle] = useState<string>('LOG IN');
-    const [isLoggedIn, setIsLoggedIn] = useState(localStorage.getItem('isLoggedIn') === 'true');
+    const [headerTitle, setHeaderTitle] = useState<string>('Online Asset Management');
+    const [isLoggedIn, setIsLoggedIn] = useState<boolean>(Boolean(localStorage.getItem('isLoggedIn')) === true);
 
     useEffect(() => {
-        setIsLoggedIn(localStorage.getItem('isLoggedIn') === 'true');
+        setIsLoggedIn(Boolean(localStorage.getItem('isLoggedIn')) === true);
     }, []);
 
     const handleLogin = () => {
@@ -22,26 +22,26 @@ function App() {
         if (state) {
             setHeaderTitle(title);
             setIsLoggedIn(false);
-            localStorage.removeItem('isLoggedIn');
+            localStorage.removeItem('loginResponse');
         }
     };
-
-    useEffect(() => {
-        setIsLoggedIn(localStorage.getItem('isLoggedIn') === 'true');
-    }, []);
 
     return (
         <Router>
             <div style={{ flexFlow: 'column', height: '100%' }}>
-                <HeaderComponent title={headerTitle} handleLogout={handleLogout} />
+                <HeaderComponent title={headerTitle} handleLogout={handleLogout} logo={isLoggedIn ? '' : '/nashtech_logo.svg'} />
                 <Routes>
                     <Route
-                        path="/"
-                        element={isLoggedIn ? <Navigate to="/admin/home" /> : <LogInComponent setIsLoggedIn={handleLogin} />}
+                        path='/'
+                        element={isLoggedIn ? <Navigate to={'/admin/home'} /> : <LogInComponent setIsLoggedIn={handleLogin} />}
                     />
                     <Route
-                        path="/admin/*"
-                        element={isLoggedIn ? <MainApp setHeaderTitle={setHeaderTitle} /> : <Navigate to="/" />}
+                        path='admin/*'
+                        element={isLoggedIn ? <MainApp setHeaderTitle={setHeaderTitle} /> : <Navigate to={'/'} />}
+                    />
+                    <Route 
+                    path='*'
+                    element={<Navigate to={'/'}/>}
                     />
                 </Routes>
             </div>

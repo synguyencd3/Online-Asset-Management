@@ -7,7 +7,7 @@ import { AdminHomeComponent } from './admin/home/AdminHomeComponent';
 import { ReportComponent } from './admin/report/ReportComponent';
 import { RequestReturningConponent } from './admin/returning/RequestReturningConponent';
 import { ManageUserComponent } from './admin/user/ManageUserComponent';
-import { PermissionCheck } from './auth/PermissionCheck';
+import { PermissionCheck } from './auth/PermissionCheckComponent';
 import { CreateUserComponent } from './admin/user/CreateUserComponent';
 import { EditUserComponent } from './admin/user/EditUserComponent';
 
@@ -15,14 +15,13 @@ export const MainApp: React.FC<{ setHeaderTitle: (title: string) => void }> = ({
     const navigate = useNavigate();
 
     useEffect(() => {
-        setHeaderTitle('HOME');
-        navigate('/admin/home');
-    }, []);
+        setHeaderTitle('Home');
+    }, [setHeaderTitle]);
 
     return (
-        <div className="d-flex container-fluid mt-5">
+        <div className="d-flex mx-5 mt-5">
             <SidebarComponent setHeaderTitle={setHeaderTitle} />
-            <main className="container-fluid" style={{ flexFlow: 'column', height: '100%' }}>
+            <main className="container" style={{ flexFlow: 'column', height: '100%' }}>
                 <Routes>
                     <Route element={<PermissionCheck />}>
                         <Route path="home" element={<AdminHomeComponent />} />

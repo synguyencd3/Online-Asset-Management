@@ -1,6 +1,6 @@
 export abstract class ColorPalette {
-    static readonly PRIMARY_COLOR = '#CF2338';
-    static readonly TERTIARY_COLOR = '#FF8080';
+    static readonly PRIMARY_COLOR = '#E30613';
+    static readonly SECONDARY_COLOR = '#CF2338';
 
     static readonly SLIVER_100_COLOR = '#EEEEEE';
     static readonly SLIVER_200_COLOR = '#DDDDDD';
