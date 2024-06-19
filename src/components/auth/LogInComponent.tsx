@@ -61,7 +61,7 @@ export const LogInComponent: React.FC<{ setIsLoggedIn: (state: boolean) => void 
                             console.log(err.response.status);
                             if (err.response.status === 401) {
                                 console.log(err.response.data.message);
-                                message.error('Username or password is incorrect. Please try again');
+                                message.error(err.response.data.message);
                             }
                             if (err.response.status == 403) {
                                 message.error('You do not have permission to access this page!');
