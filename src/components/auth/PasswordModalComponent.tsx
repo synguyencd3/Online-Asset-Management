@@ -17,7 +17,12 @@ const getValidationSchema = (isFirstLoggedIn: boolean) => Yup.object({
             .required('Old password is required'),
     newPassword: Yup.string()
         .required('New password is required')
-        .matches(/^(?=.*[A-Za-z@$!%*#?&])(?=.*\d)[A-Za-z\d@$!%*#?&]{8,}$/, 'Password must have at least 8 characters, including letters (or special characters) and numbers')
+        .matches(/^[\x00-\x7F]*$/, 'English letter only!')
+        .matches(/^(?=.*[A-Z])(?=.*[@$!%*#?&])(?=.*\d)[A-Za-z\d@$!%*#?&]{8,}$/, 'Password must have at least 8 characters, including letters (or special characters) and numbers'),
+    confirmPassword: Yup.string()
+        .required('Confirm password is required')
+        .matches(/^[\x00-\x7F]*$/, 'English letter only!')
+        .matches(/^(?=.*[A-Z])(?=.*[@$!%*#?&])(?=.*\d)[A-Za-z\d@$!%*#?&]{8,}$/, 'Password must have at least 8 characters, including letters (or special characters) and numbers'),
 });
 
 interface ChangePasswordModalProps {
@@ -27,21 +32,23 @@ interface ChangePasswordModalProps {
 }
 
 export const PasswordModalComponent: React.FC<ChangePasswordModalProps> = ({ show, isFirstLoggedIn, onClose }) => {
-    // const [apiError, setApiError] = useState<string>('');
     const [isFirstLogIn, setIsFirstLogIn] = useState<boolean>(isFirstLoggedIn);
     const [successMessage, setSuccessMessage] = useState<string>('');
     const [messageApi, contextHolder] = message.useMessage();
     const [showOld, setShowOld] = useState<boolean>(false);
     const [showNew, setShowNew] = useState<boolean>(false);
+    const [showConfirm, setShowConfirm] = useState<boolean>(false);
+
+    console.log(isFirstLogIn);
 
     const formik = useFormik({
         initialValues: {
             oldPassword: '',
-            newPassword: ''
+            newPassword: '',
+            confirmPassword: ''
         },
         validationSchema: getValidationSchema(isFirstLoggedIn),
         onSubmit: async (values, { resetForm }) => {
-            // setApiError('');
             setSuccessMessage('');
 
             messageApi.open({
@@ -49,8 +56,9 @@ export const PasswordModalComponent: React.FC<ChangePasswordModalProps> = ({ sho
                 content: 'Updating password...',
             }).then(async () => {
                 const changePswrdData: ChangePasswordModel = {
-                    oldPassword: isFirstLoggedIn != true ? '' : values.oldPassword,
-                    newPassword: values.newPassword
+                    oldPassword: isFirstLoggedIn !== true ? '' : values.oldPassword,
+                    newPassword: values.newPassword,
+                    confirmPassword: values.confirmPassword,
                 };
 
                 await changePassword(changePswrdData)
@@ -59,7 +67,7 @@ export const PasswordModalComponent: React.FC<ChangePasswordModalProps> = ({ sho
                         if (res.status == 200) {
                             resetForm();
                             setIsFirstLogIn(true);
-                            localStorage.removeItem('isFirstLogin');
+                            localStorage.setItem('isFirstLogin', 'true');
                             setSuccessMessage('Your password has been changed successfully!');
                         }
                     }).catch((err) => {
@@ -76,7 +84,6 @@ export const PasswordModalComponent: React.FC<ChangePasswordModalProps> = ({ sho
     }
 
     const handleCloseModal = () => {
-        // setApiError('');
         setSuccessMessage('');
         formik.resetForm();
         onClose();
@@ -90,6 +97,10 @@ export const PasswordModalComponent: React.FC<ChangePasswordModalProps> = ({ sho
         setShowNew(!showNew);
     };
 
+    const handleShowConfirmPassword = () => {
+        setShowConfirm(!showConfirm);
+    };
+
     return (
         <Modal show={show} onHide={handleCloseModal} centered backdrop="static">
             {contextHolder}
@@ -97,7 +108,7 @@ export const PasswordModalComponent: React.FC<ChangePasswordModalProps> = ({ sho
                 <Modal.Title style={{ color: ColorPalette.PRIMARY_COLOR }}>Change password</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                {!isFirstLogIn ? <p className="change-pswr-content mx-2">This is the first time you logged in. <br /> You have to change your password to continue</p> : null}
+                {isFirstLogIn === false ? <p className="change-pswr-content mx-2">This is the first time you logged in. <br /> You have to change your password to continue</p> : null}
                 {successMessage ? (
                     <div>
                         <div className="success-message mx-2">{successMessage}</div>
@@ -118,7 +129,7 @@ export const PasswordModalComponent: React.FC<ChangePasswordModalProps> = ({ sho
                         {isFirstLogIn !== false && (
                             <Form.Group as={Row} className="mb-3 px-2">
                                 <Form.Label column sm={4}>
-                                    Old password <span className='mx-1' style={{ color: ColorPalette.PRIMARY_COLOR }}>*</span>
+                                    Old password<span className='mx-1' style={{ color: ColorPalette.PRIMARY_COLOR }}>*</span>
                                 </Form.Label>
                                 <Col sm={8}>
                                     <InputGroup className="password-onfocus">
@@ -141,7 +152,7 @@ export const PasswordModalComponent: React.FC<ChangePasswordModalProps> = ({ sho
                         )}
                         <Form.Group as={Row} className="mb-3 px-2">
                             <Form.Label column sm={4}>
-                                New password <span className='mx-1' style={{ color: ColorPalette.PRIMARY_COLOR }}>*</span>
+                                New password<span className='mx-1' style={{ color: ColorPalette.PRIMARY_COLOR }}>*</span>
                             </Form.Label>
                             <Col sm={8}>
                                 <InputGroup className="password-onfocus">
@@ -158,6 +169,28 @@ export const PasswordModalComponent: React.FC<ChangePasswordModalProps> = ({ sho
                                 </InputGroup>
                                 {formik.touched.newPassword && formik.errors.newPassword ? (
                                     <div className="error-message">{formik.errors.newPassword}</div>
+                                ) : null}
+                            </Col>
+                        </Form.Group>
+                        <Form.Group as={Row} className="mb-3 px-2">
+                            <Form.Label column sm={4} style={{ paddingRight: 0 }}>
+                                Confirm Password<span className='mx-1' style={{ color: ColorPalette.PRIMARY_COLOR }}>*</span>
+                            </Form.Label>
+                            <Col sm={8}>
+                                <InputGroup className="password-onfocus">
+                                    <Form.Control
+                                        type={showConfirm ? 'text' : 'password'}
+                                        className="form-control border-0"
+                                        id="confirm-password"
+                                        {...formik.getFieldProps('confirmPassword')}
+                                        aria-required
+                                    />
+                                    <InputGroup.Text className='bg-transparent border-0'>
+                                        <FontAwesomeIcon icon={showConfirm ? faEye : faEyeSlash} onClick={handleShowConfirmPassword}></FontAwesomeIcon>
+                                    </InputGroup.Text>
+                                </InputGroup>
+                                {formik.touched.confirmPassword && formik.errors.confirmPassword ? (
+                                    <div className="error-message">{formik.errors.confirmPassword}</div>
                                 ) : null}
                             </Col>
                         </Form.Group>

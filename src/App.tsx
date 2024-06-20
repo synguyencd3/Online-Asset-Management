@@ -8,10 +8,15 @@ import { MainApp } from './components/MainApp';
 function App() {
     const [headerTitle, setHeaderTitle] = useState<string>('Online Asset Management');
     const [isLoggedIn, setIsLoggedIn] = useState<boolean>(Boolean(localStorage.getItem('isLoggedIn')) === true);
+    const [username, setUsername] = useState('');
 
     useEffect(() => {
         setIsLoggedIn(Boolean(localStorage.getItem('isLoggedIn')) === true);
     }, []);
+
+    const handleGetUsername = (username: string) => {
+        setUsername(username);
+    }
 
     const handleLogin = () => {
         setIsLoggedIn(true);
@@ -29,11 +34,11 @@ function App() {
     return (
         <Router>
             <div style={{ flexFlow: 'column', height: '100%' }}>
-                <HeaderComponent title={headerTitle} handleLogout={handleLogout} logo={isLoggedIn ? '' : '/nashtech_logo.svg'} />
+                <HeaderComponent title={headerTitle} handleLogout={handleLogout} logo={isLoggedIn ? '' : '/nashtech_logo.svg'} username={username} />
                 <Routes>
                     <Route
                         path='/'
-                        element={isLoggedIn ? <Navigate to={'/admin/home'} /> : <LogInComponent setIsLoggedIn={handleLogin} />}
+                        element={isLoggedIn ? <Navigate to={'/admin/home'} /> : <LogInComponent setIsLoggedIn={handleLogin} setUsername={handleGetUsername} />}
                     />
                     <Route
                         path='admin/*'

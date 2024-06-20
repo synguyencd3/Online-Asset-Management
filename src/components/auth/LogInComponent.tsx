@@ -12,22 +12,20 @@ import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 // Define the validation schema with Yup
 const validationSchema = Yup.object({
     username: Yup.string()
-        .required()
-        .matches(/^[\x00-\x7F]*$/),
+        .required('Username is required'),
     password: Yup.string()
-        .required()
-        .matches(/^(?=.*[A-Za-z@$!%*#?&])(?=.*\d)[A-Za-z\d@$!%*#?&]{8,}$/)
+        .required('Password is required')
 });
 
 
-export const LogInComponent: React.FC<{ setIsLoggedIn: (state: boolean) => void }> = ({ setIsLoggedIn }) => {
+export const LogInComponent: React.FC<{ setIsLoggedIn: (state: boolean) => void, setUsername: (username: string) => void }> = ({ setIsLoggedIn, setUsername }) => {
     const [messageApi, contextHolder] = message.useMessage();
     const [show, setShow] = useState<boolean>(false);
 
     const formik = useFormik({
         initialValues: {
             username: '',
-            password: ''
+            password: '',
         },
         validationSchema: validationSchema,
         onSubmit: async (values) => {
@@ -52,9 +50,12 @@ export const LogInComponent: React.FC<{ setIsLoggedIn: (state: boolean) => void 
                                     location: res.data.data.location
                                 }
                                 console.log(loginResponse);
+                                setUsername(loginResponse.username);
                                 localStorage.setItem('isLoggedIn', 'true');
                                 localStorage.setItem('isFirstLogin', res.data.data.isChangePassword);
-                                localStorage.setItem('loginResponse', JSON.stringify(loginResponse));
+                                localStorage.setItem('username', res.data.data.username);
+                                localStorage.setItem('roleId', res.data.data.roleId);
+                                localStorage.setItem('location', res.data.data.location);
                                 message.success(res.data.message);
                             }
                         })
@@ -95,9 +96,9 @@ export const LogInComponent: React.FC<{ setIsLoggedIn: (state: boolean) => void 
                             {...formik.getFieldProps('username')}
                             aria-required
                         />
-                        {/* {formik.touched.username && formik.errors.username ? (
+                        {formik.touched.username && formik.errors.username ? (
                             <div className="error-message">{formik.errors.username}</div>
-                        ) : null} */}
+                        ) : null}
                     </Col>
                 </Form.Group>
                 <Form.Group as={Row} className="mb-3 px-4">
@@ -117,9 +118,9 @@ export const LogInComponent: React.FC<{ setIsLoggedIn: (state: boolean) => void 
                                 <FontAwesomeIcon icon={show ? faEye : faEyeSlash} onClick={handleShowPassword}></FontAwesomeIcon>
                             </InputGroup.Text>
                         </InputGroup>
-                        {/* {formik.touched.password && formik.errors.password ? (
+                        {formik.touched.password && formik.errors.password ? (
                             <div className="error-message">{formik.errors.password}</div>
-                        ) : null} */}
+                        ) : null}
                     </Col>
                 </Form.Group>
                 <Row>

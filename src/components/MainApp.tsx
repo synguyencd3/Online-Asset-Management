@@ -17,7 +17,7 @@ export const MainApp: React.FC<{ setHeaderTitle: (title: string) => void }> = ({
     }, [setHeaderTitle]);
 
     return (
-        <div className="d-flex mx-5 mt-5">
+        <div className="d-flex mx-4 mt-5">
             <SidebarComponent setHeaderTitle={setHeaderTitle} />
             <main className="container" style={{ flexFlow: 'column', height: '100%' }}>
                 <Routes>

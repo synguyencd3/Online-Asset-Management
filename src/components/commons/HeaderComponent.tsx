@@ -11,22 +11,19 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { ConfirmModalComponent } from './ConfirmModalComponent';
 
 interface HeaderComponentProps {
+    username: string,
     title: string,
     logo: string,
     handleLogout: (state: boolean, headerTitle: string) => void
 }
 
-export const HeaderComponent: React.FC<HeaderComponentProps> = ({ title, logo, handleLogout }) => {
+export const HeaderComponent: React.FC<HeaderComponentProps> = ({ username, title, logo, handleLogout }) => {
+    // console.log(localStorage.getItem('username'));
     const navigator = useNavigate();
     const [messageApi, contextHolder] = message.useMessage();
-    const [username, setUsername] = useState<string>('');
+    
     const [showPasswordModal, setShowPasswordModal] = useState(false);
     const [showLogoutModal, setShowLogoutModal] = useState(false); // State for the Logout Modal
-
-    useEffect(() => {
-        const loginResponse = localStorage.getItem('loginResponse');
-        setUsername(loginResponse ? JSON.parse(loginResponse).username : 'username');
-    }, [localStorage.getItem('loginResponse')])
 
     const handleLogOut = async () => {
         messageApi.open({
@@ -40,9 +37,11 @@ export const HeaderComponent: React.FC<HeaderComponentProps> = ({ title, logo, h
                         console.log(res);
                         if (res.status == 200) {
                             handleLogout(true, 'Online Asset Management');
-                            localStorage.removeItem('loginResponse');
                             localStorage.removeItem('isLoggedIn');
                             localStorage.removeItem('isFirstLogin');
+                            localStorage.removeItem('username');
+                            localStorage.removeItem('roleId');
+                            localStorage.removeItem('location');
                             navigator('/');
                             console.log(res.data);
                             console.log(res.status);
