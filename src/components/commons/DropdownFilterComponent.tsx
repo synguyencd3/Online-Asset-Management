@@ -1,6 +1,6 @@
 import { faFilter } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { ChangeEvent, RefAttributes, useState } from 'react';
+import { ChangeEvent, RefAttributes, useEffect, useState } from 'react';
 import { Button, ButtonGroup, Dropdown, Form, OverlayTrigger, Tooltip, TooltipProps } from 'react-bootstrap'
 import { JSX } from 'react/jsx-runtime';
 import { Roles } from '../../utils/Enum';
@@ -19,39 +19,35 @@ export const DropdownFilterComponent = (props: Props) => {
 
 	const allValues: string[] = props.data.map(filter => { return filter.value });
 
-	const [allIsChecked, setAllIsChecked] = useState(false);
+	useEffect(() => {
+		props.initFunction()
+	}, [props.params])
 
 	const handleCheckboxChange = (event: ChangeEvent<HTMLInputElement>) => {
-
 		const { value, checked } = event.target;
 		let updatedOptions: string[] = [...props.params];
 		if (value === "All") {
 			if (checked) {
 				updatedOptions = allValues;
-			} else {
-				updatedOptions = [];
+				props.data.forEach((c, index) => {
+					let box: HTMLInputElement = document.getElementById("filter_" + index) as HTMLInputElement;
+					box.checked = true;
+				})
 			}
-			props.data.forEach((c, index) => {
-				let box: HTMLInputElement = document.getElementById("filter_" + index) as HTMLInputElement;
-				box.checked = false;
-			})
-			setAllIsChecked(checked);
 		} else {
-			if (!allIsChecked) {
-				if (checked) {
-					updatedOptions.push(value);
-				} else {
-					updatedOptions = updatedOptions.filter((option) => option !== value);
+			if (checked) {
+				updatedOptions.push(value);
+			} else {
+				updatedOptions = updatedOptions.filter((option) => option !== value);
+				if (updatedOptions.length === 0) {
+					let box: HTMLInputElement = document.getElementById("filter_All") as HTMLInputElement;
+					box.checked = false;
 				}
 			}
 		}
+		console.log(updatedOptions);
 		props.setParamsFunction(updatedOptions);
 	};
-
-	function submitFilter() {
-
-
-	}
 
 	const renderTooltip = (props: JSX.IntrinsicAttributes & TooltipProps & RefAttributes<HTMLDivElement>) => (
 		<Tooltip id="button-tooltip" {...props}>
@@ -61,14 +57,21 @@ export const DropdownFilterComponent = (props: Props) => {
 
 	return (
 		<Dropdown as={ButtonGroup}>
-			<Dropdown.Toggle split variant="outline-dark" id="dropdown-checkboxes" style={{ minWidth: "100px" }}>
-				{props.title ?? "Option"}
+			{/* do NOT remove Overlay Trigger */}
+			<OverlayTrigger placement="right" delay={{ show: 150, hide: 150 }} overlay={renderTooltip}>
+				<Dropdown.Toggle split variant="outline-dark" style={{ minWidth: "150px", textAlign:"left", width:"100%" }}>
+					{props.title ?? "Option"}
+				</Dropdown.Toggle>
+			</OverlayTrigger>
+			<Dropdown.Toggle split variant="outline-dark" id="dropdown-checkboxes" style={{ width: "100%" }}>
+				<FontAwesomeIcon icon={faFilter} className="custom-icon" />
 			</Dropdown.Toggle>
 
 			<Dropdown.Menu>
 				<Form className='px-3'>
 					<Form.Check
 						type="checkbox"
+						id='filter_All'
 						label="All"
 						value="All"
 						onChange={handleCheckboxChange}
@@ -82,18 +85,11 @@ export const DropdownFilterComponent = (props: Props) => {
 							label={filter.label}
 							value={filter.value}
 							onChange={handleCheckboxChange}
-							disabled={allIsChecked}
 							defaultChecked={true}
 						/>
 					))}
 				</Form>
 			</Dropdown.Menu>
-			<OverlayTrigger placement="right" delay={{ show: 150, hide: 150 }} overlay={renderTooltip}>
-				<Button variant="outline-dark" style={{ width: "100%" }} onClick={() => { props.initFunction() }}>
-					<FontAwesomeIcon icon={faFilter} className="custom-icon" />
-				</Button>
-			</OverlayTrigger>
-
 		</Dropdown>
 	);
 };

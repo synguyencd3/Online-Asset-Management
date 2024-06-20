@@ -3,7 +3,7 @@ import { TableComponent } from "../../commons/TableComponent";
 import { DropdownFilterComponent } from "../../commons/DropdownFilterComponent";
 import { SearchComponent } from "../../commons/SearchComponent";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { UserModel } from "../../../models/UserModel";
 import { UserForTableModel } from "../../../models/UserForTableModel";
 import { ModalUserModel } from "../../../models/ModalUserModel";
@@ -12,12 +12,15 @@ import { FunctionalIconModel } from "../../../models/FunctionalIconModel";
 import { faPencil } from "@fortawesome/free-solid-svg-icons";
 import { faCircleXmark } from "@fortawesome/free-regular-svg-icons/faCircleXmark";
 import { useLocation, useNavigate } from "react-router-dom";
-import { CORS_CONFIG, LOCAL_SERVICE_API } from "../../../utils/Config";
-
+import { AZURE_SERVICE_API, CORS_CONFIG, LOCAL_SERVICE_API } from "../../../utils/Config";
+import { PaginationComponent } from "../../commons/PaginationComponent";
+import { LoaderComponent } from "../../commons/LoaderComponent";
 type Props = {
 }
-const header = [{ name: 'Staff Code', sort: true }, { name: 'Full Name', sort: true }, { name: 'Username', sort: true }, { name: 'Join Date', sort: true }, { name: 'Type', sort: true },]
+const header = [{ name: 'Staff Code', value: "staffCode", sort: true, direction: true }, { name: 'Full Name', value: "firstName", sort: true, direction: true }, { name: 'Username', value: "username", sort: false, direction: true }, { name: 'Joined Date', value: "joinedDate", sort: true, direction: true }, { name: 'Type', value: "roleId", sort: true, direction: true },]
+const showModalCell = ["staffCode", "username", "fullName"]
 const modalHeader = ["Staff Code", "Full Name", "Username", "Date of Birth", "Gender", "Joined Date", "Type", "Location"]
+
 export const ManageUserComponent = (/*props: Props*/) => {
 
 	const navigate = useNavigate();
@@ -26,12 +29,20 @@ export const ManageUserComponent = (/*props: Props*/) => {
 
 	const [tableUser, setTableUser] = useState<UserForTableModel[]>([]);
 
+	const [loading, setLoading] = useState(true);
+
 	const [searchParam, setSearchParam] = useState("");
 
 	const [filterParam, setFilterParam] = useState([Roles.ADMIN.toString(), Roles.STAFF.toString()]);
 
-	const [pageParam, setPageParam] = useState([]);
+	// const [sortString, setSortString] = useState("firstName,asc")
+	const [sortString, setSortString] = useState({ sort: "firstName,asc" })
 
+	const [currentPage, setCurrentPage] = useState(0);
+
+	const [totalPage, setTotalPage] = useState(0);
+
+	const [totalElements, setTotalElements] = useState(0);
 
 	const location = useLocation();
 
@@ -60,13 +71,13 @@ export const ManageUserComponent = (/*props: Props*/) => {
 			if (newUser) {
 				let data: UserForTableModel = {
 					staffCode: newUser.staffCode,
-					fullname: newUser.firstName + " " + newUser.lastName,
+					fullName: newUser.firstName + " " + newUser.lastName,
 					username: newUser.username,
 					joinedDate: newUser.joinedDate,
 					type: newUser.roleId,
 				};
-
 				tableDatas.push(data);
+
 				let modal: ModalUserModel = {
 					staffCode: newUser.staffCode,
 					fullName: newUser.firstName + " " + newUser.lastName,
@@ -83,13 +94,13 @@ export const ManageUserComponent = (/*props: Props*/) => {
 				if (newUser && newUser.id === user.id) { } else {
 					let data: UserForTableModel = {
 						staffCode: user.staffCode,
-						fullname: user.firstName + " " + user.lastName,
+						fullName: user.firstName + " " + user.lastName,
 						username: user.username,
 						joinedDate: user.joinedDate,
 						type: user.roleId,
 					};
-
 					tableDatas.push(data);
+
 					let modal: ModalUserModel = {
 						staffCode: user.staffCode,
 						fullName: user.firstName + " " + user.lastName,
@@ -105,12 +116,19 @@ export const ManageUserComponent = (/*props: Props*/) => {
 			})
 			setModalUsers([...modalDatas]);
 			setTableUser([...tableDatas]);
-		}).catch(e => { console.log(e); window.alert(e) });
+			setCurrentPage(data.currentPage);
+			setTotalPage(data.totalPage);
+			setTotalElements(data.totalElements);
+		}).catch(e => { console.log(e); });
+		setLoading(false);
 		window.history.replaceState({}, '')
 	}
 
 	function InitializeQuery() {
-		url = url + "?" + "search=" + encodeURIComponent(searchParam) + "&" + "types=" + filterParam.join() + "&" + "page=0" + "&" + "size=10" + "&" + "sort=id,desc";
+		url = LOCAL_SERVICE_API + '/users' + "?" + "search=" + encodeURIComponent(searchParam) + "&" + "types=" + filterParam.join() + "&" + "page=" + currentPage + "&" + "size=10" + "&" + "sort=" + sortString.sort;
+
+		console.log(url);
+
 		getUser(url);
 	}
 
@@ -147,26 +165,42 @@ export const ManageUserComponent = (/*props: Props*/) => {
 	filterdata.push(data1, data2);
 
 	//---------------------------
+	function changePage(page: any, pageSize: any) {
+		console.log(page, pageSize);
+		InitializeQuery();
+	}
+
 
 	return (
 		<Container style={{ maxWidth: "100%" }} className="p-4">
-			<Row className="py-4 ">
-				<Col className="d-flex justify-content-center align-items-center">
+			<Row className="py-4 me-3">
+				<Col sm={3} className="d-flex justify-content-start align-items-center">
 					<DropdownFilterComponent title={"Type"} data={filterdata} params={filterParam} setParamsFunction={setFilterParam} initFunction={InitializeQuery}></DropdownFilterComponent>
 				</Col>
-				<Col className="d-flex justify-content-center align-items-center">
-					<SearchComponent placeholder={""} url={url} params={searchParam} setParamsFunction={setSearchParam} initFunction={InitializeQuery}></SearchComponent>
+				<Col className="d-flex justify-content-end align-items-center">
+					<SearchComponent placeholder={""} url={url} params={searchParam} setParamsFunction={setSearchParam} initFunction={InitializeQuery} ></SearchComponent>
 				</Col>
-				<Col className="d-flex justify-content-center align-items-center">
+				<Col sm={2} className="d-flex justify-content-end align-items-center">
 					<Button variant="danger" onClick={() => { return navigate('./new') }}>Create New User</Button>
 				</Col>
 			</Row>
-			<Row>
-				<TableComponent headers={header} datas={tableUser} url={url} auxData={modalUsers} auxHeader={modalHeader} buttons={buttons}  ></TableComponent>
-			</Row>
-			<Row>
-				{/* Pagination */}
-			</Row>
+			{loading ?
+				<LoaderComponent></LoaderComponent>
+				:
+				<>
+					{tableUser.length === 0 ?
+						<Row>
+							<h4 className="text-center"> No User Found</h4>
+						</Row> :
+						<>
+							<Row>
+								<TableComponent headers={header} datas={tableUser} url={url} auxData={modalUsers} auxHeader={modalHeader} buttons={buttons} initFunction={InitializeQuery} sortString={sortString} setSortString={setSortString} showModalCell={showModalCell}  ></TableComponent>
+							</Row>
+							<PaginationComponent currentPage={currentPage} totalPage={totalPage} totalElements={totalElements} initFunction={InitializeQuery} setCurrentPage={setCurrentPage} ></PaginationComponent>
+						</>
+					}
+				</>
+			}
 		</Container>
 	);
 }

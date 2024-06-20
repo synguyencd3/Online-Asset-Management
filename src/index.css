@@ -107,7 +107,8 @@ th {
   border-bottom: 2px solid black;
 }
 
-.cell {
+.cell,
+.cellnoClick {
   border-bottom: 1px solid rgb(142, 142, 142);
 }
 
@@ -123,6 +124,10 @@ tr:nth-child(even) {
 
 tr:hover {
   cursor: pointer;
+}
+
+.last-cell {
+  width: fit-content;
 }
 
 .table-header {
@@ -152,9 +157,10 @@ tr:hover {
   box-shadow: 0 0 0 .25rem transparent;
 }
 
-.form-control{
+.form-control {
   border-color: black;
 }
+
 .red-border-on-focus:focus {
   border-color: red !important;
   outline: none !important;
@@ -170,4 +176,48 @@ tr:hover {
 .password-onfocus:focus-within {
   border: 1px solid red;
   border-radius: 0.375rem;
+}
+
+.loader {
+  width: 50px;
+  padding: 8px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #25b09b;
+  --_m:
+    conic-gradient(#0000 10%, #000),
+    linear-gradient(#000 0 0) content-box;
+  -webkit-mask: var(--_m);
+  mask: var(--_m);
+  -webkit-mask-composite: source-out;
+  mask-composite: subtract;
+  animation: l3 1s infinite linear;
+}
+
+@keyframes l3 {
+  to {
+    transform: rotate(1turn)
+  }
+}
+
+.page-item,
+.page-link {
+  color: red;
+}
+
+.active>.page-link {
+  background-color: red;
+  border-color: red;
+}
+.active>.page-link:hover {
+color: white;
+}
+
+.page-link:focus {
+  box-shadow: none;
+  color: red;
+}
+
+.page-link:hover {
+  color: red;
 }
