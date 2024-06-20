@@ -26,7 +26,7 @@ export const HeaderComponent: React.FC<HeaderComponentProps> = ({ title, logo, h
     useEffect(() => {
         const loginResponse = localStorage.getItem('loginResponse');
         setUsername(loginResponse ? JSON.parse(loginResponse).username : 'username');
-    }, [])
+    }, [localStorage.getItem('loginResponse')])
 
     const handleLogOut = async () => {
         messageApi.open({
