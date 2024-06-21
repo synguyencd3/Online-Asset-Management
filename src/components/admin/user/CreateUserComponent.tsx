@@ -5,7 +5,7 @@ import { useFormik } from "formik";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { CORS_CONFIG, LOCAL_SERVICE_API } from "../../../utils/Config";
+import { CORS_CONFIG, AZURE_SERVICE_API } from "../../../utils/Config";
 import { message } from "antd";
 import { UserModel } from "../../../models/UserModel";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -40,7 +40,7 @@ const createUserValidationSchema = Yup.object({
 export const CreateUserComponent = (_props: Props) => {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false)
-    const url = LOCAL_SERVICE_API + "/users"
+    const url = AZURE_SERVICE_API + "/users"
 
     const formik = useFormik({
         initialValues: {

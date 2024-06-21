@@ -12,7 +12,7 @@ import { FunctionalIconModel } from "../../../models/FunctionalIconModel";
 import { faPencil } from "@fortawesome/free-solid-svg-icons";
 import { faCircleXmark } from "@fortawesome/free-regular-svg-icons/faCircleXmark";
 import { useLocation, useNavigate } from "react-router-dom";
-import { CORS_CONFIG, LOCAL_SERVICE_API } from "../../../utils/Config";
+import { CORS_CONFIG, AZURE_SERVICE_API } from "../../../utils/Config";
 import { PaginationComponent } from "../../commons/PaginationComponent";
 import { LoaderComponent } from "../../commons/LoaderComponent";
 import { ConfirmModalComponent } from "../../commons/ConfirmModalComponent";
@@ -54,7 +54,7 @@ export const ManageUserComponent = (/*props: Props*/) => {
 
     const [messageApi, contextHolder] = message.useMessage();
 
-	let url = LOCAL_SERVICE_API + '/users';
+	let url = AZURE_SERVICE_API + '/users';
 	
 
 	useEffect(() => {
