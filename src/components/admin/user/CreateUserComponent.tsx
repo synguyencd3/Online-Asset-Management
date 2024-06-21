@@ -8,6 +8,8 @@ import axios from "axios";
 import { CORS_CONFIG, LOCAL_SERVICE_API } from "../../../utils/Config";
 import { message } from "antd";
 import { UserModel } from "../../../models/UserModel";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 
 type Props = {
 }
@@ -35,9 +37,8 @@ const createUserValidationSchema = Yup.object({
     gender: Yup.string().required('Gender is required')
 });
 
-export const CreateUserComponent = (props: Props) => {
+export const CreateUserComponent = (_props: Props) => {
     const navigate = useNavigate();
-    const [messageApi, contextHolder] = message.useMessage();
     const [loading, setLoading] = useState(false)
     const url = LOCAL_SERVICE_API + "/users"
 
@@ -49,7 +50,7 @@ export const CreateUserComponent = (props: Props) => {
             gender: "",
             joinedDate: "",
             dateOfBirth: "",
-            location: localStorage.getItem("location"),
+            location: localStorage.getItem("location") ?? "HCM",
             department: "0",
         },
         validationSchema: createUserValidationSchema,
@@ -74,7 +75,7 @@ export const CreateUserComponent = (props: Props) => {
                 setLoading(false);
                 const status = response.status
                 if (status === 400) {
-                    messageApi.open({ type: 'error', content: response.data, });
+                    message.error(response.data);
                     return
                 }
                 const data = response.data;
@@ -83,10 +84,8 @@ export const CreateUserComponent = (props: Props) => {
                     navigate('/admin/manage-users', { replace: true, state: { newUser: newUser } });
                     return
                 }
-                console.log(response);
             }).catch(e => {
-                console.log(e);
-                messageApi.open({ type: 'error', content: e, });
+                message.error(e.message);
                 return
             });
         }
@@ -103,7 +102,6 @@ export const CreateUserComponent = (props: Props) => {
 
     return (
         <>
-            {contextHolder}
             <Container>
                 <Form className="p-5" style={{ maxWidth: "60%", minWidth: "300px", textAlign: "left" }} onSubmit={handleSubmit}>
                     <h4 style={{ color: ColorPalette.PRIMARY_COLOR }} className="mb-4">
@@ -213,7 +211,7 @@ export const CreateUserComponent = (props: Props) => {
                     }
                     <Row>
                         <Col className="d-flex justify-content-end my-4">
-                            <Button variant="danger" className="mx-4" style={{ minWidth: "100px" }} type="submit" disabled={!formik.dirty || !formik.isValid}> {loading ? "Loading" : "Save"}</Button>
+                            <Button variant="danger" className="mx-4" style={{ minWidth: "100px" }} type="submit" disabled={!formik.dirty || !formik.isValid}> {loading ? <FontAwesomeIcon icon={faSpinner} spin /> : "Save"}</Button>
                             <Button variant="outline-dark" className="ms-4" style={{ minWidth: "100px" }} onClick={() => { navigate(-1) }}>Cancel</Button>
                         </Col>
                     </Row>

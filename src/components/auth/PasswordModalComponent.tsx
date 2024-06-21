@@ -39,8 +39,6 @@ export const PasswordModalComponent: React.FC<ChangePasswordModalProps> = ({ sho
     const [showNew, setShowNew] = useState<boolean>(false);
     const [showConfirm, setShowConfirm] = useState<boolean>(false);
 
-    console.log(isFirstLogIn);
-
     const formik = useFormik({
         initialValues: {
             oldPassword: '',

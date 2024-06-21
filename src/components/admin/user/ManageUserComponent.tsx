@@ -18,10 +18,6 @@ import { LoaderComponent } from "../../commons/LoaderComponent";
 import { ConfirmModalComponent } from "../../commons/ConfirmModalComponent";
 import { message } from "antd";
 import { disableUser } from "../../../services/UserService";
-import { ErrorResponse } from "../../../exceptions/ErrorResponse";
-import { log } from "console";
-
-
 const header = [{ name: 'Staff Code', value: "staffCode", sort: true, direction: true }, { name: 'Full Name', value: "firstName", sort: true, direction: true }, { name: 'Username', value: "username", sort: false, direction: true }, { name: 'Joined Date', value: "joinedDate", sort: true, direction: true }, { name: 'Type', value: "roleId", sort: true, direction: true },]
 const showModalCell = ["staffCode", "username", "fullName"]
 const modalHeader = ["Staff Code", "Full Name", "Username", "Date of Birth", "Gender", "Joined Date", "Type", "Location"]
@@ -47,14 +43,6 @@ export const ManageUserComponent = (/*props: Props*/) => {
 	});
 	const [dummy, setDummy] = useState(1);
 
-	// const [searchParam, setSearchParam] = useState("");
-
-	// const [filterParam, setFilterParam] = useState([Roles.ADMIN.toString(), Roles.STAFF.toString()]);
-
-	// const [sortString, setSortString] = useState({ sort: "firstName,asc" })
-
-	// const [currentPage, setCurrentPage] = useState(0);
-
 	const [totalPage, setTotalPage] = useState(0);
 
 	const location = useLocation();
@@ -75,8 +63,6 @@ export const ManageUserComponent = (/*props: Props*/) => {
 
 	async function getUser(url: string) {
 		setLoading(true)
-		console.log("call");
-
 		await axios.get(
 			url,
 			CORS_CONFIG
@@ -138,8 +124,10 @@ export const ManageUserComponent = (/*props: Props*/) => {
 			setTableUser([...tableDatas]);
 			setParam((p: any) => ({ ...p, page: data.currentPage }));
 			setTotalPage(data.totalPage);
-		}).catch(e => { console.log(e); });
-		setLoading(false)
+		}).catch(e => {
+			message.error(e.message);
+		});
+		setLoading(false);
 		window.history.replaceState({}, '')
 	}
 
