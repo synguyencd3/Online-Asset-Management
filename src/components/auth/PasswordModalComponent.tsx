@@ -14,15 +14,16 @@ const getValidationSchema = (isFirstLoggedIn: boolean) => Yup.object({
     oldPassword: !isFirstLoggedIn
         ? Yup.string().notRequired()
         : Yup.string()
-            .required('Old password is required'),
+            .required('Old password is required!'),
     newPassword: Yup.string()
-        .required('New password is required')
+        .required('New password is required!')
         .matches(/^[\x00-\x7F]*$/, 'English letter only!')
-        .matches(/^(?=.*[A-Z])(?=.*[@$!%*#?&])(?=.*\d)[A-Za-z\d@$!%*#?&]{8,}$/, 'Password must have at least 8 characters, including at least 1 uppercase letters, alphanumeric and special characters'),
+        .matches(/^(?=.*[A-Z])(?=.*[@$!%*#?&])(?=.*\d)[A-Za-z\d@$!%*#?&]{8,}$/, 'Password must have at least 8 characters, including at least 1 uppercase letters, alphanumeric and special characters.'),
     confirmPassword: Yup.string()
-        .required('Confirm password is required')
+        .required('Confirm password is required!')
+        .oneOf([Yup.ref('newPassword')], 'Passwords must match!')
         .matches(/^[\x00-\x7F]*$/, 'English letter only!')
-        .matches(/^(?=.*[A-Z])(?=.*[@$!%*#?&])(?=.*\d)[A-Za-z\d@$!%*#?&]{8,}$/, 'Password must have at least 8 characters, including at least 1 uppercase letters, alphanumeric and special characters'),
+        .matches(/^(?=.*[A-Z])(?=.*[@$!%*#?&])(?=.*\d)[A-Za-z\d@$!%*#?&]{8,}$/, 'Password must have at least 8 characters, including at least 1 uppercase letters, alphanumeric and special characters.'),
 });
 
 interface ChangePasswordModalProps {
