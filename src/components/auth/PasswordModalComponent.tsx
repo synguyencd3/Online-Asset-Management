@@ -172,7 +172,7 @@ export const PasswordModalComponent: React.FC<ChangePasswordModalProps> = ({ sho
                         </Form.Group>
                         <Form.Group as={Row} className="mb-3 px-2">
                             <Form.Label column sm={4} style={{ paddingRight: 0 }}>
-                                Confirm Password<span className='mx-1' style={{ color: ColorPalette.PRIMARY_COLOR }}>*</span>
+                                Confirm password<span className='mx-1' style={{ color: ColorPalette.PRIMARY_COLOR }}>*</span>
                             </Form.Label>
                             <Col sm={8}>
                                 <InputGroup className="password-onfocus">
@@ -199,7 +199,7 @@ export const PasswordModalComponent: React.FC<ChangePasswordModalProps> = ({ sho
                                     variant='danger'
                                     className="mx-2 fw-semibold"
                                     type="submit"
-                                    style={{ minWidth: "90px" }}
+                                    style={{ minWidth: "90px", backgroundColor: ColorPalette.PRIMARY_COLOR, border: 'none' }}
                                     disabled={!formik.isValid || !formik.dirty}>
                                     Save
                                 </Button>

@@ -21,7 +21,7 @@ export const ConfirmModalComponent: React.FC<ConfirmModalProps> = ({ show, confi
             <Modal.Body className='pb-0'>
                 <p className='px-2'>{confirmQuestion}</p>
             </Modal.Body>
-            <Modal.Footer style={{ paddingTop: 0, borderTop: 'none',display: "flex", justifyContent: "center" }}>
+            <Modal.Footer style={{ paddingTop: 0, borderTop: 'none',display: "flex", justifyContent: "start" }}>
                 <Button style={{ backgroundColor: ColorPalette.PRIMARY_COLOR, border: 'none' }} className='fw-semibold' onClick={onConfirm}>
                     {confirmBtnLabel}
                 </Button>
