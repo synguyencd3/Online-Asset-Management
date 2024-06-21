@@ -211,7 +211,7 @@ export const CreateUserComponent = (_props: Props) => {
                     }
                     <Row>
                         <Col className="d-flex justify-content-end my-4">
-                            <Button variant="danger" className="mx-4" style={{ minWidth: "100px" }} type="submit" disabled={!formik.dirty || !formik.isValid}> {loading ? <FontAwesomeIcon icon={faSpinner} spin /> : "Save"}</Button>
+                            <Button variant="danger" className="mx-4" style={{ minWidth: "100px" }} type="submit" disabled={!formik.dirty || !formik.isValid || loading }> {loading ? <FontAwesomeIcon icon={faSpinner} spin /> : "Save"}</Button>
                             <Button variant="outline-dark" className="ms-4" style={{ minWidth: "100px" }} onClick={() => { navigate(-1) }}>Cancel</Button>
                         </Col>
                     </Row>
