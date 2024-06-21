@@ -1,24 +1,19 @@
-import { useEffect } from "react";
 import { Pagination } from "react-bootstrap";
 
 
 type Props = {
     currentPage: number;
     totalPage: number;
-    totalElements: number;
     setCurrentPage: any;
-    initFunction: () => void
+    setDummy: any;
 }
-export const PaginationComponent = ({ currentPage, totalPage, totalElements, setCurrentPage, initFunction }: Props) => {
+export const PaginationComponent = ({ currentPage, totalPage, setCurrentPage, setDummy }: Props) => {
     const isFirstPage = currentPage === 0;
-    const isLastPage = currentPage === totalPage-1;
-    useEffect(() => {
-        initFunction()
-    }, [currentPage])
+    const isLastPage = currentPage === totalPage - 1;
 
-
-    const handlePageChange = (p: number) => {
-        setCurrentPage(p)
+    const handlePageChange = (page: number) => {
+        setCurrentPage((p: any) => ({ ...p, page: page }))
+        setDummy(Math.random())
     };
 
     const renderPageItems = () => {

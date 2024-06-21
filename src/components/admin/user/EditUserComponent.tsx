@@ -41,7 +41,10 @@ export const EditUserComponent = (props: Props) => {
         onSubmit: async (values) => {
             console.log(values);
             await axios.post(url, values, CORS_CONFIG).then(response => {
+                
                 console.log(response);
+            
+            
             }).catch(e => {
                 console.log(e);
             });

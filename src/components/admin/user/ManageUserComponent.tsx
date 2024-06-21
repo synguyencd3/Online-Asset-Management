@@ -3,7 +3,7 @@ import { TableComponent } from "../../commons/TableComponent";
 import { DropdownFilterComponent } from "../../commons/DropdownFilterComponent";
 import { SearchComponent } from "../../commons/SearchComponent";
 import axios from "axios";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { UserModel } from "../../../models/UserModel";
 import { UserForTableModel } from "../../../models/UserForTableModel";
 import { ModalUserModel } from "../../../models/ModalUserModel";
@@ -12,7 +12,7 @@ import { FunctionalIconModel } from "../../../models/FunctionalIconModel";
 import { faPencil } from "@fortawesome/free-solid-svg-icons";
 import { faCircleXmark } from "@fortawesome/free-regular-svg-icons/faCircleXmark";
 import { useLocation, useNavigate } from "react-router-dom";
-import { AZURE_SERVICE_API, CORS_CONFIG, LOCAL_SERVICE_API } from "../../../utils/Config";
+import { CORS_CONFIG, LOCAL_SERVICE_API } from "../../../utils/Config";
 import { PaginationComponent } from "../../commons/PaginationComponent";
 import { LoaderComponent } from "../../commons/LoaderComponent";
 type Props = {
@@ -31,18 +31,26 @@ export const ManageUserComponent = (/*props: Props*/) => {
 
 	const [loading, setLoading] = useState(true);
 
-	const [searchParam, setSearchParam] = useState("");
 
-	const [filterParam, setFilterParam] = useState([Roles.ADMIN.toString(), Roles.STAFF.toString()]);
+	// limit the API call per param properties by using dummy, use setDummy(Math.random()) to init the query with param
+	const [param, setParam] = useState({
+		search: "",
+		sort: "firstName,asc",
+		types: [Roles.ADMIN.toString(), Roles.STAFF.toString()],
+		page: 0,
+		size: 20
+	});
+	const [dummy, setDummy] = useState(1);
 
-	// const [sortString, setSortString] = useState("firstName,asc")
-	const [sortString, setSortString] = useState({ sort: "firstName,asc" })
+	// const [searchParam, setSearchParam] = useState("");
 
-	const [currentPage, setCurrentPage] = useState(0);
+	// const [filterParam, setFilterParam] = useState([Roles.ADMIN.toString(), Roles.STAFF.toString()]);
+
+	// const [sortString, setSortString] = useState({ sort: "firstName,asc" })
+
+	// const [currentPage, setCurrentPage] = useState(0);
 
 	const [totalPage, setTotalPage] = useState(0);
-
-	const [totalElements, setTotalElements] = useState(0);
 
 	const location = useLocation();
 
@@ -50,13 +58,14 @@ export const ManageUserComponent = (/*props: Props*/) => {
 
 	let url = LOCAL_SERVICE_API + '/users';
 
-	// 'http://localhost:8080/api/v1/users?search=Nhat%20Tran&types=1,2&page=0&size=10&sort=id,desc' 
-
 	useEffect(() => {
-		getUser(url)
-	}, [])
+		InitializeQuery()
+	}, [dummy])
 
 	async function getUser(url: string) {
+		setLoading(true)
+		console.log("call");
+
 		await axios.get(
 			url,
 			CORS_CONFIG
@@ -116,20 +125,21 @@ export const ManageUserComponent = (/*props: Props*/) => {
 			})
 			setModalUsers([...modalDatas]);
 			setTableUser([...tableDatas]);
-			setCurrentPage(data.currentPage);
+			setParam((p: any) => ({ ...p, page: data.currentPage }));
 			setTotalPage(data.totalPage);
-			setTotalElements(data.totalElements);
 		}).catch(e => { console.log(e); });
 		setLoading(false);
 		window.history.replaceState({}, '')
 	}
 
 	function InitializeQuery() {
-		url = LOCAL_SERVICE_API + '/users' + "?" + "search=" + encodeURIComponent(searchParam) + "&" + "types=" + filterParam.join() + "&" + "page=" + currentPage + "&" + "size=10" + "&" + "sort=" + sortString.sort;
-
-		console.log(url);
-
-		getUser(url);
+		let new_url = url + "?"
+			+ "search=" + encodeURIComponent(param.search) + "&"
+			+ "types=" + param.types.join() + "&"
+			+ "page=" + param.page + "&"
+			+ "size=" + "20" + "&"
+			+ "sort=" + param.sort;
+		getUser(new_url);
 	}
 
 	// button
@@ -163,22 +173,16 @@ export const ManageUserComponent = (/*props: Props*/) => {
 	let data1 = { label: "Admin", value: Roles.ADMIN.toString() }
 	let data2 = { label: "Staff", value: Roles.STAFF.toString() }
 	filterdata.push(data1, data2);
-
-	//---------------------------
-	function changePage(page: any, pageSize: any) {
-		console.log(page, pageSize);
-		InitializeQuery();
-	}
-
+	//----------------------------
 
 	return (
 		<Container style={{ maxWidth: "100%" }} className="p-4">
 			<Row className="py-4 me-3">
 				<Col sm={3} className="d-flex justify-content-start align-items-center">
-					<DropdownFilterComponent title={"Type"} data={filterdata} params={filterParam} setParamsFunction={setFilterParam} initFunction={InitializeQuery}></DropdownFilterComponent>
+					<DropdownFilterComponent title={"Type"} data={filterdata} params={param.types} setParamsFunction={setParam} setDummy={setDummy}></DropdownFilterComponent>
 				</Col>
 				<Col className="d-flex justify-content-end align-items-center">
-					<SearchComponent placeholder={""} url={url} params={searchParam} setParamsFunction={setSearchParam} initFunction={InitializeQuery} ></SearchComponent>
+					<SearchComponent placeholder={""} params={param.search} setParamsFunction={setParam} setDummy={setDummy}></SearchComponent>
 				</Col>
 				<Col sm={2} className="d-flex justify-content-end align-items-center">
 					<Button variant="danger" onClick={() => { return navigate('./new') }}>Create New User</Button>
@@ -194,9 +198,10 @@ export const ManageUserComponent = (/*props: Props*/) => {
 						</Row> :
 						<>
 							<Row>
-								<TableComponent headers={header} datas={tableUser} url={url} auxData={modalUsers} auxHeader={modalHeader} buttons={buttons} initFunction={InitializeQuery} sortString={sortString} setSortString={setSortString} showModalCell={showModalCell}  ></TableComponent>
+								{/* this initfucntion */}
+								<TableComponent headers={header} datas={tableUser} auxData={modalUsers} auxHeader={modalHeader} buttons={buttons} setSortString={setParam} showModalCell={showModalCell} setDummy={setDummy}  ></TableComponent>
 							</Row>
-							<PaginationComponent currentPage={currentPage} totalPage={totalPage} totalElements={totalElements} initFunction={InitializeQuery} setCurrentPage={setCurrentPage} ></PaginationComponent>
+							<PaginationComponent currentPage={param.page} setCurrentPage={setParam} totalPage={totalPage} setDummy={setDummy} ></PaginationComponent>
 						</>
 					}
 				</>

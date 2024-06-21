@@ -9,7 +9,6 @@ type Props = {
     // query: string;
     data: Object
     label: Object[];
-    url: string;
 }
 export const InfoModalComponent = (props: Props) => {
     return (

@@ -6,12 +6,9 @@ import { JSX } from "react/jsx-runtime";
 
 type Props = {
     placeholder: string | null
-
-    // add on the url, do not change
-    url: string
     params: string
     setParamsFunction: any;
-    initFunction: () => void;
+    setDummy: any;
 }
 
 
@@ -30,15 +27,15 @@ export const SearchComponent = (props: Props) => {
     };
 
     return (
-        <Form onSubmit={(e) => { SubmitSearch(e) }} style={{width:"60%"}}>
+        <Form onSubmit={(e) => { SubmitSearch(e) }} style={{ width: "60%" }}>
             <InputGroup id="search-group" className="" style={{ maxWidth: "" }}>
-                <Form.Control placeholder={props.placeholder ?? "Search"} id="search-input" name="search"  onChange={(e) => { props.setParamsFunction(e.target.value) }} />
+                {/* <Form.Control placeholder={props.placeholder ?? "Search"} id="search-input" name="search"  onChange={(e) => { props.setParamsFunction((p: any)=>({...p,search:e.target.value})) }} /> */}
+                <Form.Control placeholder={props.placeholder ?? "Search"} id="search-input" name="search" onChange={(e) => { props.setParamsFunction((p: any) => ({ ...p, search: e.target.value })) }} />
                 <OverlayTrigger placement="right" delay={{ show: 150, hide: 150 }} overlay={renderTooltip}>
-                    <Button type="submit" variant="outline-dark" id="search-button" onClick={() => { props.initFunction() }}>
+                    <Button type="submit" variant="outline-dark" id="search-button" onClick={() => { props.setDummy(Math.random()); }}>
                         <FontAwesomeIcon size='lg' icon={faMagnifyingGlass} />
                     </Button>
                 </OverlayTrigger>
-
             </InputGroup>
         </Form>
     );

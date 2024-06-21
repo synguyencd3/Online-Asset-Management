@@ -49,7 +49,7 @@ export const CreateUserComponent = (props: Props) => {
             gender: "",
             joinedDate: "",
             dateOfBirth: "",
-            location: "0",
+            location: localStorage.getItem("location"),
             department: "0",
         },
         validationSchema: createUserValidationSchema,

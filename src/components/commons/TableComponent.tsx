@@ -1,7 +1,7 @@
 import { faSortDown, faSortUp } from '@fortawesome/free-solid-svg-icons'
 import '../../App.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Col, Container, Row, Table } from "react-bootstrap";
 import { TableHeaderModel } from '../../models/TableHeaderModel'
 import { InfoModalComponent } from './InfoModalComponent'
@@ -9,23 +9,19 @@ import { FunctionalIconModel } from '../../models/FunctionalIconModel'
 
 type Props = {
 	headers: TableHeaderModel[];
-	sortString: any
 	setSortString: any;
-	initFunction: () => void
 	datas: Object[]
 
-	// By map(), auxData and auxHeader item should have exact index as data
+	//auxData and auxHeader item should have exact index as data
 	auxData: Object[];
 	auxHeader: Object[];
-
-	//Button
 	buttons: FunctionalIconModel[];
-	///
-	url: string
 	showModalCell: string[];
+
+	setDummy:any
 }
 
-export const TableComponent = ({ headers, datas, url, auxData, auxHeader, buttons, sortString, setSortString, initFunction, showModalCell }: Props) => {
+export const TableComponent = ({ headers, datas, auxData, auxHeader, buttons, setSortString, showModalCell, setDummy }: Props) => {
 
 	const [header, setHeader] = useState(headers);
 
@@ -33,9 +29,6 @@ export const TableComponent = ({ headers, datas, url, auxData, auxHeader, button
 
 	const [modalData, setModalData] = useState<Object>({});
 
-	useEffect(() => {
-		initFunction();
-	}, [sortString])
 
 	const handleClick = (e: React.MouseEvent<any>, key: object) => {
 		const targetElement = e.target as HTMLElement;
@@ -52,7 +45,7 @@ export const TableComponent = ({ headers, datas, url, auxData, auxHeader, button
 		setHeader([...header]);
 		let t = h.value + "," + (h.direction ? "asc" : "desc")
 		setSortString((sortString: any) => ({ ...sortString, sort: t }));
-		// initFunction();
+		setDummy(Math.random())
 	}
 	return (
 		<>
@@ -62,7 +55,6 @@ export const TableComponent = ({ headers, datas, url, auxData, auxHeader, button
 				onHide={() => setModalShow(false)}
 				label={auxHeader}
 				data={modalData}
-				url={url}
 			/>
 
 			<Container style={{ maxWidth: "100%", width: "100%" }}>
