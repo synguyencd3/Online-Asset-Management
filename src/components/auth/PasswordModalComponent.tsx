@@ -57,7 +57,6 @@ export const PasswordModalComponent: React.FC<ChangePasswordModalProps> = ({ sho
                 const changePswrdData: ChangePasswordModel = {
                     oldPassword: isFirstLoggedIn !== true ? '' : values.oldPassword,
                     newPassword: values.newPassword,
-                    confirmPassword: values.confirmPassword,
                 };
 
                 await changePassword(changePswrdData)
