@@ -9,9 +9,6 @@ import { CORS_CONFIG, LOCAL_SERVICE_API } from "../../../utils/Config";
 import { message } from "antd";
 import { UserModel } from "../../../models/UserModel";
 
-type Props = {
-}
-
 const eighteenYearsAgo = new Date(new Date().setFullYear(new Date().getFullYear() - 18));
 
 const createUserValidationSchema = Yup.object({
@@ -35,7 +32,7 @@ const createUserValidationSchema = Yup.object({
     gender: Yup.string().required('Gender is required')
 });
 
-export const CreateUserComponent = (props: Props) => {
+export const CreateUserComponent = () => {
     const navigate = useNavigate();
     const [messageApi, contextHolder] = message.useMessage();
     const [loading, setLoading] = useState(false)
@@ -186,7 +183,7 @@ export const CreateUserComponent = (props: Props) => {
                                 Location
                             </Form.Label>
                             <Col sm={9}>
-                                <Form.Select name="location" value={values.location} onChange={handleChange} >
+                                <Form.Select name="location" value={values.location ?? 'HCM'} onChange={handleChange} >
                                     <option value="0">HCM</option>
                                     <option value="1" >HN</option>
                                     <option value="2" >DN</option>

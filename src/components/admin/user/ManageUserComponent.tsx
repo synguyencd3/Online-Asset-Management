@@ -18,8 +18,6 @@ import { LoaderComponent } from "../../commons/LoaderComponent";
 import { ConfirmModalComponent } from "../../commons/ConfirmModalComponent";
 import { message } from "antd";
 import { disableUser } from "../../../services/UserService";
-import { ErrorResponse } from "../../../exceptions/ErrorResponse";
-import { log } from "console";
 
 
 const header = [{ name: 'Staff Code', value: "staffCode", sort: true, direction: true }, { name: 'Full Name', value: "firstName", sort: true, direction: true }, { name: 'Username', value: "username", sort: false, direction: true }, { name: 'Joined Date', value: "joinedDate", sort: true, direction: true }, { name: 'Type', value: "roleId", sort: true, direction: true },]
