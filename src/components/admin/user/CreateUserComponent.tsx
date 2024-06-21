@@ -4,12 +4,11 @@ import * as Yup from 'yup';
 import { useFormik } from "formik";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import axios from "axios";
-import { CORS_CONFIG, LOCAL_SERVICE_API } from "../../../utils/Config";
 import { message } from "antd";
 import { UserModel } from "../../../models/UserModel";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
+import { createUser } from "../../../services/UserService";
 
 type Props = {
 }
@@ -40,7 +39,6 @@ const createUserValidationSchema = Yup.object({
 export const CreateUserComponent = (_props: Props) => {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false)
-    const url = LOCAL_SERVICE_API + "/users"
 
     const formik = useFormik({
         initialValues: {
@@ -71,7 +69,7 @@ export const CreateUserComponent = (_props: Props) => {
                 "joinedDate": values.joinedDate,
                 "dateOfBirth": values.dateOfBirth
             }
-            await axios.post(url, body, CORS_CONFIG).then(response => {
+            await createUser(body).then(response => {
                 setLoading(false);
                 const status = response.status
                 if (status === 400) {

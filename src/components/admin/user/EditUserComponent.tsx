@@ -1,10 +1,9 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { CORS_CONFIG, LOCAL_SERVICE_API } from "../../../utils/Config";
+import { AZURE_SERVICE_API } from "../../../utils/Config";
 import { Button, Col, Container, Form, Row } from "react-bootstrap";
 import { ColorPalette } from "../../../utils/ColorPalette";
 import { useEffect, useState } from "react";
 import { useFormik } from "formik";
-import axios from "axios";
 import * as Yup from 'yup';
 import { ModalUserModel } from "../../../models/ModalUserModel";
 import { Roles } from "../../../utils/Enum";
@@ -12,6 +11,7 @@ import { UserModel } from "../../../models/UserModel";
 import { message } from "antd";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
+import { getOneUser, updateUser } from "../../../services/UserService";
 
 type Props = {
 }
@@ -32,7 +32,7 @@ const createUserValidationSchema = Yup.object({
 
 export const EditUserComponent = (_props: Props) => {
 
-    const url = LOCAL_SERVICE_API + "/users/"
+    const url = AZURE_SERVICE_API + "/users/"
 
     const location = useLocation();
 
@@ -59,8 +59,8 @@ export const EditUserComponent = (_props: Props) => {
                 setLoading(false);
                 return;
             }
-            await axios.put(url + values.staffCode, body, CORS_CONFIG).then(async _response => {
-                await axios.get(url + values.staffCode, CORS_CONFIG).then(response => {
+            await updateUser(values.staffCode, body).then(async _response => {
+                await getOneUser(values.staffCode).then(response => {
                     if (response.status === 200) {
                         const u: UserModel = response.data.data;
                         navigate('/admin/manage-users', { replace: true, state: { newUser: u } });
