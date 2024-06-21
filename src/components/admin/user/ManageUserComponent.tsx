@@ -15,8 +15,13 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { CORS_CONFIG, LOCAL_SERVICE_API } from "../../../utils/Config";
 import { PaginationComponent } from "../../commons/PaginationComponent";
 import { LoaderComponent } from "../../commons/LoaderComponent";
-type Props = {
-}
+import { ConfirmModalComponent } from "../../commons/ConfirmModalComponent";
+import { message } from "antd";
+import { disableUser } from "../../../services/UserService";
+import { ErrorResponse } from "../../../exceptions/ErrorResponse";
+import { log } from "console";
+
+
 const header = [{ name: 'Staff Code', value: "staffCode", sort: true, direction: true }, { name: 'Full Name', value: "firstName", sort: true, direction: true }, { name: 'Username', value: "username", sort: false, direction: true }, { name: 'Joined Date', value: "joinedDate", sort: true, direction: true }, { name: 'Type', value: "roleId", sort: true, direction: true },]
 const showModalCell = ["staffCode", "username", "fullName"]
 const modalHeader = ["Staff Code", "Full Name", "Username", "Date of Birth", "Gender", "Joined Date", "Type", "Location"]
@@ -56,7 +61,13 @@ export const ManageUserComponent = (/*props: Props*/) => {
 
 	const [newUser] = useState<UserModel>(location.state?.newUser);
 
+    const [showDisableModal, setShowDisableModal] = useState(false); // State for the Logout Modal
+    const [disableStaffCode, setDisableStaffCode] = useState(''); // State for the Logout Modal
+
+    const [messageApi, contextHolder] = message.useMessage();
+
 	let url = LOCAL_SERVICE_API + '/users';
+	
 
 	useEffect(() => {
 		InitializeQuery()
@@ -128,7 +139,7 @@ export const ManageUserComponent = (/*props: Props*/) => {
 			setParam((p: any) => ({ ...p, page: data.currentPage }));
 			setTotalPage(data.totalPage);
 		}).catch(e => { console.log(e); });
-		setLoading(false);
+		setLoading(false)
 		window.history.replaceState({}, '')
 	}
 
@@ -150,7 +161,9 @@ export const ManageUserComponent = (/*props: Props*/) => {
 	}
 
 	function deleteUser(...data: any[]) {
-		window.alert(data)
+		// window.alert(data)
+		console.log(data[1]);
+		handleDisableClick(data[1].staffCode);
 	}
 
 	const editIcon: FunctionalIconModel = {
@@ -168,6 +181,48 @@ export const ManageUserComponent = (/*props: Props*/) => {
 
 	//--------------------------- 
 
+	// Disable User
+	const handleDisableClick = (staffCode: string) => {
+        setShowDisableModal(true)
+		setDisableStaffCode(staffCode); // Show the Disable Modal
+    }
+
+	const handleDisable = async (staffCode : string) => {
+        messageApi.open({
+            type: 'loading',
+            content: 'Disabling user...',
+        })
+            .then(async () => {
+                console.log(import.meta.env.VITE_AZURE_BACKEND_DOMAIN);
+                await disableUser(staffCode)
+                    .then((res) => {
+                        console.log(res);
+                        if (res.status == 200) {
+                            console.log(res.data);
+                            message.success(res.data.message);
+							setDummy(Math.random());
+                        }
+                    })
+                    .catch((err) => {
+						console.log(err.response);
+                        console.log(process.env.REACT_APP_AZURE_BACKEND_DOMAIN);
+                        // const errorData = err.response.data.substring(0, err.response.data.indexOf('}') + 1);
+                        // const errorResponse: ErrorResponse = JSON.parse(errorData);
+                        message.error(`${err.response.message}`);
+                    });
+            });
+    }
+
+    const handleDisableConfirm = () => {
+        setShowDisableModal(false);
+        handleDisable(disableStaffCode); // Call the Disable function
+    }
+
+    const handleDisableCancel = () => {
+        setShowDisableModal(false);
+		setDisableStaffCode('') // Hide the Disable Modal
+    }
+
 	// Dropdown Filter
 	let filterdata = [];
 	let data1 = { label: "Admin", value: Roles.ADMIN.toString() }
@@ -177,6 +232,7 @@ export const ManageUserComponent = (/*props: Props*/) => {
 
 	return (
 		<Container style={{ maxWidth: "100%" }} className="p-4">
+			{contextHolder}
 			<Row className="py-4 me-3">
 				<Col sm={3} className="d-flex justify-content-start align-items-center">
 					<DropdownFilterComponent title={"Type"} data={filterdata} params={param.types} setParamsFunction={setParam} setDummy={setDummy}></DropdownFilterComponent>
@@ -206,6 +262,7 @@ export const ManageUserComponent = (/*props: Props*/) => {
 					}
 				</>
 			}
+			<ConfirmModalComponent show={showDisableModal} onConfirm={handleDisableConfirm} onCancel={handleDisableCancel} confirmTitle={'Are you sure?'} confirmQuestion={'Do you want to disable this user?'} confirmBtnLabel={'Disable'} cancelBtnLabel={'Cancel'} />
 		</Container>
 	);
 }

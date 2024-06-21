@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Navbar, Container } from 'react-bootstrap';
 import { ColorPalette } from '../../utils/ColorPalette';
 import { useNavigate } from 'react-router-dom';
@@ -111,3 +111,4 @@ export const HeaderComponent: React.FC<HeaderComponentProps> = ({ username, titl
         </>
     )
 }
+

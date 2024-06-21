@@ -21,6 +21,7 @@ const validationSchema = Yup.object({
 export const LogInComponent: React.FC<{ setIsLoggedIn: (state: boolean) => void, setUsername: (username: string) => void }> = ({ setIsLoggedIn, setUsername }) => {
     const [messageApi, contextHolder] = message.useMessage();
     const [show, setShow] = useState<boolean>(false);
+    const [loading, setLoading] = useState<boolean>(false);
 
     const formik = useFormik({
         initialValues: {
@@ -33,6 +34,7 @@ export const LogInComponent: React.FC<{ setIsLoggedIn: (state: boolean) => void,
                 username: values.username,
                 password: values.password,
             };
+            setLoading(true);
 
             messageApi.open({
                 type: 'loading',
@@ -60,6 +62,7 @@ export const LogInComponent: React.FC<{ setIsLoggedIn: (state: boolean) => void,
                             }
                         })
                         .catch((err) => {
+                            setLoading(false);
                             console.log(err.response.status);
                             if (err.response.status === 401) {
                                 console.log(err.response.data.message);
@@ -130,7 +133,7 @@ export const LogInComponent: React.FC<{ setIsLoggedIn: (state: boolean) => void,
                             className="mx-4"
                             type="submit"
                             style={{ minWidth: "90px" }}
-                            disabled={!formik.isValid || !formik.dirty}>
+                            disabled={!formik.isValid || !formik.dirty || loading === true }>
                             Login
                         </Button>
                     </Col>

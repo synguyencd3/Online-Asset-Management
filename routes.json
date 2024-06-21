@@ -1,0 +1,42 @@
+{
+    "navigationFallback": {
+        "rewrite": "/index.html",
+        "exclude": [
+            "/images/*.{png,jpg,gif}",
+            "/css/*"
+        ]
+    },
+    "trailingSlash": "always",
+    "routes": [
+        {
+            "route": "/",
+            "serve": "/index.html",
+            "statusCode": 200
+        },
+        {
+            "route": "/admin",
+            "redirect": "/admin/home",
+            "statusCode": 301
+        },
+        {
+            "route": "/admin/*",
+            "redirect": "/admin/home",
+            "statusCode": 301
+        },
+        {
+            "route": "/admin/*",
+            "serve": "/index.html",
+            "statusCode": 200
+        },
+        {
+            "route": "/*",
+            "redirect": "/",
+            "statusCode": 301
+        }
+    ],
+    "responseOverrides": {
+        "404": {
+            "rewrite": "/index.html"
+        }
+    }
+}

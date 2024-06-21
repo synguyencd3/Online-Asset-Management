@@ -19,6 +19,7 @@ export const DropdownFilterComponent = (props: Props) => {
 	const allValues: string[] = props.data.map(filter => { return filter.value });
 
 	const handleCheckboxChange = (event: ChangeEvent<HTMLInputElement>) => {
+
 		const { value, checked } = event.target;
 		let updatedOptions: string[] = [...props.params];
 		if (value === "All") {
