@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { PasswordModalComponent } from '../../auth/PasswordModalComponent';
+import { PasswordModalComponent } from '../auth/PasswordModalComponent';
 
 
-export const AdminHomeComponent: React.FC = () => {
+export const UserHomeComponent: React.FC = () => {
     const [showModal, setShowModal] = useState(false);
     const [firstLogin, setFirstLogin] = useState<boolean>(false);
 

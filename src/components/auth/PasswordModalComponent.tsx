@@ -65,7 +65,7 @@ export const PasswordModalComponent: React.FC<ChangePasswordModalProps> = ({ sho
                         if (res.status == 200) {
                             resetForm();
                             setIsFirstLogIn(true);
-                            localStorage.setItem('isFirstLogin', 'true');
+                            sessionStorage.setItem('isFirstLogin', 'true');
                             setSuccessMessage('Your password has been changed successfully!');
                         }
                     }).catch((err) => {
@@ -197,9 +197,9 @@ export const PasswordModalComponent: React.FC<ChangePasswordModalProps> = ({ sho
                                 <Button
                                     id='btn-save-change-pass'
                                     variant='danger'
-                                    className="mx-2 fw-semibold"
+                                    className="mx-2 fw-semibold text-white"
                                     type="submit"
-                                    style={{ minWidth: "90px" }}
+                                    style={{ minWidth: "90px", backgroundColor: ColorPalette.PRIMARY_COLOR }}
                                     disabled={!formik.isValid || !formik.dirty}>
                                     Save
                                 </Button>

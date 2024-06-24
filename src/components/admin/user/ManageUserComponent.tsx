@@ -101,7 +101,7 @@ export const ManageUserComponent = (/*props: Props*/) => {
 
 			users.map(user => {
 				if (newUser && newUser.staffCode === user.staffCode) {
-
+      				// TODO document why this block is empty
 				}
 				else {
 					let data: UserForTableModel = {
@@ -247,7 +247,7 @@ export const ManageUserComponent = (/*props: Props*/) => {
 					}
 				</>
 			}
-			<ConfirmModalComponent show={showDisableModal} onConfirm={handleDisableConfirm} onCancel={handleDisableCancel} confirmTitle={'Are you sure?'} confirmQuestion={'Do you want to disable this user?'} confirmBtnLabel={'Disable'} cancelBtnLabel={'Cancel'} />
+			<ConfirmModalComponent show={showDisableModal} onConfirm={handleDisableConfirm} onCancel={handleDisableCancel} confirmTitle={'Are you sure?'} confirmQuestion={'Do you want to disable this user?'} confirmBtnLabel={'Disable'} cancelBtnLabel={'Cancel'} modalSize={"md"} />
 		</Container>
 	);
 }

@@ -1,5 +1,4 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { AZURE_SERVICE_API } from "../../../utils/Config";
 import { Button, Col, Container, Form, Row } from "react-bootstrap";
 import { ColorPalette } from "../../../utils/ColorPalette";
 import { useEffect, useState } from "react";
@@ -32,7 +31,7 @@ const createUserValidationSchema = Yup.object({
 
 export const EditUserComponent = (_props: Props) => {
 
-    const url = AZURE_SERVICE_API + "/users/"
+    // const url = AZURE_SERVICE_API + "/users/"
 
     const location = useLocation();
 

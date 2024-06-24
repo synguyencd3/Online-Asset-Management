@@ -35,32 +35,18 @@
   color: white;
 }
 
-.sidebar {
-  width: 250px;
-  /* Adjust width as needed */
-  position: fixed;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  background-color: #fff;
-  padding-top: 20px;
-  border-right: 1px solid #ccc;
-}
-
-.toggle-button {
-  display: none;
-  position: fixed;
-  top: 10px;
-  left: 10px;
-  z-index: 1100;
-}
-
 @media (max-width: 768px) {
-  .sidebar {
-    display: none;
+  .sidebar-column,
+  .main-column {
+      flex-basis: 100%;
+      max-width: 100%;
   }
+}
 
-  .toggle-button {
-    display: block;
+@media (min-width: 769px) and (max-width: 1024px) {
+  .sidebar-column,
+  .main-column {
+      flex-basis: 100%;
+      max-width: 100%;
   }
 }

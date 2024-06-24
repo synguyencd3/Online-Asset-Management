@@ -48,7 +48,7 @@ export const CreateUserComponent = (_props: Props) => {
             gender: "",
             joinedDate: "",
             dateOfBirth: "",
-            location: localStorage.getItem("location") ?? "HCM",
+            location: sessionStorage.getItem("location") ?? "HCM",
             department: "0",
         },
         validationSchema: createUserValidationSchema,
