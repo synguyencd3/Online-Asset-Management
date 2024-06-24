@@ -18,7 +18,6 @@ interface HeaderComponentProps {
 }
 
 export const HeaderComponent: React.FC<HeaderComponentProps> = ({ username, title, logo, handleLogout }) => {
-    // console.log(localStorage.getItem('username'));
     const navigator = useNavigate();
     const [messageApi, contextHolder] = message.useMessage();
     
@@ -37,11 +36,11 @@ export const HeaderComponent: React.FC<HeaderComponentProps> = ({ username, titl
                         console.log(res);
                         if (res.status == 200) {
                             handleLogout(true, 'Online Asset Management');
-                            localStorage.removeItem('isLoggedIn');
-                            localStorage.removeItem('isFirstLogin');
-                            localStorage.removeItem('username');
-                            localStorage.removeItem('roleId');
-                            localStorage.removeItem('location');
+                            sessionStorage.removeItem('isLoggedIn');
+                            sessionStorage.removeItem('isFirstLogin');
+                            sessionStorage.removeItem('username');
+                            sessionStorage.removeItem('roleId');
+                            sessionStorage.removeItem('location');
                             navigator('/');
                             console.log(res.data);
                             console.log(res.status);
@@ -72,7 +71,7 @@ export const HeaderComponent: React.FC<HeaderComponentProps> = ({ username, titl
 
     const handleClose = () => {
         setShowPasswordModal(false);
-        localStorage.removeItem('isFirstLogin');
+        sessionStorage.removeItem('isFirstLogin');
     };
 
     const handleChangePassword = () => {
@@ -88,7 +87,7 @@ export const HeaderComponent: React.FC<HeaderComponentProps> = ({ username, titl
                         {logo ? <img src={logo} className='logo my-auto' alt='logo' /> : <div></div>}
                         <h3 className="my-2 mx-4 fs-3 text-white fw-semibold" id='navbar-title'>{title}</h3>
                     </Navbar.Brand>
-                    {localStorage.getItem('isLoggedIn') ? (
+                    {sessionStorage.getItem('isLoggedIn') ? (
                         <div id="navbarNavDarkDropdown">
                             <ul className="navbar-nav">
                                 <li className="nav-item dropdown">
@@ -107,7 +106,7 @@ export const HeaderComponent: React.FC<HeaderComponentProps> = ({ username, titl
                 </Container>
             </Navbar>
             <PasswordModalComponent show={showPasswordModal} onClose={handleClose} isFirstLoggedIn={true} />
-            <ConfirmModalComponent show={showLogoutModal} onConfirm={handleLogoutConfirm} onCancel={handleLogoutCancel} confirmTitle={'Are you sure?'} confirmQuestion={'Do you want to log out?'} confirmBtnLabel={'Log out'} cancelBtnLabel={'Cancel'} />
+            <ConfirmModalComponent show={showLogoutModal} onConfirm={handleLogoutConfirm} onCancel={handleLogoutCancel} confirmTitle={'Are you sure?'} confirmQuestion={'Do you want to log out?'} confirmBtnLabel={'Log out'} cancelBtnLabel={'Cancel'} modalSize={'sm'} />
         </>
     )
 }

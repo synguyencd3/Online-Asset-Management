@@ -4,33 +4,47 @@ import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-d
 import { HeaderComponent } from './components/commons/HeaderComponent';
 import { LogInComponent } from './components/auth/LogInComponent';
 import { MainApp } from './components/MainApp';
+import { NotHavePermission } from './components/auth/NotHavePermission';
 
 function App() {
     const [headerTitle, setHeaderTitle] = useState<string>('Online Asset Management');
-    const [isLoggedIn, setIsLoggedIn] = useState<boolean>(Boolean(localStorage.getItem('isLoggedIn')) === true);
+    const [isLoggedIn, setIsLoggedIn] = useState<boolean>(Boolean(sessionStorage.getItem('isLoggedIn')) === true);
     const [username, setUsername] = useState('');
+    const [roleId, setRoleId] = useState(Number(sessionStorage.getItem('roleId')));
 
     useEffect(() => {
-        setIsLoggedIn(Boolean(localStorage.getItem('isLoggedIn')) === true);
-        setUsername(localStorage.getItem('username') as string);
+        setIsLoggedIn(Boolean(sessionStorage.getItem('isLoggedIn')) === true);
+        setUsername(sessionStorage.getItem('username') as string);
+        setRoleId(Number(sessionStorage.getItem('roleId')));
     }, []);
 
     const handleGetUsername = (username: string) => {
         setUsername(username);
     }
 
-    const handleLogin = () => {
-        setIsLoggedIn(true);
-        localStorage.setItem('isLoggedIn', 'true');
+    const getHomePath = (roleId: number) => {
+        return roleId === 1 ? '/admin/home' : '/user/home';
+    };
+
+    const handleLogin = (state: boolean, roleId: number) => {
+        setIsLoggedIn(state);
+        sessionStorage.setItem('isLoggedIn', 'true');
+        setRoleId(roleId);
+        console.log(roleId);
+        console.log(typeof roleId);
     };
 
     const handleLogout = (state: boolean, title: string) => {
         if (state) {
             setHeaderTitle(title);
             setIsLoggedIn(false);
-            localStorage.removeItem('loginResponse');
+            sessionStorage.removeItem('loginResponse');
+            sessionStorage.removeItem('isLoggedIn');
+            sessionStorage.removeItem('username');
+            sessionStorage.removeItem('roleId');
         }
     };
+
 
     return (
         <Router>
@@ -39,15 +53,41 @@ function App() {
                 <Routes>
                     <Route
                         path='/'
-                        element={isLoggedIn ? <Navigate to={'/admin/home'} /> : <LogInComponent setIsLoggedIn={handleLogin} setUsername={handleGetUsername} />}
+                        element={
+                            isLoggedIn ? (
+                                <Navigate to={getHomePath(roleId)} />
+                            ) : (
+                                <LogInComponent setIsLoggedIn={handleLogin} setUsername={handleGetUsername} />
+                            )
+                        }
                     />
                     <Route
                         path='admin/*'
-                        element={isLoggedIn ? <MainApp setHeaderTitle={setHeaderTitle} /> : <Navigate to={'/'} />}
+                        element={
+                            isLoggedIn && roleId == 1 ? (
+                                <MainApp setHeaderTitle={setHeaderTitle} roleId={roleId} />
+                            ) : (
+                                <Navigate to='/not-have-permission' />
+                            )
+                        }
+                    />
+                    <Route
+                        path='user/*'
+                        element={
+                            isLoggedIn && roleId == 2 ? (
+                                <MainApp setHeaderTitle={setHeaderTitle} roleId={roleId} />
+                            ) : (
+                                <Navigate to='/not-have-permission' />
+                            )
+                        }
+                    />
+                    <Route
+                        path='/not-have-permission'
+                        element={<NotHavePermission />}
                     />
                     <Route
                         path='*'
-                        element={<Navigate to={'/'} />}
+                        element={isLoggedIn ? <Navigate to={getHomePath(roleId)} /> : <Navigate to={"/"} />}
                     />
                 </Routes>
             </div>

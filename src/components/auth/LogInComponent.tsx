@@ -9,6 +9,11 @@ import { Button, Col, Container, Form, InputGroup, Row } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
+interface LoginProps {
+    setIsLoggedIn: (state: boolean, roleId: number) => void, 
+    setUsername: (username: string) => void
+}
+
 // Define the validation schema with Yup
 const validationSchema = Yup.object({
     username: Yup.string()
@@ -17,8 +22,7 @@ const validationSchema = Yup.object({
         .required('Password is required')
 });
 
-
-export const LogInComponent: React.FC<{ setIsLoggedIn: (state: boolean) => void, setUsername: (username: string) => void }> = ({ setIsLoggedIn, setUsername }) => {
+export const LogInComponent: React.FC<LoginProps> = ({ setIsLoggedIn, setUsername }) => {
     const [messageApi, contextHolder] = message.useMessage();
     const [show, setShow] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(false);
@@ -45,7 +49,6 @@ export const LogInComponent: React.FC<{ setIsLoggedIn: (state: boolean) => void,
                         .then((res) => {
                             console.log(res);
                             if (res.status == 200) {
-                                setIsLoggedIn(true);
                                 const loginResponse: LogInResponseModel = {
                                     username: res.data.data.username ?? 'username',
                                     roleId: res.data.data.roleId,
@@ -53,11 +56,12 @@ export const LogInComponent: React.FC<{ setIsLoggedIn: (state: boolean) => void,
                                 }
                                 console.log(loginResponse);
                                 setUsername(loginResponse.username);
-                                localStorage.setItem('isLoggedIn', 'true');
-                                localStorage.setItem('isFirstLogin', res.data.data.isChangePassword);
-                                localStorage.setItem('username', res.data.data.username);
-                                localStorage.setItem('roleId', res.data.data.roleId);
-                                localStorage.setItem('location', res.data.data.location);
+                                sessionStorage.setItem('isLoggedIn', 'true');
+                                sessionStorage.setItem('isFirstLogin', res.data.data.isChangePassword);
+                                sessionStorage.setItem('username', res.data.data.username);
+                                sessionStorage.setItem('roleId', res.data.data.roleId);
+                                sessionStorage.setItem('location', res.data.data.location);
+                                setIsLoggedIn(true, Number(res.data.data.roleId));
                                 message.success(res.data.message);
                             }
                         })
@@ -129,7 +133,7 @@ export const LogInComponent: React.FC<{ setIsLoggedIn: (state: boolean) => void,
                 <Row>
                     <Col className="d-flex justify-content-end mb-3">
                         <Button
-                            className="mx-4"
+                            className="mx-4 text-white"
                             type="submit"
                             style={{ minWidth: "90px", backgroundColor: ColorPalette.PRIMARY_COLOR, border: 'none' }}
                             disabled={!formik.isValid || !formik.dirty || loading === true }>
@@ -139,61 +143,5 @@ export const LogInComponent: React.FC<{ setIsLoggedIn: (state: boolean) => void,
                 </Row>
             </Form>
         </Container>
-        // <div className="container-fluid my-5">
-        //     {contextHolder}
-        //     <div className="row justify-content-center">
-        //         <div className="col-lg-4 col-sm-3">
-        //             <div className="card mt-5">
-        //                 <div className="card-header text-center">
-        //                     {/* <img src="/nashtech_logo.png" alt="Nash Tech Logo" className="logo" /> */}
-        //                     <h3 className='my-4 fs-4' style={{ color: ColorPalette.PRIMARY_COLOR }}>Welcome to Online Asset Management</h3>
-        //                 </div>
-        //                 <div className="card-body text-left mt-4">
-        //                     <form id="loginForm" className="d-flex flex-column justify-content-center" onSubmit={formik.handleSubmit}>
-        //                         <div className="form-group mb-4">
-        //                             <div className="form-control-container">
-        //                                 <label htmlFor="username" className='fw-semibold me-3 text-uppercase'>
-        //                                     Username:<span className='mx-1' style={{ color: ColorPalette.PRIMARY_COLOR }}>*</span>
-        //                                 </label>
-        //                                 <input
-        //                                     type="text"
-        //                                     className="form-control fs-xs-2 fs-5 py-2"
-        //                                     id="username"
-        //                                     placeholder="Enter username"
-        //                                     {...formik.getFieldProps('username')}
-        //                                     aria-required
-        //                                 />
-        //                             </div>
-        //                             {formik.touched.username && formik.errors.username ? (
-        //                                 <div className="error-message">{formik.errors.username}</div>
-        //                             ) : null}
-        //                         </div>
-        //                         <div className="form-group mb-3">
-        //                             <div className="form-control-container">
-        //                                 <label htmlFor="username" className='fw-semibold me-3 text-uppercase'>
-        //                                     Password:<span className='mx-1' style={{ color: ColorPalette.PRIMARY_COLOR }}>*</span>
-        //                                 </label>
-        //                                 <input
-        //                                     type="password"
-        //                                     className="form-control fs-5"
-        //                                     id="password"
-        //                                     placeholder="Enter password"
-        //                                     {...formik.getFieldProps('password')}
-        //                                     required
-        //                                 />
-        //                             </div>
-        //                             {formik.touched.password && formik.errors.password ? (
-        //                                 <div className="error-message">{formik.errors.password}</div>
-        //                             ) : null}
-        //                         </div>
-        //                         <div className="d-flex justify-content-end">
-        //                             <button id='btn-login' type="submit" className="btn px-5 py-2 fw-bold text-uppercase text-white" style={{ backgroundColor: ColorPalette.PRIMARY_COLOR }} disabled={!formik.isValid || !formik.dirty}>Login</button>
-        //                         </div>
-        //                     </form>
-        //                 </div>
-        //             </div>
-        //         </div>
-        //     </div>
-        // </div>
     );
 };

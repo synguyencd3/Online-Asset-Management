@@ -4,12 +4,11 @@ import * as Yup from 'yup';
 import { useFormik } from "formik";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import axios from "axios";
-import { CORS_CONFIG, AZURE_SERVICE_API } from "../../../utils/Config";
 import { message } from "antd";
 import { UserModel } from "../../../models/UserModel";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
+import { createUser } from "../../../services/UserService";
 
 type Props = {
 }
@@ -40,7 +39,6 @@ const createUserValidationSchema = Yup.object({
 export const CreateUserComponent = (_props: Props) => {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false)
-    const url = AZURE_SERVICE_API + "/users"
 
     const formik = useFormik({
         initialValues: {
@@ -50,7 +48,7 @@ export const CreateUserComponent = (_props: Props) => {
             gender: "",
             joinedDate: "",
             dateOfBirth: "",
-            location: localStorage.getItem("location") ?? "HCM",
+            location: sessionStorage.getItem("location") ?? "HCM",
             department: "0",
         },
         validationSchema: createUserValidationSchema,
@@ -71,7 +69,7 @@ export const CreateUserComponent = (_props: Props) => {
                 "joinedDate": values.joinedDate,
                 "dateOfBirth": values.dateOfBirth
             }
-            await axios.post(url, body, CORS_CONFIG).then(response => {
+            await createUser(body).then(response => {
                 setLoading(false);
                 const status = response.status
                 if (status === 400) {
@@ -211,7 +209,7 @@ export const CreateUserComponent = (_props: Props) => {
                     }
                     <Row>
                         <Col className="d-flex justify-content-end my-4">
-                            <Button variant="danger" className="mx-4" style={{ minWidth: "100px" }} type="submit" disabled={!formik.dirty || !formik.isValid}> {loading ? <FontAwesomeIcon icon={faSpinner} spin /> : "Save"}</Button>
+                            <Button variant="danger" className="mx-4" style={{ minWidth: "100px" }} type="submit" disabled={!formik.dirty || !formik.isValid || loading }> {loading ? <FontAwesomeIcon icon={faSpinner} spin /> : "Save"}</Button>
                             <Button variant="outline-dark" className="ms-4" style={{ minWidth: "100px" }} onClick={() => { navigate(-1) }}>Cancel</Button>
                         </Col>
                     </Row>

@@ -2,7 +2,6 @@ import { Button, Col, Container, Row } from "react-bootstrap";
 import { TableComponent } from "../../commons/TableComponent";
 import { DropdownFilterComponent } from "../../commons/DropdownFilterComponent";
 import { SearchComponent } from "../../commons/SearchComponent";
-import axios from "axios";
 import { useEffect, useState } from "react";
 import { UserModel } from "../../../models/UserModel";
 import { UserForTableModel } from "../../../models/UserForTableModel";
@@ -12,12 +11,12 @@ import { FunctionalIconModel } from "../../../models/FunctionalIconModel";
 import { faPencil } from "@fortawesome/free-solid-svg-icons";
 import { faCircleXmark } from "@fortawesome/free-regular-svg-icons/faCircleXmark";
 import { useLocation, useNavigate } from "react-router-dom";
-import { CORS_CONFIG, AZURE_SERVICE_API } from "../../../utils/Config";
 import { PaginationComponent } from "../../commons/PaginationComponent";
 import { LoaderComponent } from "../../commons/LoaderComponent";
 import { ConfirmModalComponent } from "../../commons/ConfirmModalComponent";
 import { message } from "antd";
-import { disableUser } from "../../../services/UserService";
+import { disableUser, getUser } from "../../../services/UserService";
+
 const header = [{ name: 'Staff Code', value: "staffCode", sort: true, direction: true }, { name: 'Full Name', value: "firstName", sort: true, direction: true }, { name: 'Username', value: "username", sort: false, direction: true }, { name: 'Joined Date', value: "joinedDate", sort: true, direction: true }, { name: 'Type', value: "roleId", sort: true, direction: true },]
 const showModalCell = ["staffCode", "username", "fullName"]
 const modalHeader = ["Staff Code", "Full Name", "Username", "Date of Birth", "Gender", "Joined Date", "Type", "Location"]
@@ -49,31 +48,34 @@ export const ManageUserComponent = (/*props: Props*/) => {
 
 	const [newUser] = useState<UserModel>(location.state?.newUser);
 
-    const [showDisableModal, setShowDisableModal] = useState(false); // State for the Logout Modal
-    const [disableStaffCode, setDisableStaffCode] = useState(''); // State for the Logout Modal
+	const [showDisableModal, setShowDisableModal] = useState(false); // State for the Logout Modal
+	const [disableStaffCode, setDisableStaffCode] = useState(''); // State for the Logout Modal
 
-    const [messageApi, contextHolder] = message.useMessage();
-
-	let url = AZURE_SERVICE_API + '/users';
-	
+	const [messageApi, contextHolder] = message.useMessage();
 
 	useEffect(() => {
 		InitializeQuery()
 	}, [dummy])
 
-	async function getUser(url: string) {
+	async function InitializeQuery() {
+		let params = "?"
+			+ "search=" + encodeURIComponent(param.search) + "&"
+			+ "types=" + param.types.join() + "&"
+			+ "page=" + param.page + "&"
+			+ "size=" + "20" + "&"
+			+ "sort=" + param.sort;
+
 		setLoading(true)
-		await axios.get(
-			url,
-			CORS_CONFIG
-		).then((response) => {
-			// check status
+
+		await getUser(params).then((response) => {
 			let data = response.data.data;
+
 			let users: UserModel[] = data.content;
 
 			let tableDatas: UserForTableModel[] = [];
 
 			let modalDatas: ModalUserModel[] = [];
+
 			if (newUser) {
 				let data: UserForTableModel = {
 					staffCode: newUser.staffCode,
@@ -96,8 +98,12 @@ export const ManageUserComponent = (/*props: Props*/) => {
 				}
 				modalDatas.push(modal);
 			}
+
 			users.map(user => {
-				if (newUser && newUser.id === user.id) { } else {
+				if (newUser && newUser.staffCode === user.staffCode) {
+      				// TODO document why this block is empty
+				}
+				else {
 					let data: UserForTableModel = {
 						staffCode: user.staffCode,
 						fullName: user.firstName + " " + user.lastName,
@@ -120,6 +126,7 @@ export const ManageUserComponent = (/*props: Props*/) => {
 					modalDatas.push(modal);
 				}
 			})
+
 			setModalUsers([...modalDatas]);
 			setTableUser([...tableDatas]);
 			setParam((p: any) => ({ ...p, page: data.currentPage }));
@@ -129,16 +136,6 @@ export const ManageUserComponent = (/*props: Props*/) => {
 		});
 		setLoading(false);
 		window.history.replaceState({}, '')
-	}
-
-	function InitializeQuery() {
-		let new_url = url + "?"
-			+ "search=" + encodeURIComponent(param.search) + "&"
-			+ "types=" + param.types.join() + "&"
-			+ "page=" + param.page + "&"
-			+ "size=" + "20" + "&"
-			+ "sort=" + param.sort;
-		getUser(new_url);
 	}
 
 	// button
@@ -171,45 +168,45 @@ export const ManageUserComponent = (/*props: Props*/) => {
 
 	// Disable User
 	const handleDisableClick = (staffCode: string) => {
-        setShowDisableModal(true)
+		setShowDisableModal(true)
 		setDisableStaffCode(staffCode); // Show the Disable Modal
-    }
+	}
 
-	const handleDisable = async (staffCode : string) => {
-        messageApi.open({
-            type: 'loading',
-            content: 'Disabling user...',
-        })
-            .then(async () => {
-                console.log(import.meta.env.VITE_AZURE_BACKEND_DOMAIN);
-                await disableUser(staffCode)
-                    .then((res) => {
-                        console.log(res);
-                        if (res.status == 200) {
-                            console.log(res.data);
-                            message.success(res.data.message);
+	const handleDisable = async (staffCode: string) => {
+		messageApi.open({
+			type: 'loading',
+			content: 'Disabling user...',
+		})
+			.then(async () => {
+				console.log(import.meta.env.VITE_AZURE_BACKEND_DOMAIN);
+				await disableUser(staffCode)
+					.then((res) => {
+						console.log(res);
+						if (res.status == 200) {
+							console.log(res.data);
+							message.success(res.data.message);
 							setDummy(Math.random());
-                        }
-                    })
-                    .catch((err) => {
+						}
+					})
+					.catch((err) => {
 						console.log(err.response);
-                        console.log(process.env.REACT_APP_AZURE_BACKEND_DOMAIN);
-                        // const errorData = err.response.data.substring(0, err.response.data.indexOf('}') + 1);
-                        // const errorResponse: ErrorResponse = JSON.parse(errorData);
-                        message.error(`${err.response.message}`);
-                    });
-            });
-    }
+						console.log(process.env.REACT_APP_AZURE_BACKEND_DOMAIN);
+						// const errorData = err.response.data.substring(0, err.response.data.indexOf('}') + 1);
+						// const errorResponse: ErrorResponse = JSON.parse(errorData);
+						message.error(`${err.response.message}`);
+					});
+			});
+	}
 
-    const handleDisableConfirm = () => {
-        setShowDisableModal(false);
-        handleDisable(disableStaffCode); // Call the Disable function
-    }
+	const handleDisableConfirm = () => {
+		setShowDisableModal(false);
+		handleDisable(disableStaffCode); // Call the Disable function
+	}
 
-    const handleDisableCancel = () => {
-        setShowDisableModal(false);
+	const handleDisableCancel = () => {
+		setShowDisableModal(false);
 		setDisableStaffCode('') // Hide the Disable Modal
-    }
+	}
 
 	// Dropdown Filter
 	let filterdata = [];
@@ -250,7 +247,7 @@ export const ManageUserComponent = (/*props: Props*/) => {
 					}
 				</>
 			}
-			<ConfirmModalComponent show={showDisableModal} onConfirm={handleDisableConfirm} onCancel={handleDisableCancel} confirmTitle={'Are you sure?'} confirmQuestion={'Do you want to disable this user?'} confirmBtnLabel={'Disable'} cancelBtnLabel={'Cancel'} />
+			<ConfirmModalComponent show={showDisableModal} onConfirm={handleDisableConfirm} onCancel={handleDisableCancel} confirmTitle={'Are you sure?'} confirmQuestion={'Do you want to disable this user?'} confirmBtnLabel={'Disable'} cancelBtnLabel={'Cancel'} modalSize={"md"} />
 		</Container>
 	);
 }
