@@ -2,15 +2,31 @@
     "navigationFallback": {
         "rewrite": "/index.html",
         "exclude": [
-            "*.{jpg,gif,png}",
-            "assets/*"
+            "/images/*.{png,jpg,gif}",
+            "/css/*"
         ]
     },
+    "trailingSlash": "always",
     "routes": [
         {
+            "route": "/admin",
+            "redirect": "/admin/home",
+            "statusCode": 301
+        },
+        {
+            "route": "/admin/*",
+            "redirect": "/admin/home",
+            "statusCode": 301
+        },
+        {
             "route": "/*",
-            "rewrite": "/",
-            "statusCode": 401
+            "redirect": "/",
+            "statusCode": 301
         }
-    ]
+    ],
+    "responseOverrides": {
+        "404": {
+            "rewrite": "/index.html"
+        }
+    }
 }
