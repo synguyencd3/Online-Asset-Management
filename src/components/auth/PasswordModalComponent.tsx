@@ -14,15 +14,16 @@ const getValidationSchema = (isFirstLoggedIn: boolean) => Yup.object({
     oldPassword: !isFirstLoggedIn
         ? Yup.string().notRequired()
         : Yup.string()
-            .required('Old password is required'),
+            .required('Old password is required!'),
     newPassword: Yup.string()
-        .required('New password is required')
+        .required('New password is required!')
         .matches(/^[\x00-\x7F]*$/, 'English letter only!')
-        .matches(/^(?=.*[A-Z])(?=.*[@$!%*#?&])(?=.*\d)[A-Za-z\d@$!%*#?&]{8,}$/, 'Password must have at least 8 characters, including at least 1 uppercase letters, alphanumeric and special characters'),
+        .matches(/^(?=.*[A-Z])(?=.*[@$!%*#?&])(?=.*\d)[A-Za-z\d@$!%*#?&]{8,}$/, 'Password must have at least 8 characters, including at least 1 uppercase letters, alphanumeric and special characters.'),
     confirmPassword: Yup.string()
-        .required('Confirm password is required')
+        .required('Confirm password is required!')
+        .oneOf([Yup.ref('newPassword')], 'Confirm Password does not match.')
         .matches(/^[\x00-\x7F]*$/, 'English letter only!')
-        .matches(/^(?=.*[A-Z])(?=.*[@$!%*#?&])(?=.*\d)[A-Za-z\d@$!%*#?&]{8,}$/, 'Password must have at least 8 characters, including at least 1 uppercase letters, alphanumeric and special characters'),
+        .matches(/^(?=.*[A-Z])(?=.*[@$!%*#?&])(?=.*\d)[A-Za-z\d@$!%*#?&]{8,}$/, 'Password must have at least 8 characters, including at least 1 uppercase letters, alphanumeric and special characters.'),
 });
 
 interface ChangePasswordModalProps {
@@ -56,7 +57,6 @@ export const PasswordModalComponent: React.FC<ChangePasswordModalProps> = ({ sho
                 const changePswrdData: ChangePasswordModel = {
                     oldPassword: isFirstLoggedIn !== true ? '' : values.oldPassword,
                     newPassword: values.newPassword,
-                    confirmPassword: values.confirmPassword,
                 };
 
                 await changePassword(changePswrdData)
@@ -172,7 +172,7 @@ export const PasswordModalComponent: React.FC<ChangePasswordModalProps> = ({ sho
                         </Form.Group>
                         <Form.Group as={Row} className="mb-3 px-2">
                             <Form.Label column sm={4} style={{ paddingRight: 0 }}>
-                                Confirm Password<span className='mx-1' style={{ color: ColorPalette.PRIMARY_COLOR }}>*</span>
+                                Confirm password<span className='mx-1' style={{ color: ColorPalette.PRIMARY_COLOR }}>*</span>
                             </Form.Label>
                             <Col sm={8}>
                                 <InputGroup className="password-onfocus">
@@ -199,7 +199,7 @@ export const PasswordModalComponent: React.FC<ChangePasswordModalProps> = ({ sho
                                     variant='danger'
                                     className="mx-2 fw-semibold text-white"
                                     type="submit"
-                                    style={{ minWidth: "90px", backgroundColor: ColorPalette.PRIMARY_COLOR }}
+                                    style={{ minWidth: "90px", backgroundColor: ColorPalette.PRIMARY_COLOR, border: 'none' }}
                                     disabled={!formik.isValid || !formik.dirty}>
                                     Save
                                 </Button>

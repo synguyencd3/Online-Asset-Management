@@ -102,7 +102,6 @@ export const ManageUserComponent = (/*props: Props*/) => {
 				}
 				modalDatas.push(modal);
 			}
-			console.log(users);
 
 			users.map(user => {
 				if (newUser && newUser.staffCode === user.staffCode) {

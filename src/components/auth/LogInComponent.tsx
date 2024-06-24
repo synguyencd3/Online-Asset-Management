@@ -135,7 +135,7 @@ export const LogInComponent: React.FC<LoginProps> = ({ setIsLoggedIn, setUsernam
                         <Button
                             className="mx-4 text-white"
                             type="submit"
-                            style={{ minWidth: "90px", backgroundColor: ColorPalette.PRIMARY_COLOR }}
+                            style={{ minWidth: "90px", backgroundColor: ColorPalette.PRIMARY_COLOR, border: 'none' }}
                             disabled={!formik.isValid || !formik.dirty || loading === true }>
                             Login
                         </Button>

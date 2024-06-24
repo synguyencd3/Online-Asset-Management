@@ -25,7 +25,7 @@ export const DropdownFilterComponent = (props: Props) => {
 		if (value === "All") {
 			if (checked) {
 				updatedOptions = allValues;
-				props.data.forEach((_, index) => {
+				props.data.forEach((_c, index) => {
 					let box: HTMLInputElement = document.getElementById("filter_" + index) as HTMLInputElement;
 					box.checked = true;
 				})
