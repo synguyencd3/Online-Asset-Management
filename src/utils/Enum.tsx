@@ -27,9 +27,9 @@ export enum ReturningState {
 }
 
 export enum AssetState {
-    AVAILABLE,
-    NOT_AVAILABLE,
-    ASSIGNED
+    AVAILABLE = "Available",
+    NOT_AVAILABLE = "Not Available",
+    ASSIGNED = "Assigned",
 }
 
 export enum Roles {
