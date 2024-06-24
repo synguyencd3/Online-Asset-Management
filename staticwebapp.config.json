@@ -5,7 +5,6 @@
             "*.{tsx,css,png,jpg,gif,svg}"
         ]
     },
-    "trailingSlash": "always",
     "routes": [
         {
             "route": "/admin",
