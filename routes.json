@@ -2,8 +2,7 @@
     "navigationFallback": {
         "rewrite": "/index.html",
         "exclude": [
-            "/images/*.{png,jpg,gif}",
-            "/css/*"
+            "*.{tsx,css,png,jpg,gif,svg}"
         ]
     },
     "trailingSlash": "always",
