@@ -21,7 +21,7 @@ const getValidationSchema = (isFirstLoggedIn: boolean) => Yup.object({
         .matches(/^(?=.*[A-Z])(?=.*[@$!%*#?&])(?=.*\d)[A-Za-z\d@$!%*#?&]{8,}$/, 'Password must have at least 8 characters, including at least 1 uppercase letters, alphanumeric and special characters.'),
     confirmPassword: Yup.string()
         .required('Confirm password is required!')
-        .oneOf([Yup.ref('newPassword')], 'Passwords must match!')
+        .oneOf([Yup.ref('newPassword')], 'Confirm Password does not match.')
         .matches(/^[\x00-\x7F]*$/, 'English letter only!')
         .matches(/^(?=.*[A-Z])(?=.*[@$!%*#?&])(?=.*\d)[A-Za-z\d@$!%*#?&]{8,}$/, 'Password must have at least 8 characters, including at least 1 uppercase letters, alphanumeric and special characters.'),
 });
