@@ -1,6 +1,5 @@
 import { Button, Col, Container, Form, Row } from "react-bootstrap";
 import { ColorPalette } from "../../../utils/ColorPalette";
-import { message } from "antd";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { AssetState } from "../../../utils/Enum";
@@ -40,6 +39,7 @@ export const CreateAssetComponent = () => {
     validationSchema: assetValidationSchema,
     onSubmit: async (values) => {
       console.log(values);
+      setLoading(false);
     }
     // onChange: (event: any) => {
     //   console.log(event);
