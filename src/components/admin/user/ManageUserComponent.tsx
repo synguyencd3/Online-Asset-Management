@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { UserModel } from "../../../models/UserModel";
 import { UserForTableModel } from "../../../models/UserForTableModel";
 import { ModalUserModel } from "../../../models/ModalUserModel";
-import { Roles } from "../../../utils/Enum";
+import { Roles, RolesLowerCase } from "../../../utils/Enum";
 import { FunctionalIconModel } from "../../../models/FunctionalIconModel";
 import { faPencil } from "@fortawesome/free-solid-svg-icons";
 import { faCircleXmark } from "@fortawesome/free-regular-svg-icons/faCircleXmark";
@@ -53,6 +53,10 @@ export const ManageUserComponent = (/*props: Props*/) => {
 
 	const [messageApi, contextHolder] = message.useMessage();
 
+	function toDateString(date: string) {
+		let d = new Date(date);
+		return new Intl.DateTimeFormat("en-GB").format(d);
+	}
 	useEffect(() => {
 		InitializeQuery()
 	}, [dummy])
@@ -81,8 +85,8 @@ export const ManageUserComponent = (/*props: Props*/) => {
 					staffCode: newUser.staffCode,
 					fullName: newUser.firstName + " " + newUser.lastName,
 					username: newUser.username,
-					joinedDate: newUser.joinedDate,
-					type: newUser.roleId,
+					joinedDate: toDateString(newUser.joinedDate),
+					type: RolesLowerCase[newUser.roleId],
 				};
 				tableDatas.push(data);
 
@@ -90,14 +94,15 @@ export const ManageUserComponent = (/*props: Props*/) => {
 					staffCode: newUser.staffCode,
 					fullName: newUser.firstName + " " + newUser.lastName,
 					username: newUser.username,
-					dateOfBirth: newUser.dateOfBirth,
-					gender: newUser.gender,
-					joinedDate: newUser.joinedDate,
-					roleId: Roles[newUser.roleId],
+					dateOfBirth: toDateString(newUser.dateOfBirth),
+					gender: newUser.gender.charAt(0) + newUser.gender.slice(1).toLowerCase(),
+					joinedDate: toDateString(newUser.joinedDate),
+					roleId: RolesLowerCase[newUser.roleId],
 					location: newUser.location,
 				}
 				modalDatas.push(modal);
 			}
+			console.log(users);
 
 			users.map(user => {
 				if (newUser && newUser.staffCode === user.staffCode) {
@@ -108,8 +113,8 @@ export const ManageUserComponent = (/*props: Props*/) => {
 						staffCode: user.staffCode,
 						fullName: user.firstName + " " + user.lastName,
 						username: user.username,
-						joinedDate: user.joinedDate,
-						type: user.roleId,
+						joinedDate: toDateString(user.joinedDate),
+						type: RolesLowerCase[user.roleId],
 					};
 					tableDatas.push(data);
 
@@ -117,10 +122,10 @@ export const ManageUserComponent = (/*props: Props*/) => {
 						staffCode: user.staffCode,
 						fullName: user.firstName + " " + user.lastName,
 						username: user.username,
-						dateOfBirth: user.dateOfBirth,
-						gender: user.gender,
-						joinedDate: user.joinedDate,
-						roleId: Roles[user.roleId],
+						dateOfBirth: toDateString(user.dateOfBirth),
+						gender: user.gender.charAt(0) + user.gender.slice(1).toLowerCase(),
+						joinedDate: toDateString(user.joinedDate),
+						roleId: RolesLowerCase[user.roleId],
 						location: user.location,
 					}
 					modalDatas.push(modal);
@@ -218,15 +223,15 @@ export const ManageUserComponent = (/*props: Props*/) => {
 	return (
 		<Container style={{ maxWidth: "100%" }} className="p-4">
 			{contextHolder}
-			<Row className="py-4 me-3">
-				<Col sm={3} className="d-flex justify-content-start align-items-center">
+			<Row className="py-4 ms-0 me-3">
+				<Col sm={3} className="d-flex justify-content-start align-items-center px-2">
 					<DropdownFilterComponent title={"Type"} data={filterdata} params={param.types} setParamsFunction={setParam} setDummy={setDummy}></DropdownFilterComponent>
 				</Col>
 				<Col className="d-flex justify-content-end align-items-center">
 					<SearchComponent placeholder={""} params={param.search} setParamsFunction={setParam} setDummy={setDummy}></SearchComponent>
 				</Col>
-				<Col sm={2} className="d-flex justify-content-end align-items-center">
-					<Button variant="danger" onClick={() => { return navigate('./new') }}>Create New User</Button>
+				<Col sm={3} className="d-flex justify-content-end align-items-center" style={{ maxWidth: "230px" }}>
+					<Button variant="danger" onClick={() => { return navigate('./new') }} style={{ width: "230px" }}>Create New User</Button>
 				</Col>
 			</Row>
 			{loading ?

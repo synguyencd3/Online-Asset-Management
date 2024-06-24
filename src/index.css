@@ -132,7 +132,7 @@ tr:hover {
 
 .table-header {
   display: flex;
-  justify-content: space-between;
+  /* justify-content: space-between; */
   padding: 0;
   align-items: center;
 }
@@ -203,14 +203,16 @@ tr:hover {
 .page-item,
 .page-link {
   color: red;
+  font-weight: normal;
 }
 
 .active>.page-link {
   background-color: red;
   border-color: red;
 }
+
 .active>.page-link:hover {
-color: white;
+  color: white;
 }
 
 .page-link:focus {
@@ -220,4 +222,9 @@ color: white;
 
 .page-link:hover {
   color: red;
+}
+
+.pagination {
+  --bs-pagination-disabled-bg: white
+}
 }

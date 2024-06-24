@@ -9,4 +9,4 @@ export const getOneUser = async (staffCode: string) => await axios.get(`${AZURE_
 
 export const updateUser = async (staffCode: string, body: any) => await axios.put(`${AZURE_SERVICE_API}/users/` + staffCode, body, CORS_CONFIG);
 
-export const createUser = async (body: any) => await axios.post(`${AZURE_SERVICE_API}/users/`, body, CORS_CONFIG);
+export const createUser = async (body: any) => await axios.post(`${AZURE_SERVICE_API}/users`, body, CORS_CONFIG);

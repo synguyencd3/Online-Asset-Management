@@ -1,6 +1,6 @@
 import { faFilter } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { ChangeEvent, RefAttributes } from 'react';
+import { ChangeEvent, RefAttributes, useRef } from 'react';
 import { ButtonGroup, Dropdown, Form, OverlayTrigger, Tooltip, TooltipProps } from 'react-bootstrap'
 import { JSX } from 'react/jsx-runtime';
 
@@ -17,7 +17,7 @@ type Props = {
 export const DropdownFilterComponent = (props: Props) => {
 
 	const allValues: string[] = props.data.map(filter => { return filter.value });
-
+	const defaultLength = useRef(props.params.length).current;
 	const handleCheckboxChange = (event: ChangeEvent<HTMLInputElement>) => {
 
 		const { value, checked } = event.target;
@@ -25,27 +25,31 @@ export const DropdownFilterComponent = (props: Props) => {
 		if (value === "All") {
 			if (checked) {
 				updatedOptions = allValues;
-				props.data.forEach((_c, index) => {
+				props.data.forEach((_, index) => {
 					let box: HTMLInputElement = document.getElementById("filter_" + index) as HTMLInputElement;
 					box.checked = true;
+				})
+			}
+			else {
+				updatedOptions = [];
+				props.data.forEach((_, index) => {
+					let box: HTMLInputElement = document.getElementById("filter_" + index) as HTMLInputElement;
+					box.checked = false;
 				})
 			}
 		} else {
 			if (checked) {
 				updatedOptions.push(value);
-				if (updatedOptions.length === props.params.length) {
+				if (updatedOptions.length >= defaultLength) {
 					let box: HTMLInputElement = document.getElementById("filter_All") as HTMLInputElement;
 					box.checked = true;
 				}
 			} else {
 				updatedOptions = updatedOptions.filter((option) => option !== value);
-				if (updatedOptions.length === 0) {
-					let box: HTMLInputElement = document.getElementById("filter_All") as HTMLInputElement;
-					box.checked = false;
-				}
+				let box: HTMLInputElement = document.getElementById("filter_All") as HTMLInputElement;
+				box.checked = false;
 			}
 		}
-		console.log(updatedOptions);
 		props.setParamsFunction((p: any) => ({ ...p, types: updatedOptions }));
 		props.setDummy(Math.random())
 	};
@@ -76,6 +80,7 @@ export const DropdownFilterComponent = (props: Props) => {
 						label="All"
 						value="All"
 						onChange={handleCheckboxChange}
+						defaultChecked={true}
 					/>
 					{/* Select Datas here */}
 					{props.data.map((filter, index) => (

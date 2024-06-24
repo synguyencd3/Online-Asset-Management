@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from 'yup';
 import { ModalUserModel } from "../../../models/ModalUserModel";
-import { Roles } from "../../../utils/Enum";
+import { RolesLowerCase } from "../../../utils/Enum";
 import { UserModel } from "../../../models/UserModel";
 import { message } from "antd";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -19,31 +19,42 @@ const eighteenYearsAgo = new Date(new Date().setFullYear(new Date().getFullYear(
 const createUserValidationSchema = Yup.object({
     dateOfBirth: Yup.date()
         .max(eighteenYearsAgo, 'User is under 18. Please select a different date')
-        .required('Date of birth is required'),
+        .required(''),
     joinedDate: Yup.date()
         .min(Yup.ref('dateOfBirth'), 'Joined date is not later than Date of Birth. Please select a different date')
         .test('is-weekend', 'Joined date is Saturday or Sunday. Please select a different date', function (value) {
             return (value && (value.getDay() != 6 && value.getDay() != 0))
         })
-        .required('Joined date is required'),
-    gender: Yup.string().required('Gender is required')
+        .required(''),
+    gender: Yup.string().required('')
 });
-
+function formatDate(date: string) {
+    let d = date.split("/");
+    return ([d[2], d[1], d[0]].join('-'))
+}
 export const EditUserComponent = (_props: Props) => {
-
-    // const url = AZURE_SERVICE_API + "/users/"
-
     const location = useLocation();
 
     const [user] = useState<ModalUserModel>(location.state.user);
-
     const [loading, setLoading] = useState(false);
     const [messageApi, contextHolder] = message.useMessage();
 
     const navigate = useNavigate();
 
+    let staffcodearray = user.staffCode.match(/[A-Za-z]+/);
+    const prefix = staffcodearray ? staffcodearray[0] : "SD";
+
     const formik = useFormik({
-        initialValues: { ...user, firstName: user.fullName.split(' ')[0], lastName: user.fullName.split(' ')[1] },
+        initialValues: {
+            ...user,
+            roleId: RolesLowerCase[user.roleId as keyof typeof RolesLowerCase],
+            dateOfBirth: formatDate(user.dateOfBirth),
+            joinedDate: formatDate(user.joinedDate),
+            firstName: user.fullName.split(' ')[0],
+            lastName: user.fullName.split(' ')[1],
+            prefix: prefix,
+            gender:user.gender.toUpperCase()
+        },
         validationSchema: createUserValidationSchema,
         onSubmit: async (values) => {
             setLoading(true);
@@ -51,7 +62,7 @@ export const EditUserComponent = (_props: Props) => {
                 dateOfBirth: values.dateOfBirth,
                 joinedDate: values.joinedDate,
                 gender: values.gender,
-                type: Roles[values.roleId as keyof typeof Roles]
+                type: values.roleId
             }
             if (!formik.dirty) {
                 messageApi.open({ type: 'warning', content: 'Please Change Infomation before Submit', });
@@ -83,6 +94,7 @@ export const EditUserComponent = (_props: Props) => {
         }
     }, [isSubmitting])
 
+    console.log(values);
 
     return (
         <>
@@ -96,15 +108,16 @@ export const EditUserComponent = (_props: Props) => {
                     <Form.Group as={Row} className="mb-3" controlId="firstName">
                         <Form.Label column sm={3} >
                             First Name
+                            <span className='mx-1' style={{ color: ColorPalette.PRIMARY_COLOR }}>*</span>
                         </Form.Label>
                         <Col sm={9}>
                             <Form.Control type="text" disabled value={values.firstName} />
                         </Col>
-
                     </Form.Group>
                     <Form.Group as={Row} className="mb-3" controlId="lastName">
                         <Form.Label column sm={3}>
                             Last Name
+                            <span className='mx-1' style={{ color: ColorPalette.PRIMARY_COLOR }}>*</span>
                         </Form.Label>
                         <Col sm={9}>
                             <Form.Control type="text" disabled value={values.lastName} />
@@ -114,6 +127,7 @@ export const EditUserComponent = (_props: Props) => {
                     <Form.Group as={Row} className="mb-3" controlId="dateOfBirth">
                         <Form.Label column sm={3}>
                             Date of Birth
+                            <span className='mx-1' style={{ color: ColorPalette.PRIMARY_COLOR }}>*</span>
                         </Form.Label>
                         <Col sm={9}>
                             <Form.Control type="date"  {...getFieldProps('dateOfBirth')} />
@@ -126,6 +140,7 @@ export const EditUserComponent = (_props: Props) => {
                     <Form.Group as={Row} className="mb-3" controlId="gender">
                         <Form.Label column sm={3}>
                             Gender
+                            <span className='mx-1' style={{ color: ColorPalette.PRIMARY_COLOR }}>*</span>
                         </Form.Label>
                         <Col sm={9} id="gender" className="red-border-on-focus">
                             <Form.Check inline label="Female" name="gender" value="FEMALE" type="radio" id={"female"} className="me-5" checked={values.gender === "MALE" ? false : true} onChange={handleChange} />
@@ -139,6 +154,7 @@ export const EditUserComponent = (_props: Props) => {
                     <Form.Group as={Row} className="mb-3" controlId="joinedDate">
                         <Form.Label column sm={3}>
                             Joined Date
+                            <span className='mx-1' style={{ color: ColorPalette.PRIMARY_COLOR }}>*</span>
                         </Form.Label>
                         <Col sm={9}>
                             <Form.Control type="date"  {...getFieldProps('joinedDate')} />
@@ -148,43 +164,50 @@ export const EditUserComponent = (_props: Props) => {
                         </Col>
                     </Form.Group>
 
-                    <Form.Group as={Row} className="mb-3" controlId="type">
+                    <Form.Group as={Row} className="mb-3" controlId="roleId">
                         <Form.Label column sm={3}>
                             Type
+                            <span className='mx-1' style={{ color: ColorPalette.PRIMARY_COLOR }}>*</span>
                         </Form.Label>
                         <Col sm={9}>
-                            <Form.Select name="type" defaultValue={values.roleId} disabled>
-                                <option value="STAFF">STAFF</option>
-                                <option value="ADMIN" >ADMIN</option>
+                            <Form.Select name="roleId" value={values.roleId} onChange={handleChange} >
+                                <option value={1}>Admin</option>
+                                <option value={2}>Staff</option>
                             </Form.Select>
                         </Col>
                     </Form.Group>
-
                     <Form.Group as={Row} className="mb-3" controlId="type">
                         <Form.Label column sm={3}>
-                            {values.roleId === "ADMIN" ?
-                                "Location" : "Department"}
+                            Staff Type
+                            <span className='mx-1' style={{ color: ColorPalette.PRIMARY_COLOR }}>*</span>
                         </Form.Label>
                         <Col sm={9}>
-                            <Form.Select name={values.roleId === "ADMIN" ? "location" : "department"} defaultValue={""} disabled>
-                                {values.roleId === "ADMIN" ?
-                                    <>
-                                        <option value="0">HCM</option>
-                                        <option value="1" >HN</option>
-                                        <option value="2" >DN</option>
-                                    </>
-                                    : <>
-                                        <option value="0">SD</option>
-                                        <option value="1" >BDP</option>
-                                    </>
-                                }
+                            <Form.Select name="prefix" value={values.prefix} onChange={handleChange} >
+                                <option value="SD">SD</option>
+                                <option value="BPS" >BPS</option>
                             </Form.Select>
                         </Col>
                     </Form.Group>
+                    {RolesLowerCase[values.roleId] === "Admin" ?
+                        <Form.Group as={Row} className="mb-3" controlId="location">
+                            <Form.Label column sm={3}>
+                                Location
+                                <span className='mx-1' style={{ color: ColorPalette.PRIMARY_COLOR }}>*</span>
+                            </Form.Label>
+                            <Col sm={9}>
+                                <Form.Select name="location" value={values.location} onChange={handleChange} >
+                                    <option value="HCM" >HCM: Ho Chi Minh</option>
+                                    <option value="HN" >HN: Ha Noi</option>
+                                    <option value="DN" >DN: Da Nang</option>
+                                </Form.Select>
+                            </Col>
+                        </Form.Group>
+                        : ""
+                    }
                     <Row>
                         <Col className="d-flex justify-content-end my-4">
-                            <Button variant="danger" className="mx-4" style={{ minWidth: "100px" }} type="submit" disabled={loading}> {loading ? <FontAwesomeIcon icon={faSpinner} spin /> : "Save"}</Button>
-                            <Button variant="outline-dark" className="ms-4" style={{ minWidth: "100px" }} onClick={() => { navigate(-1) }}>Cancel</Button>
+                        <Button variant="danger" className="mx-4" style={{ minWidth: "100px" }} type="submit" disabled={!formik.dirty || !formik.isValid || loading}> {loading ? <FontAwesomeIcon icon={faSpinner} spin /> : "Save"}</Button>
+                        <Button variant="outline-dark" className="ms-4" style={{ minWidth: "100px" }} onClick={() => { navigate(-1) }}>Cancel</Button>
                         </Col>
                     </Row>
                 </Form>

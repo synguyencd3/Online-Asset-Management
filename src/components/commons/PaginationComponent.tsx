@@ -12,6 +12,9 @@ export const PaginationComponent = ({ currentPage, totalPage, setCurrentPage, se
     const isLastPage = currentPage === totalPage - 1;
 
     const handlePageChange = (page: number) => {
+        if (page === currentPage) {
+            return
+        }
         setCurrentPage((p: any) => ({ ...p, page: page }))
         setDummy(Math.random())
     };

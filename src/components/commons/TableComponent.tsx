@@ -67,7 +67,7 @@ export const TableComponent = ({ headers, datas, auxData, auxHeader, buttons, se
 									<div className='table-header header-border'>
 										{h.name}
 										{h.sort ?
-											<FontAwesomeIcon values={h.name} icon={h.direction ? faSortDown : faSortUp} onClick={() => { onClickSort(h, index); }} />
+											<FontAwesomeIcon values={h.name} icon={h.direction ? faSortDown : faSortUp} onClick={() => { onClickSort(h, index); }} style={{marginLeft:"10px"}}/>
 											: ""}
 									</div>
 								</th>

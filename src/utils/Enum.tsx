@@ -3,17 +3,29 @@ export enum Location {
     HN,
     DN,
 }
+export enum Prfix {
+    SD, BPS
+}
 
 export enum Gender {
     BLANK,
     MALE,
     FEMALE,
 }
+export enum GenderLowerCase {
+    Male = "MALE",
+    Female = "FEMALE",
+}
+export enum GenderUpperCase {
+    MALE = "Male",
+    FEMALE = "Female",
+}
 
 export enum StaffState {
     ACTIVE,
     INACTIVE,
 }
+
 // should change to number ?
 export enum AssignmentState {
     ACCEPTED = 'Accepted',
@@ -34,4 +46,10 @@ export enum AssetState {
 
 export enum Roles {
     ADMIN = 1, STAFF = 2
+}
+export enum RolesLowerCase {
+    Admin = 1, Staff = 2
+}
+export enum RolesAsString {
+    ADMIN = "Admin", STAFF = "Staff"
 }

@@ -3,7 +3,7 @@ import { ColorPalette } from "../../../utils/ColorPalette";
 import * as Yup from 'yup';
 import { useFormik } from "formik";
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { message } from "antd";
 import { UserModel } from "../../../models/UserModel";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -17,23 +17,31 @@ const eighteenYearsAgo = new Date(new Date().setFullYear(new Date().getFullYear(
 
 const createUserValidationSchema = Yup.object({
     firstName: Yup.string()
-        .max(128, 'First name must be at most 128 characters')
-        .matches(/^[a-zA-Z]+$/, 'First name cannot contain special characters')
-        .required('First name is required'),
+        .max(128,)
+        .matches(/^[a-zA-Z]+$/,)
+        .required(),
     lastName: Yup.string()
-        .max(128, 'Last name must be at most 128 characters')
-        .matches(/^[a-zA-Z]+$/, 'Last name cannot contain special characters')
-        .required('Last name is required'),
+        .max(128, '')
+        .matches(/^[a-zA-Z]+$/,)
+        .required(),
     dateOfBirth: Yup.date()
         .max(eighteenYearsAgo, 'User is under 18. Please select a different date')
-        .required('Date of birth is required'),
+        // .max(new Date(), '\u200B')
+        // .test('is-adult', 'User must be 18 years or older', function () {
+        //     const today = new Date();
+        //     const differenceMs = today.getMilliseconds() - eighteenYearsAgo.getMilliseconds();
+        //     const differenceYears = Math.floor(differenceMs / (1000 * 60 * 60 * 24 * 365.25));
+
+        //     return differenceYears === 18;
+        // })
+        .required(),
     joinedDate: Yup.date()
         .min(Yup.ref('dateOfBirth'), 'Joined date is not later than Date of Birth. Please select a different date')
         .test('is-weekend', 'Joined date is Saturday or Sunday. Please select a different date', function (value) {
             return (value && (value.getDay() != 6 && value.getDay() != 0))
         })
-        .required('Joined date is required'),
-    gender: Yup.string().required('Gender is required')
+        .required('\u200B'),
+    gender: Yup.string().required()
 });
 
 export const CreateUserComponent = (_props: Props) => {
@@ -48,32 +56,29 @@ export const CreateUserComponent = (_props: Props) => {
             gender: "",
             joinedDate: "",
             dateOfBirth: "",
-            location: sessionStorage.getItem("location") ?? "HCM",
-            department: "0",
+            location: localStorage.getItem("location") ?? "HCM",
+            prefix: "SD",
         },
         validationSchema: createUserValidationSchema,
         onSubmit: async (values) => {
-            if (values.roleId == "1") {
-                values.location = "0";
-            }
-            if (values.roleId == "2") {
-                values.department = "0";
-            }
-
+            setLoading(true)
             /// temp body
             const body = {
-                "roleId": values.roleId,
-                "firstName": values.firstName,
-                "lastName": values.lastName,
-                "gender": values.gender,
-                "joinedDate": values.joinedDate,
-                "dateOfBirth": values.dateOfBirth
+                roleId: values.roleId,
+                firstName: values.firstName,
+                lastName: values.lastName,
+                gender: values.gender,
+                joinedDate: values.joinedDate,
+                dateOfBirth: values.dateOfBirth,
+                location: values.location,
+                prefix: values.prefix
             }
             await createUser(body).then(response => {
                 setLoading(false);
                 const status = response.status
                 if (status === 400) {
                     message.error(response.data);
+                    setLoading(false);
                     return
                 }
                 const data = response.data;
@@ -82,21 +87,15 @@ export const CreateUserComponent = (_props: Props) => {
                     navigate('/admin/manage-users', { replace: true, state: { newUser: newUser } });
                     return
                 }
-            }).catch(e => {
-                message.error(e.message);
+            }).catch(_e => {
+                message.error("Fail to create user");
                 return
             });
+            setLoading(false)
         }
     });
 
-    const { handleSubmit, handleChange, values, errors, getFieldProps, isSubmitting } = formik;
-
-    useEffect(() => {
-        const array = Object.keys(errors);
-        if (array) {
-            document.getElementById(array[0])?.focus();
-        }
-    }, [isSubmitting])
+    const { handleSubmit, handleChange, values, getFieldProps } = formik;
 
     return (
         <>
@@ -108,40 +107,38 @@ export const CreateUserComponent = (_props: Props) => {
                     <Form.Group as={Row} className="mb-3" controlId="firstName">
                         <Form.Label column sm={3} >
                             First Name
+                            <span className='mx-1' style={{ color: ColorPalette.PRIMARY_COLOR }}>*</span>
                         </Form.Label>
                         <Col sm={9}>
                             <Form.Control type="text"  {...getFieldProps('firstName')} />
-                            {formik.touched.firstName && formik.errors.firstName ? (
-                                <div className="error-message">{formik.errors.firstName}</div>
-                            ) : null}
                         </Col>
 
                     </Form.Group>
                     <Form.Group as={Row} className="mb-3" controlId="lastName">
                         <Form.Label column sm={3}>
                             Last Name
+                            <span className='mx-1' style={{ color: ColorPalette.PRIMARY_COLOR }}>*</span>
                         </Form.Label>
                         <Col sm={9}>
                             <Form.Control type="text"  {...getFieldProps('lastName')} />
-                            {formik.touched.lastName && formik.errors.lastName ? (
-                                <div className="error-message">{formik.errors.lastName}</div>
-                            ) : null}
                         </Col>
                     </Form.Group>
                     <Form.Group as={Row} className="mb-3" controlId="dateOfBirth">
                         <Form.Label column sm={3}>
                             Date of Birth
+                            <span className='mx-1' style={{ color: ColorPalette.PRIMARY_COLOR }}>*</span>
                         </Form.Label>
                         <Col sm={9}>
-                            <Form.Control type="date"  {...getFieldProps('dateOfBirth')} />
+                            <Form.Control type="date"  {...getFieldProps('dateOfBirth')} style={formik.errors.dateOfBirth ? { borderColor: "red" } : {}} />
                             {formik.touched.dateOfBirth && formik.errors.dateOfBirth ? (
-                                <div className="error-message">{formik.errors.dateOfBirth}</div>
+                                <div className="error-message" style={formik.errors.dateOfBirth.length <= 1 ? { height: "0px" } : {}}>{formik.errors.dateOfBirth}</div>
                             ) : null}
                         </Col>
                     </Form.Group>
                     <Form.Group as={Row} className="mb-3" controlId="gender">
                         <Form.Label column sm={3}>
                             Gender
+                            <span className='mx-1' style={{ color: ColorPalette.PRIMARY_COLOR }}>*</span>
                         </Form.Label>
                         <Col sm={9} id="gender" className="red-border-on-focus">
                             <Form.Check inline label="Female" name="gender" value="FEMALE" type="radio" id={"female"} className="me-5" onChange={handleChange} />
@@ -154,9 +151,10 @@ export const CreateUserComponent = (_props: Props) => {
                     <Form.Group as={Row} className="mb-3" controlId="joinedDate">
                         <Form.Label column sm={3}>
                             Joined Date
+                            <span className='mx-1' style={{ color: ColorPalette.PRIMARY_COLOR }}>*</span>
                         </Form.Label>
                         <Col sm={9}>
-                            <Form.Control type="date"  {...getFieldProps('joinedDate')} />
+                            <Form.Control type="date"  {...getFieldProps('joinedDate')} style={formik.errors.joinedDate ? { borderColor: "red" } : {}} />
                             {formik.touched.joinedDate && formik.errors.joinedDate ? (
                                 <div className="error-message">{formik.errors.joinedDate}</div>
                             ) : null}
@@ -165,56 +163,52 @@ export const CreateUserComponent = (_props: Props) => {
                     <Form.Group as={Row} className="mb-3" controlId="roleId">
                         <Form.Label column sm={3}>
                             Type
+                            <span className='mx-1' style={{ color: ColorPalette.PRIMARY_COLOR }}>*</span>
                         </Form.Label>
                         <Col sm={9}>
                             <Form.Select name="roleId" value={values.roleId} onChange={handleChange} >
-                                <option value="1" >ADMIN</option>
-                                <option value="2">STAFF</option>
+                                <option value="1" >Admin</option>
+                                <option value="2">Staff</option>
                             </Form.Select>
-                            {formik.touched.roleId && formik.errors.roleId ? (
-                                <div className="error-message">{formik.errors.roleId}</div>
-                            ) : null}
+                        </Col>
+                    </Form.Group>
+                    <Form.Group as={Row} className="mb-3" controlId="type">
+                        <Form.Label column sm={3}>
+                            Staff Type
+                            <span className='mx-1' style={{ color: ColorPalette.PRIMARY_COLOR }}>*</span>
+                        </Form.Label>
+                        <Col sm={9}>
+                            <Form.Select name="prefix" value={values.prefix} onChange={handleChange} >
+                                <option value="SD">SD</option>
+                                <option value="BPS" >BPS</option>
+                            </Form.Select>
                         </Col>
                     </Form.Group>
                     {values.roleId === "1" ?
                         <Form.Group as={Row} className="mb-3" controlId="location">
                             <Form.Label column sm={3}>
                                 Location
+                                <span className='mx-1' style={{ color: ColorPalette.PRIMARY_COLOR }}>*</span>
                             </Form.Label>
                             <Col sm={9}>
                                 <Form.Select name="location" value={values.location} onChange={handleChange} >
-                                    <option value="0">HCM</option>
-                                    <option value="1" >HN</option>
-                                    <option value="2" >DN</option>
+                                    <option value="HCM" >HCM: Ho Chi Minh</option>
+                                    <option value="HN" >HN: Ha Noi</option>
+                                    <option value="DN" >DN: Da Nang</option>
                                 </Form.Select>
-                                {formik.touched.location && formik.errors.location ? (
-                                    <div className="error-message">{formik.errors.location}</div>
-                                ) : null}
                             </Col>
                         </Form.Group>
-                        : <Form.Group as={Row} className="mb-3" controlId="type">
-                            <Form.Label column sm={3}>
-                                Department
-                            </Form.Label>
-                            <Col sm={9}>
-                                <Form.Select name="department" value={values.department} onChange={handleChange} >
-                                    <option value="0">SD</option>
-                                    <option value="1" >BDP</option>
-                                </Form.Select>
-                                {formik.touched.department && formik.errors.department ? (
-                                    <div className="error-message">{formik.errors.department}</div>
-                                ) : null}
-                            </Col>
-                        </Form.Group>
+                        : ""
                     }
+
                     <Row>
                         <Col className="d-flex justify-content-end my-4">
-                            <Button variant="danger" className="mx-4" style={{ minWidth: "100px" }} type="submit" disabled={!formik.dirty || !formik.isValid || loading }> {loading ? <FontAwesomeIcon icon={faSpinner} spin /> : "Save"}</Button>
+                            <Button variant="danger" className="mx-4" style={{ minWidth: "100px" }} type="submit" disabled={!formik.dirty || !formik.isValid || loading}> {loading ? <FontAwesomeIcon icon={faSpinner} spin /> : "Save"}</Button>
                             <Button variant="outline-dark" className="ms-4" style={{ minWidth: "100px" }} onClick={() => { navigate(-1) }}>Cancel</Button>
                         </Col>
                     </Row>
                 </Form>
-            </Container>
+            </Container >
         </>
     );
 }
