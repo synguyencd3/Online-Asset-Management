@@ -17,13 +17,13 @@ const eighteenYearsAgo = new Date(new Date().setFullYear(new Date().getFullYear(
 
 const createUserValidationSchema = Yup.object({
     firstName: Yup.string()
-        .max(128,)
-        .matches(/^[a-zA-Z]+$/,)
-        .required(),
+        .max(128,"First name must be at most 128 characters")
+        .matches(/^[a-zA-Z]+$/,"First name cannot contain special characters")
+        .required("First name is required"),
     lastName: Yup.string()
-        .max(128, '')
-        .matches(/^[a-zA-Z]+$/,)
-        .required(),
+        .max(128, "Last name must be at most 128 characters")
+        .matches(/^[a-zA-Z]+$/,"Last name cannot contain special characters")
+        .required('Last name is required'),
     dateOfBirth: Yup.date()
         .max(eighteenYearsAgo, 'User is under 18. Please select a different date')
         // .max(new Date(), '\u200B')
@@ -34,14 +34,14 @@ const createUserValidationSchema = Yup.object({
 
         //     return differenceYears === 18;
         // })
-        .required(),
+        .required('Date of birth is required'),
     joinedDate: Yup.date()
         .min(Yup.ref('dateOfBirth'), 'Joined date is not later than Date of Birth. Please select a different date')
         .test('is-weekend', 'Joined date is Saturday or Sunday. Please select a different date', function (value) {
             return (value && (value.getDay() != 6 && value.getDay() != 0))
         })
-        .required('\u200B'),
-    gender: Yup.string().required()
+        .required('Joined date is required'),
+    gender: Yup.string().required('Gender is required')
 });
 
 export const CreateUserComponent = (_props: Props) => {
@@ -111,6 +111,9 @@ export const CreateUserComponent = (_props: Props) => {
                         </Form.Label>
                         <Col sm={9}>
                             <Form.Control type="text"  {...getFieldProps('firstName')} />
+                            {formik.touched.firstName && formik.errors.firstName ? (
+                            <div className="error-message">{formik.errors.firstName}</div>
+                        ) : null}
                         </Col>
 
                     </Form.Group>
@@ -121,6 +124,9 @@ export const CreateUserComponent = (_props: Props) => {
                         </Form.Label>
                         <Col sm={9}>
                             <Form.Control type="text"  {...getFieldProps('lastName')} />
+                            {formik.touched.lastName && formik.errors.lastName ? (
+                            <div className="error-message">{formik.errors.lastName}</div>
+                        ) : null}
                         </Col>
                     </Form.Group>
                     <Form.Group as={Row} className="mb-3" controlId="dateOfBirth">

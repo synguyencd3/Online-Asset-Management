@@ -19,14 +19,14 @@ const eighteenYearsAgo = new Date(new Date().setFullYear(new Date().getFullYear(
 const createUserValidationSchema = Yup.object({
     dateOfBirth: Yup.date()
         .max(eighteenYearsAgo, 'User is under 18. Please select a different date')
-        .required(''),
+        .required('Date of birth is required'),
     joinedDate: Yup.date()
         .min(Yup.ref('dateOfBirth'), 'Joined date is not later than Date of Birth. Please select a different date')
         .test('is-weekend', 'Joined date is Saturday or Sunday. Please select a different date', function (value) {
             return (value && (value.getDay() != 6 && value.getDay() != 0))
         })
-        .required(''),
-    gender: Yup.string().required('')
+        .required('Joined date is required'),
+    gender: Yup.string().required('Gender is required')
 });
 function formatDate(date: string) {
     let d = date.split("/");
@@ -93,8 +93,6 @@ export const EditUserComponent = (_props: Props) => {
             document.getElementById(array[0])?.focus();
         }
     }, [isSubmitting])
-
-    console.log(values);
 
     return (
         <>
@@ -182,7 +180,7 @@ export const EditUserComponent = (_props: Props) => {
                             <span className='mx-1' style={{ color: ColorPalette.PRIMARY_COLOR }}>*</span>
                         </Form.Label>
                         <Col sm={9}>
-                            <Form.Select name="prefix" value={values.prefix} onChange={handleChange} >
+                            <Form.Select name="prefix" value={values.prefix} onChange={handleChange} disabled>
                                 <option value="SD">SD</option>
                                 <option value="BPS" >BPS</option>
                             </Form.Select>
@@ -195,7 +193,7 @@ export const EditUserComponent = (_props: Props) => {
                                 <span className='mx-1' style={{ color: ColorPalette.PRIMARY_COLOR }}>*</span>
                             </Form.Label>
                             <Col sm={9}>
-                                <Form.Select name="location" value={values.location} onChange={handleChange} >
+                                <Form.Select name="location" value={values.location} onChange={handleChange} disabled>
                                     <option value="HCM" >HCM: Ho Chi Minh</option>
                                     <option value="HN" >HN: Ha Noi</option>
                                     <option value="DN" >DN: Da Nang</option>
