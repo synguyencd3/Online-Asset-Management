@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import '../../styles/SidebarStyle.css';
+import { logoPNG } from '../../utils/ImageFiles';
 
 interface SidebarProps {
   setHeaderTitle: (title: string) => void,
@@ -18,7 +19,7 @@ export const SidebarComponent: React.FC<SidebarProps> = ({ setHeaderTitle, roleI
   return (
     <>
       <div className="logo" style={{ marginBottom: '100px' }}>
-        <img src="/nashtech_logo.png" alt="Logo" />
+        <img src={logoPNG} alt="Logo" />
         <h2 className='text-left ms-3 fs-5 mb-2'>Online Asset Management</h2>
       </div>
       {roleId === 1 ? (
