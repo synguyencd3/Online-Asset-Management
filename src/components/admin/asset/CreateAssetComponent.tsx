@@ -7,7 +7,20 @@ import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faClose, faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
-import { CategoryModel } from "../../../models/CategoryModel";
+import {
+  CategoryCreateModel,
+  CategoryModel,
+} from "../../../models/CategoryModel";
+import useSWR from "swr";
+import {
+  categoriesEndpoint,
+  createCategories,
+  getCategories,
+} from "../../../services/CategoryService";
+import { message } from "antd";
+import { AssetCreateModel } from "../../../models/AssetModel";
+import { createAsset } from "../../../services/AssetService";
+import { AssetForTableModel } from "../../../models/AssetForTableModel";
 
 const assetValidationSchema = Yup.object({
   assetName: Yup.string()
@@ -24,37 +37,16 @@ const assetValidationSchema = Yup.object({
     .required("Installed date is required"),
 });
 
-const categories: Array<CategoryModel> = [
-  {
-    id: 1,
-    name: "Action",
-    prefix: "Action",
-  },
-  {
-    id: 2,
-    name: "Adventure",
-    prefix: "Adventure",
-  },
-  {
-    id: 3,
-    name: "Horror",
-    prefix: "Horror",
-  },
-  {
-    id: 4,
-    name: "Sci-Fi",
-    prefix: "Sci-Fi",
-  },
-];
-
 export const CreateAssetComponent = () => {
   const [loading, setLoading] = useState(false);
   const [addCategory, setAddCategory] = useState(false);
   const navigate = useNavigate();
-
   const [showDropdown, setShowDropdown] = useState(false);
 
-  
+  const { data: categoriesResponse, mutate: mutateCategories } = useSWR(
+    categoriesEndpoint,
+    getCategories
+  );
 
   const formik = useFormik({
     initialValues: {
@@ -62,22 +54,48 @@ export const CreateAssetComponent = () => {
       categoryName: "",
       specification: "",
       installedDate: "",
-      state: AssetState.AVAILABLE,
+      assetState: AssetState.AVAILABLE,
     },
     validationSchema: assetValidationSchema,
     onSubmit: async (values) => {
-      console.log(values);
       setLoading(false);
+      const data : AssetCreateModel = {
+        assetName: values.assetName,
+        categoryName: values.categoryName,
+        specification: values.specification,
+        installDate: values.installedDate,
+        assetState: values.assetState.toUpperCase(),
+      }
+
+      await createAsset(data)
+        .then((response) => {
+          message.success(response.data.message);
+          const newAsset : AssetForTableModel = response.data.data;
+          navigate('/admin/manage-assets', { replace: true, state: { newAsset: newAsset } });
+          setLoading(false);
+        })
+        .catch((error) => {
+          message.error(error.response.data.message);
+          setLoading(false);
+        });
     },
   });
 
-  const categoryFormik = useFormik({
+  const categoryFormik = useFormik<CategoryCreateModel>({
     initialValues: {
-      categoryName: "",
+      name: "",
       prefix: "",
     },
     onSubmit: async (values) => {
-      console.log(values);
+      await createCategories(values)
+        .then((response) => {
+          message.success(response.data.message);
+          mutateCategories();
+          categoryFormik.resetForm();
+        })
+        .catch((error) => {
+          message.error(error.response.data.message);
+        });
     },
   });
 
@@ -145,16 +163,18 @@ export const CreateAssetComponent = () => {
                   }}
                   className="border-dark"
                 >
-                  {categories.map((category) => (
-                    <Dropdown.Item
-                      key={category.id}
-                      onClick={() => {
-                        handleCategoryChange(category);
-                      }}
-                    >
-                      {category.name}
-                    </Dropdown.Item>
-                  ))}
+                  {categoriesResponse?.data.data.map(
+                    (category: CategoryModel) => (
+                      <Dropdown.Item
+                        key={category.id}
+                        onClick={() => {
+                          handleCategoryChange(category);
+                        }}
+                      >
+                        {category.name}
+                      </Dropdown.Item>
+                    )
+                  )}
                   <Dropdown.Divider className="border-dark" />
                   <Dropdown.Item id="add-category-dropdown-item">
                     {addCategory ? (
@@ -168,7 +188,8 @@ export const CreateAssetComponent = () => {
                             placeholder="New Category Name"
                             className="rounded-0"
                             style={{ height: "30px" }}
-                            {...categoryFormik.getFieldProps("categoryName")}
+                            id="newCategoryName"
+                            {...categoryFormik.getFieldProps("name")}
                           />
                         </Col>
                         <Col sm={3}>
@@ -178,6 +199,7 @@ export const CreateAssetComponent = () => {
                             className="rounded-0"
                             style={{ height: "30px" }}
                             maxLength={2}
+                            id="newCategoryPrefix"
                             {...categoryFormik.getFieldProps("prefix")}
                           />
                         </Col>
@@ -260,14 +282,14 @@ export const CreateAssetComponent = () => {
               ) : null}
             </Col>
           </Form.Group>
-          <Form.Group as={Row} className="mb-3" controlId="state">
+          <Form.Group as={Row} className="mb-3" controlId="assetState">
             <Form.Label column sm={3}>
               State
             </Form.Label>
-            <Col sm={9} id="state" className="red-border-on-focus">
+            <Col sm={9} id="assetState" className="red-border-on-focus">
               <Form.Check
                 label={AssetState.AVAILABLE}
-                name="state"
+                name="assetState"
                 value={AssetState.AVAILABLE}
                 type="radio"
                 id={AssetState.AVAILABLE}
@@ -277,7 +299,7 @@ export const CreateAssetComponent = () => {
               />
               <Form.Check
                 label={AssetState.NOT_AVAILABLE}
-                name="state"
+                name="assetState"
                 value={AssetState.NOT_AVAILABLE}
                 type="radio"
                 id={AssetState.NOT_AVAILABLE}

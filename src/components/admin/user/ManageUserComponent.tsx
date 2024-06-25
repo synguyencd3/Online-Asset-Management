@@ -200,7 +200,7 @@ export const ManageUserComponent = (/*props: Props*/) => {
 						console.log(process.env.REACT_APP_AZURE_BACKEND_DOMAIN);
 						// const errorData = err.response.data.substring(0, err.response.data.indexOf('}') + 1);
 						// const errorResponse: ErrorResponse = JSON.parse(errorData);
-						message.error(`${err.response.message}`);
+						message.error(`${err.response.data.message}`);
 					});
 			});
 	}

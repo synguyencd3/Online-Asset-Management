@@ -1,6 +1,6 @@
 import { message } from 'antd';
 import React, { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { FunctionalIconModel } from '../../../models/FunctionalIconModel';
 import { faPencil } from '@fortawesome/free-solid-svg-icons';
 import { Button, Col, Container, Row } from 'react-bootstrap';
@@ -46,9 +46,9 @@ export const ManageAssetComponent: React.FC = () => {
 
 	const [totalPage, setTotalPage] = useState(0);
 
-	// const location = useLocation();
+	const location = useLocation();
 
-	// const [newAsset] = useState<AssetModel>(location.state?.newAsset);
+	const [newAsset] = useState<AssetForTableModel>(location.state?.newAsset);
 
 	const [modalShow, setModalShow] = useState(false);
 	const [modalData, setModalData] = useState<Object>({});
@@ -89,6 +89,7 @@ export const ManageAssetComponent: React.FC = () => {
 			+ "size=" + "20" + "&"
 			+ "sort=" + param.sort;
 
+    console.log(params)
 		setLoading(true)
 
 		await getAsset(params).then((response) => {
@@ -96,13 +97,27 @@ export const ManageAssetComponent: React.FC = () => {
 			setParam((p: any) => ({ ...p, page: data.currentPage }));
 			let assets: AssetForTableModel[] = data.content;
 			assets.forEach(e => { e.state = e.state.charAt(0) + e.state.replace(/_/g, " ").slice(1).toLowerCase() })
-			setTableAsset(data.content)
+      let assetTable : AssetForTableModel[] = [];
+      if (newAsset) {
+        assetTable.push(newAsset);
+        newAsset.state = newAsset.state.charAt(0) + newAsset.state.replace(/_/g, " ").slice(1).toLowerCase()
+        assets.forEach(e => {
+          if (e.assetCode !== newAsset.assetCode) {
+            assetTable.push(e);
+          }
+        });
+        setTableAsset(assetTable);
+      }
+      else {
+        setTableAsset(data.content)
+      }
+
 			setTotalPage(data.totalPage);
 		}).catch(e => {
 			message.error(e.message);
 		});
 		setLoading(false);
-		window.history.replaceState({}, '')
+		// window.history.replaceState({}, '')
 	}
 
 	// button
