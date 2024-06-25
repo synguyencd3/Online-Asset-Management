@@ -98,7 +98,6 @@ export const CreateUserComponent = (_props: Props) => {
     const { handleSubmit, handleChange, values, getFieldProps } = formik;
 
     return (
-        <>
             <Container>
                 <Form className="p-5" style={{ maxWidth: "60%", minWidth: "300px", textAlign: "left" }} onSubmit={handleSubmit}>
                     <h4 style={{ color: ColorPalette.PRIMARY_COLOR }} className="mb-4">
@@ -215,6 +214,5 @@ export const CreateUserComponent = (_props: Props) => {
                     </Row>
                 </Form>
             </Container >
-        </>
     );
 }
