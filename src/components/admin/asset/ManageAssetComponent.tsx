@@ -12,7 +12,8 @@ import { PaginationComponent } from '../../commons/PaginationComponent';
 import { AssetForTableModel } from '../../../models/AssetForTableModel';
 import { faCircleXmark } from '@fortawesome/free-regular-svg-icons';
 import { CategoryModel } from '../../../models/CategoryModel';
-import { getAsset, getCategories } from '../../../services/AssetService';
+import { deleteAsset, getAsset, getCategories } from '../../../services/AssetService';
+import { ConfirmModalComponent } from '../../commons/ConfirmModalComponent';
 
 
 
@@ -31,6 +32,10 @@ export const ManageAssetComponent: React.FC = () => {
 	const [category, setCategory] = useState<CategoryModel[]>([]);
 
 	const [loading, setLoading] = useState(true);
+
+  const [showDisableModal, setShowDisableModal] = useState(false); 
+
+  const [deleteAssetCode, setDeleteAssetCode] = useState('');
 
 	const [param, setParam] = useState({
 		search: "",
@@ -127,9 +132,51 @@ export const ManageAssetComponent: React.FC = () => {
 		navigate('/admin/manage-users/edit', { state: { user: data[1] } })
 	}
 
-	function deleteAsset(...data: any[]) {
-		data ? "" : '';
+  const handleDelete = async (assetCode: string) => {
+    message.open({
+			type: 'loading',
+			content: 'Deleting asset...',
+		})
+			.then(async () => {
+				console.log(import.meta.env.VITE_AZURE_BACKEND_DOMAIN);
+				await deleteAsset(assetCode)
+					.then((res) => {
+						console.log(res);
+						if (res.status == 200) {
+							console.log(res.data);
+							message.success(res.data.message);
+							setDummy(Math.random());
+						}
+					})
+					.catch((err) => {
+						console.log(err.response);
+						console.log(process.env.REACT_APP_AZURE_BACKEND_DOMAIN);
+						// const errorData = err.response.data.substring(0, err.response.data.indexOf('}') + 1);
+						// const errorResponse: ErrorResponse = JSON.parse(errorData);
+						message.error(`${err.response.message}`);
+					});
+			});
+  }
+
+  const handleDeleteConfirm = () => {
+		setShowDisableModal(false);
+		handleDelete(deleteAssetCode); // Call the Disable function
 	}
+
+  const handleDeleteCancel = () => {
+		setShowDisableModal(false);
+		setDeleteAssetCode('') // Hide the Disable Modal
+	}
+
+  const handleDeleteClick = (staffCode: string) => {
+		setShowDisableModal(true)
+		setDeleteAssetCode(staffCode); // Show the Disable Modal
+	}
+
+  function openModal(...data: any[]) {
+    console.log(data[1]);
+		handleDeleteClick(data[1].assetCode);
+  }
 
 	const editIcon: FunctionalIconModel = {
 		icon: faPencil,
@@ -139,7 +186,7 @@ export const ManageAssetComponent: React.FC = () => {
 	const deleteIcon: FunctionalIconModel = {
 		icon: faCircleXmark,
 		style: { color: 'red' },
-		onClickfunction: deleteAsset
+		onClickfunction: openModal
 	};
 
 	buttons.push(editIcon, deleteIcon);
@@ -204,7 +251,7 @@ export const ManageAssetComponent: React.FC = () => {
         label={modalHeader}
         data={modalData}
       /> */}
-			{/* <ConfirmModalComponent show={showDisableModal} onConfirm={handleDisableConfirm} onCancel={handleDisableCancel} confirmTitle={'Are you sure?'} confirmQuestion={'Do you want to disable this user?'} confirmBtnLabel={'Disable'} cancelBtnLabel={'Cancel'} modalSize={"md"} /> */}
+			<ConfirmModalComponent show={showDisableModal} onConfirm={handleDeleteConfirm} onCancel={handleDeleteCancel} confirmTitle={'Are you sure?'} confirmQuestion={'Do you want to delete this asset?'} confirmBtnLabel={'Delete'} cancelBtnLabel={'Cancel'} modalSize={"md"} /> 
 		</Container>
 	);
 }
