@@ -4,7 +4,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useState } from 'react'
 import { Col, Container, Row, Table } from "react-bootstrap";
 import { TableHeaderModel } from '../../models/TableHeaderModel'
-import { InfoModalComponent } from './InfoModalComponent'
 import { FunctionalIconModel } from '../../models/FunctionalIconModel'
 
 type Props = {
@@ -18,16 +17,17 @@ type Props = {
 	buttons: FunctionalIconModel[];
 	showModalCell: string[];
 
-	setDummy:any
+	setDummy: any;
+	setModalData: any
+	setModalShow: any
+	pre_button: any
 }
 
-export const TableComponent = ({ headers, datas, auxData, auxHeader, buttons, setSortString, showModalCell, setDummy }: Props) => {
+export const TableComponent = ({ headers, datas, auxData, buttons, setSortString, showModalCell, setDummy, setModalData, setModalShow, pre_button }: Props) => {
 
 	const [header, setHeader] = useState(headers);
 
-	const [modalShow, setModalShow] = useState(false);
 
-	const [modalData, setModalData] = useState<Object>({});
 
 
 	const handleClick = (e: React.MouseEvent<any>, key: object) => {
@@ -49,27 +49,22 @@ export const TableComponent = ({ headers, datas, auxData, auxHeader, buttons, se
 	}
 	return (
 		<>
-			<InfoModalComponent
-				title={"Detailed User Infomation"}
-				show={modalShow}
-				onHide={() => setModalShow(false)}
-				label={auxHeader}
-				data={modalData}
-			/>
-
 			<Container style={{ maxWidth: "100%", width: "100%" }}>
 
-				<Table hover responsive className='table'>
-					<thead>
+				<Table hover responsive className='table' id='table'>
+					<thead id='table-header'>
 						<tr>
 							{headers?.map((h, index) => (
 								<th key={h.name}>
-									<div className='table-header header-border'>
-										{h.name}
-										{h.sort ?
-											<FontAwesomeIcon values={h.name} icon={h.direction ? faSortDown : faSortUp} onClick={() => { onClickSort(h, index); }} style={{marginLeft:"10px"}}/>
-											: ""}
-									</div>
+									{h.name.length > 0 ?
+										<div className='table-header header-border'>
+											{h.name}
+											{h.sort ?
+												<FontAwesomeIcon values={h.name} icon={h.direction ? faSortDown : faSortUp} onClick={() => { onClickSort(h, index); }} style={{ marginLeft: "10px" }} />
+												: ""}
+										</div>
+										: ""
+									}
 								</th>
 							))}
 						</tr>
@@ -77,11 +72,12 @@ export const TableComponent = ({ headers, datas, auxData, auxHeader, buttons, se
 					<tbody>
 						{datas?.map((data: Object, index) => (
 							<tr key={index} onClick={(e) => { handleClick(e, auxData[index]) }}>
+								{pre_button ? <td>{pre_button}</td>:""}
 								{
 									Object.entries(data).map(([key, value], idx) => {
 										if (showModalCell.includes(key)) {
 											return (
-												<td key={idx} className='modalClick'>
+												<td key={idx} className='modalClick' style={headers[idx].colStyle}>
 													<div className='cell'>
 														{value?.toString()}
 													</div>
@@ -89,7 +85,7 @@ export const TableComponent = ({ headers, datas, auxData, auxHeader, buttons, se
 											)
 										} else {
 											return (
-												<td key={idx}>
+												<td key={idx} style={headers[idx].colStyle}>
 													<div className='cellnoClick'>
 														{value?.toString()}
 													</div>
@@ -100,13 +96,13 @@ export const TableComponent = ({ headers, datas, auxData, auxHeader, buttons, se
 									)
 								}
 								<td className='last-cell'>
-										<Row className='g-3 justify-content-around'>
-											{buttons?.map((button: FunctionalIconModel, bIndex) => (
-												<Col key={bIndex} lg={3}>
-													<FontAwesomeIcon size='lg' icon={button.icon} onClick={(e) => { button.onClickfunction(e, auxData[index], data) }} style={button.style} />
-												</Col>
-											))}
-										</Row>
+									<Row className='g-3 justify-content-center'>
+										{buttons?.map((button: FunctionalIconModel, bIndex) => (
+											<Col key={bIndex} className='d-flex justify-content-end'>
+												<FontAwesomeIcon size='lg' icon={button.icon} onClick={(e) => { button.onClickfunction(e, auxData[index], data) }} style={button.style} />
+											</Col>
+										))}
+									</Row>
 								</td>
 							</tr>
 						))}

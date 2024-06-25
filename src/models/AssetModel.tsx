@@ -1,4 +1,4 @@
-import { Location } from "../utils/Enum";
+import { AssetState, Location } from "../utils/Enum";
 import { CategoryModel } from "./CategoryModel";
 
 export type AssetModel = {
@@ -9,4 +9,5 @@ export type AssetModel = {
     specification: string;
     installedDate: Date;
     location: Location;
+    state: AssetState;
 }

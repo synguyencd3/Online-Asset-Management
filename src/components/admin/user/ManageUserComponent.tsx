@@ -16,8 +16,9 @@ import { LoaderComponent } from "../../commons/LoaderComponent";
 import { ConfirmModalComponent } from "../../commons/ConfirmModalComponent";
 import { message } from "antd";
 import { disableUser, getUser } from "../../../services/UserService";
+import { UserInfoModalComponent } from "../../commons/UserInfoModalComponent";
 
-const header = [{ name: 'Staff Code', value: "staffCode", sort: true, direction: true }, { name: 'Full Name', value: "firstName", sort: true, direction: true }, { name: 'Username', value: "username", sort: false, direction: true }, { name: 'Joined Date', value: "joinedDate", sort: true, direction: true }, { name: 'Type', value: "roleId", sort: true, direction: true },]
+const header = [{ name: 'Staff Code', value: "staffCode", sort: true, direction: true, colStyle:{} }, { name: 'Full Name', value: "firstName", sort: true, direction: true, colStyle:{} }, { name: 'Username', value: "username", sort: false, direction: true, colStyle:{} }, { name: 'Joined Date', value: "joinedDate", sort: true, direction: true, colStyle:{} }, { name: 'Type', value: "roleId", sort: true, direction: true, colStyle:{} },]
 const showModalCell = ["staffCode", "username", "fullName"]
 const modalHeader = ["Staff Code", "Full Name", "Username", "Date of Birth", "Gender", "Joined Date", "Type", "Location"]
 
@@ -48,6 +49,8 @@ export const ManageUserComponent = (/*props: Props*/) => {
 
 	const [newUser] = useState<UserModel>(location.state?.newUser);
 
+	const [modalShow, setModalShow] = useState(false);
+	const [modalData, setModalData] = useState<Object>({});
 	const [showDisableModal, setShowDisableModal] = useState(false); // State for the Logout Modal
 	const [disableStaffCode, setDisableStaffCode] = useState(''); // State for the Logout Modal
 
@@ -105,7 +108,7 @@ export const ManageUserComponent = (/*props: Props*/) => {
 
 			users.map(user => {
 				if (newUser && newUser.staffCode === user.staffCode) {
-      				// TODO document why this block is empty
+					// TODO document why this block is empty
 				}
 				else {
 					let data: UserForTableModel = {
@@ -214,20 +217,23 @@ export const ManageUserComponent = (/*props: Props*/) => {
 
 	// Dropdown Filter
 	let filterdata = [];
-	let data1 = { label: "Admin", value: Roles.ADMIN.toString() }
-	let data2 = { label: "Staff", value: Roles.STAFF.toString() }
+	let data1 = { label: "Admin", value: Roles.ADMIN.toString(),  defaultChecked:true}
+	let data2 = { label: "Staff", value: Roles.STAFF.toString(), defaultChecked:true }
 	filterdata.push(data1, data2);
 	//----------------------------
 
 	return (
 		<Container style={{ maxWidth: "100%" }} className="p-4">
 			{contextHolder}
-			<Row className="py-4 ms-0 me-3">
+			<h4 className="ms-1" style={{ color: "red", fontWeight: "bold" }}>
+				User List
+			</h4>
+			<Row className="py-4 ms-0 me-3 user-param-row">
 				<Col sm={3} className="d-flex justify-content-start align-items-center px-2">
-					<DropdownFilterComponent title={"Type"} data={filterdata} params={param.types} setParamsFunction={setParam} setDummy={setDummy}></DropdownFilterComponent>
+					<DropdownFilterComponent title={"Type"} data={filterdata} params={param.types} setParamsFunction={setParam} setDummy={setDummy} style={{}} defaultAll={true} paramName={"types"}></DropdownFilterComponent>
 				</Col>
-				<Col className="d-flex justify-content-end align-items-center">
-					<SearchComponent placeholder={""} params={param.search} setParamsFunction={setParam} setDummy={setDummy}></SearchComponent>
+				<Col className="d-flex justify-content-end align-items-center" style={{ minWidth: "200px" }}>
+					<SearchComponent placeholder={""} params={param.search} setParamsFunction={setParam} setDummy={setDummy} style={{}}></SearchComponent>
 				</Col>
 				<Col sm={3} className="d-flex justify-content-end align-items-center" style={{ maxWidth: "230px" }}>
 					<Button variant="danger" onClick={() => { return navigate('./new') }} style={{ width: "230px" }}>Create New User</Button>
@@ -244,13 +250,20 @@ export const ManageUserComponent = (/*props: Props*/) => {
 						<>
 							<Row>
 								{/* this initfucntion */}
-								<TableComponent headers={header} datas={tableUser} auxData={modalUsers} auxHeader={modalHeader} buttons={buttons} setSortString={setParam} showModalCell={showModalCell} setDummy={setDummy}  ></TableComponent>
+								<TableComponent headers={header} datas={tableUser} auxData={modalUsers} auxHeader={modalHeader} buttons={buttons} setSortString={setParam} showModalCell={showModalCell} setDummy={setDummy} setModalData={setModalData} setModalShow={setModalShow} pre_button={undefined}  ></TableComponent>
 							</Row>
 							<PaginationComponent currentPage={param.page} setCurrentPage={setParam} totalPage={totalPage} setDummy={setDummy} ></PaginationComponent>
 						</>
 					}
 				</>
 			}
+			<UserInfoModalComponent
+				title={"Detailed User Infomation"}
+				show={modalShow}
+				onHide={() => setModalShow(false)}
+				label={modalHeader}
+				data={modalData}
+			/>
 			<ConfirmModalComponent show={showDisableModal} onConfirm={handleDisableConfirm} onCancel={handleDisableCancel} confirmTitle={'Are you sure?'} confirmQuestion={'Do you want to disable this user?'} confirmBtnLabel={'Disable'} cancelBtnLabel={'Cancel'} modalSize={"md"} />
 		</Container>
 	);

@@ -1,15 +1,18 @@
 import { faFilter } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { ChangeEvent, RefAttributes, useRef } from 'react';
+import { ChangeEvent, RefAttributes } from 'react';
 import { ButtonGroup, Dropdown, Form, OverlayTrigger, Tooltip, TooltipProps } from 'react-bootstrap'
 import { JSX } from 'react/jsx-runtime';
 
 type Props = {
 	title: string | null
-	data: { label: string, value: string }[]
+	data: { label: string, value: string, defaultChecked: boolean }[]
 	params: string[]
 	setParamsFunction: any;
+	paramName: string
 	setDummy: any
+	style: Object
+	defaultAll: boolean
 }
 
 
@@ -17,23 +20,22 @@ type Props = {
 export const DropdownFilterComponent = (props: Props) => {
 
 	const allValues: string[] = props.data.map(filter => { return filter.value });
-	const defaultLength = useRef(props.params.length).current;
+const defaultLength = props.data.length
 	const handleCheckboxChange = (event: ChangeEvent<HTMLInputElement>) => {
-
 		const { value, checked } = event.target;
 		let updatedOptions: string[] = [...props.params];
 		if (value === "All") {
 			if (checked) {
 				updatedOptions = allValues;
 				props.data.forEach((_c, index) => {
-					let box: HTMLInputElement = document.getElementById("filter_" + index) as HTMLInputElement;
+					let box: HTMLInputElement = document.getElementById("filter_" + props.title + "_" + index) as HTMLInputElement;
 					box.checked = true;
 				})
 			}
 			else {
 				updatedOptions = [];
 				props.data.forEach((_, index) => {
-					let box: HTMLInputElement = document.getElementById("filter_" + index) as HTMLInputElement;
+					let box: HTMLInputElement = document.getElementById("filter_" + props.title + "_" + index) as HTMLInputElement;
 					box.checked = false;
 				})
 			}
@@ -41,16 +43,16 @@ export const DropdownFilterComponent = (props: Props) => {
 			if (checked) {
 				updatedOptions.push(value);
 				if (updatedOptions.length >= defaultLength) {
-					let box: HTMLInputElement = document.getElementById("filter_All") as HTMLInputElement;
+					let box: HTMLInputElement = document.getElementById("filter_" + props.title + "_" + "All") as HTMLInputElement;
 					box.checked = true;
 				}
 			} else {
 				updatedOptions = updatedOptions.filter((option) => option !== value);
-				let box: HTMLInputElement = document.getElementById("filter_All") as HTMLInputElement;
+				let box: HTMLInputElement = document.getElementById("filter_" + props.title + "_" + "All") as HTMLInputElement;
 				box.checked = false;
 			}
 		}
-		props.setParamsFunction((p: any) => ({ ...p, types: updatedOptions }));
+		props.setParamsFunction((p: any) => ({ ...p, [props.paramName]: updatedOptions }));
 		props.setDummy(Math.random())
 	};
 
@@ -61,37 +63,37 @@ export const DropdownFilterComponent = (props: Props) => {
 	);
 
 	return (
-		<Dropdown as={ButtonGroup}>
+		<Dropdown as={ButtonGroup} style={props.style}>
 			{/* do NOT remove Overlay Trigger */}
-			<OverlayTrigger placement="right" delay={{ show: 150, hide: 150 }} overlay={renderTooltip}>
+			<OverlayTrigger placement="top" delay={{ show: 150, hide: 150 }} overlay={renderTooltip}>
 				<Dropdown.Toggle split variant="outline-dark" style={{ minWidth: "150px", textAlign: "left", width: "100%" }}>
 					{props.title ?? "Option"}
 				</Dropdown.Toggle>
 			</OverlayTrigger>
-			<Dropdown.Toggle split variant="outline-dark" id="dropdown-checkboxes" style={{ width: "100%" }}>
+			<Dropdown.Toggle split variant="outline-dark" id="dropdown-checkboxes" style={{ width: "100%", maxWidth: "50px" }}>
 				<FontAwesomeIcon icon={faFilter} className="custom-icon" />
 			</Dropdown.Toggle>
 
-			<Dropdown.Menu>
+			<Dropdown.Menu style={{ width: "100%" }}>
 				<Form className='px-3'>
 					<Form.Check
 						type="checkbox"
-						id='filter_All'
+						id={'filter_' + props.title + '_' + 'All'}
 						label="All"
 						value="All"
 						onChange={handleCheckboxChange}
-						defaultChecked={true}
+						defaultChecked={props.defaultAll}
 					/>
 					{/* Select Datas here */}
 					{props.data.map((filter, index) => (
 						<Form.Check
 							key={index}
-							id={"filter_" + index}
+							id={"filter_" + props.title + "_" + index}
 							type="checkbox"
 							label={filter.label}
 							value={filter.value}
 							onChange={handleCheckboxChange}
-							defaultChecked={true}
+							defaultChecked={filter.defaultChecked}
 						/>
 					))}
 				</Form>

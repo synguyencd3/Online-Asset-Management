@@ -65,3 +65,8 @@
 .read-the-docs {
   color: #888;
 }
+
+.dropdown-menu{
+  max-height: 270px;
+  overflow-y: auto;
+}

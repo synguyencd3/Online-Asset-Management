@@ -9,6 +9,7 @@ type Props = {
     params: string
     setParamsFunction: any;
     setDummy: any;
+    style: Object
 }
 
 
@@ -27,10 +28,9 @@ export const SearchComponent = (props: Props) => {
     };
 
     return (
-        <Form onSubmit={(e) => { SubmitSearch(e) }} style={{ width: "60%" }}>
+        <Form onSubmit={(e) => { SubmitSearch(e) }} style={{  width: "60%", ...props.style, }}>
             <InputGroup id="search-group" className="" style={{ maxWidth: "" }}>
-                {/* <Form.Control placeholder={props.placeholder ?? "Search"} id="search-input" name="search"  onChange={(e) => { props.setParamsFunction((p: any)=>({...p,search:e.target.value})) }} /> */}
-                <Form.Control placeholder={props.placeholder ?? "Search"} id="search-input" name="search" onChange={(e) => { props.setParamsFunction((p: any) => ({ ...p, search: e.target.value })) }} />
+                <Form.Control placeholder={props.placeholder ?? ""} id="search-input" name="search" onChange={(e) => { props.setParamsFunction((p: any) => ({ ...p, search: e.target.value })) }} />
                 <OverlayTrigger placement="right" delay={{ show: 150, hide: 150 }} overlay={renderTooltip}>
                     <Button type="submit" variant="outline-dark" id="search-button" onClick={() => { props.setDummy(Math.random()); }}>
                         <FontAwesomeIcon size='lg' icon={faMagnifyingGlass} />

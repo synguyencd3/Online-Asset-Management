@@ -30,7 +30,7 @@ export const PaginationComponent = ({ currentPage, totalPage, setCurrentPage, se
     };
 
     return (
-        <Pagination className="justify-content-end me-3">
+        <Pagination className="justify-content-end pe-2">
             <Pagination.Prev disabled={isFirstPage || totalPage === 0} onClick={() => handlePageChange(currentPage - 1)}> Previous</Pagination.Prev>
 
             {renderPageItems()}

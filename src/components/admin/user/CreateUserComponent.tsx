@@ -56,7 +56,7 @@ export const CreateUserComponent = (_props: Props) => {
             gender: "",
             joinedDate: "",
             dateOfBirth: "",
-            location: localStorage.getItem("location") ?? "HCM",
+            location: sessionStorage.getItem("location") ?? "HCM",
             prefix: "SD",
         },
         validationSchema: createUserValidationSchema,
@@ -205,7 +205,7 @@ export const CreateUserComponent = (_props: Props) => {
                         </Form.Group>
                         : ""
                     }
-
+                    
                     <Row>
                         <Col className="d-flex justify-content-end my-4">
                             <Button variant="danger" className="mx-4" style={{ minWidth: "100px" }} type="submit" disabled={!formik.dirty || !formik.isValid || loading}> {loading ? <FontAwesomeIcon icon={faSpinner} spin /> : "Save"}</Button>

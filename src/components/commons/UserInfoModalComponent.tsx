@@ -10,7 +10,7 @@ type Props = {
     data: Object
     label: Object[];
 }
-export const InfoModalComponent = (props: Props) => {
+export const UserInfoModalComponent = (props: Props) => {
     return (
         <Modal
             {...props}
@@ -23,7 +23,7 @@ export const InfoModalComponent = (props: Props) => {
                 <Container>
                     <Modal.Title id="contained-modal-title-vcenter" className="d-flex justify-content-around align-items-center" style={{ color: "red", fontWeight: "bold" }}>
                             {props.title ?? "Title"}
-                        <FontAwesomeIcon icon={faXmark} className="px-1" onClick={props.onHide} style={{ border: "3px red solid", borderRadius: "5px" }}></FontAwesomeIcon>
+                        <FontAwesomeIcon icon={faXmark} id="close-modal-button" className="px-1" onClick={props.onHide} style={{ border: "3px red solid", borderRadius: "5px" }}></FontAwesomeIcon>
                     </Modal.Title>
                 </Container>
             </Modal.Header>
@@ -31,15 +31,15 @@ export const InfoModalComponent = (props: Props) => {
                 <Container style={{ maxWidth: "80%" }}>
                     <Row>
                         <Col sm={4}>
-                            {props.label ? Object.values(props.label).map((value: any) => (
-                                <Row className="my-3" key={value}>
+                            {props.label ? Object.values(props.label).map((value: any, index:number) => (
+                                <Row className="my-3 modal-field" key={value} id={"modal-label" + index}>
                                     {value.toString() ?? ""}
                                 </Row>
                             )) : ""}
                         </Col>
                         <Col >
                             {props.data ? Object.values(props.data).map((value: any) => (
-                                <Row className="my-3" key={value}>
+                                <Row className="my-3 modal-value" key={value}>
                                     {value.toString() ?? ""}
                                 </Row>
                             )) : ""}

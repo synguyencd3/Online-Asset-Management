@@ -40,8 +40,10 @@ export enum ReturningState {
 
 export enum AssetState {
     AVAILABLE = "Available",
-    NOT_AVAILABLE = "Not Available",
+    NOT_AVAILABLE = "Not available",
     ASSIGNED = "Assigned",
+    WATING_FOR_RECYCLING = "Waiting for recycling",
+    RECYCLED = "Recycled"
 }
 
 export enum Roles {
