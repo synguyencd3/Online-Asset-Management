@@ -1,0 +1,61 @@
+{
+    "routes": [
+        {
+            "route": "/",
+            "rewrite": "/index.html"
+        },
+        {
+            "route": "*.css",
+            "statusCode": 200
+        },
+        {
+            "route": "*.js",
+            "statusCode": 200
+        },
+        {
+            "route": "*.wasm",
+            "statusCode": 200
+        },
+        {
+            "route": "*.json",
+            "statusCode": 200
+        },
+        {
+            "route": "*.map",
+            "statusCode": 200
+        },
+        {
+            "route": "*.ts",
+            "statusCode": 200
+        },
+        {
+            "route": "*.tsx",
+            "statusCode": 200
+        },
+        {
+            "route": "/*",
+            "rewrite": "/index.html"
+        }
+    ],
+    "mimeTypes": {
+        ".js": "application/javascript",
+        ".css": "text/css",
+        ".json": "application/json",
+        ".wasm": "application/wasm",
+        ".ts": "application/typescript",
+        ".tsx": "application/typescript",
+        ".map": "application/json"
+    },
+    "navigationFallback": {
+        "rewrite": "/index.html",
+        "exclude": [
+            "/public/*.{png,jpg,gif,svg}",
+            "/css/*"
+        ]
+    },
+    "responseOverrides": {
+        "404": {
+            "rewrite": "/index.html"
+        }
+    }
+}
