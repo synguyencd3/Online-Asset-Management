@@ -151,7 +151,7 @@ tr:hover {
 }
 
 .form-check-input:focus,
-.form-control:focus {
+.form-control:focus, #dropdown-custom-2:focus {
   border-color: red;
   outline: 0;
   box-shadow: 0 0 0 .25rem transparent;
@@ -227,4 +227,24 @@ tr:hover {
 .pagination {
   --bs-pagination-disabled-bg: white
 }
+
+#dropdown-custom-2:hover{
+  background-color: transparent;
+  text-align: left;
+  color: black;
+}
+
+#dropdown-custom-2{
+  background-color: transparent;
+  text-align: left;
+  color: black;
+}
+.dropdown-item.active, .dropdown-item:active {
+  color: var(--DARK-400-COLOR);
+  text-decoration: none;
+  background-color: var(--SLIVER-200-COLOR);
+}
+
+#add-category-dropdown-item:active, #add-category-dropdown-item:hover{
+  background-color: transparent;
 }

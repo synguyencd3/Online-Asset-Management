@@ -1,17 +1,17 @@
-import { Button, Col, Container, Form, Row } from "react-bootstrap";
+import { Button, Col, Container, Dropdown, Form, Row } from "react-bootstrap";
 import { ColorPalette } from "../../../utils/ColorPalette";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { AssetState } from "../../../utils/Enum";
 import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSpinner } from "@fortawesome/free-solid-svg-icons";
+import { faCheck, faClose, faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
+import { CategoryModel } from "../../../models/CategoryModel";
 
 const assetValidationSchema = Yup.object({
   assetName: Yup.string()
     .max(100, "Asset name must be at most 100 characters")
-    .matches(/^[a-zA-Z]+$/, "Asset name cannot contain special characters")
     .required("Asset name is required"),
   categoryName: Yup.string()
     // .max(100, 'Last name must be at most 128 characters')
@@ -24,9 +24,37 @@ const assetValidationSchema = Yup.object({
     .required("Installed date is required"),
 });
 
+const categories: Array<CategoryModel> = [
+  {
+    id: 1,
+    name: "Action",
+    prefix: "Action",
+  },
+  {
+    id: 2,
+    name: "Adventure",
+    prefix: "Adventure",
+  },
+  {
+    id: 3,
+    name: "Horror",
+    prefix: "Horror",
+  },
+  {
+    id: 4,
+    name: "Sci-Fi",
+    prefix: "Sci-Fi",
+  },
+];
+
 export const CreateAssetComponent = () => {
   const [loading, setLoading] = useState(false);
+  const [addCategory, setAddCategory] = useState(false);
   const navigate = useNavigate();
+
+  const [showDropdown, setShowDropdown] = useState(false);
+
+  
 
   const formik = useFormik({
     initialValues: {
@@ -40,11 +68,32 @@ export const CreateAssetComponent = () => {
     onSubmit: async (values) => {
       console.log(values);
       setLoading(false);
-    }
-    // onChange: (event: any) => {
-    //   console.log(event);
-    // },
+    },
   });
+
+  const categoryFormik = useFormik({
+    initialValues: {
+      categoryName: "",
+      prefix: "",
+    },
+    onSubmit: async (values) => {
+      console.log(values);
+    },
+  });
+
+  const toggleDropdown = (isShow: boolean) => {
+    setShowDropdown(isShow);
+    if (!isShow) {
+      setAddCategory(false);
+      categoryFormik.resetForm();
+    }
+  };
+
+  const handleCategoryChange = (category: CategoryModel) => {
+    formik.setFieldValue("categoryName", category.name);
+    toggleDropdown(false);
+  };
+
   return (
     <div>
       <Container>
@@ -75,13 +124,107 @@ export const CreateAssetComponent = () => {
               Category
             </Form.Label>
             <Col sm={9}>
-              <Form.Control
-                type="text"
-                {...formik.getFieldProps("categoryName")}
-              />
-              {/* {formik.touched.lastName && formik.errors.lastName ? (
-            <div className="error-message">{formik.errors.lastName}</div>
-          ) : null} */}
+              <Dropdown
+                show={showDropdown}
+                onToggle={toggleDropdown}
+                autoClose="outside"
+              >
+                <Dropdown.Toggle
+                  variant="outline-dark"
+                  id="dropdown-custom-2"
+                  className="form-select"
+                  style={{ height: "39px" }}
+                >
+                  {formik.values.categoryName}
+                </Dropdown.Toggle>
+
+                <Dropdown.Menu
+                  style={{
+                    width: "100%",
+                    background: ColorPalette.SLIVER_100_COLOR,
+                  }}
+                  className="border-dark"
+                >
+                  {categories.map((category) => (
+                    <Dropdown.Item
+                      key={category.id}
+                      onClick={() => {
+                        handleCategoryChange(category);
+                      }}
+                    >
+                      {category.name}
+                    </Dropdown.Item>
+                  ))}
+                  <Dropdown.Divider className="border-dark" />
+                  <Dropdown.Item id="add-category-dropdown-item">
+                    {addCategory ? (
+                      <Form.Group
+                        className="d-flex"
+                        controlId="newCategoryName"
+                      >
+                        <Col sm={7}>
+                          <Form.Control
+                            type="text"
+                            placeholder="New Category Name"
+                            className="rounded-0"
+                            style={{ height: "30px" }}
+                            {...categoryFormik.getFieldProps("categoryName")}
+                          />
+                        </Col>
+                        <Col sm={3}>
+                          <Form.Control
+                            type="text"
+                            placeholder="PF"
+                            className="rounded-0"
+                            style={{ height: "30px" }}
+                            maxLength={2}
+                            {...categoryFormik.getFieldProps("prefix")}
+                          />
+                        </Col>
+                        <Col className="d-flex ps-2">
+                          <Col className="d-flex align-items-center justify-content-center">
+                            <FontAwesomeIcon
+                              size="lg"
+                              icon={faCheck}
+                              onClick={() =>
+                                categoryFormik.dirty
+                                  ? categoryFormik.handleSubmit()
+                                  : null
+                              }
+                              color={
+                                categoryFormik.dirty
+                                  ? ColorPalette.PRIMARY_COLOR
+                                  : ColorPalette.SLIVER_400_COLOR
+                              }
+                            />
+                          </Col>
+                          <Col className="d-flex align-items-center justify-content-center">
+                            <FontAwesomeIcon
+                              size="lg"
+                              icon={faClose}
+                              onClick={() => {
+                                toggleDropdown(false);
+                              }}
+                            />
+                          </Col>
+                        </Col>
+                      </Form.Group>
+                    ) : (
+                      <div
+                        className="btn-link text-danger"
+                        onClick={() => setAddCategory(true)}
+                      >
+                        <i>Add New Category</i>
+                      </div>
+                    )}
+                  </Dropdown.Item>
+                </Dropdown.Menu>
+              </Dropdown>
+              {formik.touched.categoryName && formik.errors.categoryName ? (
+                <div className="error-message">
+                  {formik.errors.categoryName}
+                </div>
+              ) : null}
             </Col>
           </Form.Group>
           <Form.Group as={Row} className="mb-3" controlId="specification">
