@@ -18,7 +18,7 @@ import { message } from "antd";
 import { disableUser, getUser } from "../../../services/UserService";
 import { UserInfoModalComponent } from "../../commons/UserInfoModalComponent";
 
-const header = [{ name: 'Staff Code', value: "staffCode", sort: true, direction: true, colStyle:{} }, { name: 'Full Name', value: "firstName", sort: true, direction: true, colStyle:{} }, { name: 'Username', value: "username", sort: false, direction: true, colStyle:{} }, { name: 'Joined Date', value: "joinedDate", sort: true, direction: true, colStyle:{} }, { name: 'Type', value: "roleId", sort: true, direction: true, colStyle:{} },]
+const header = [{ name: 'Staff Code', value: "staffCode", sort: true, direction: true, colStyle: {} }, { name: 'Full Name', value: "firstName", sort: true, direction: true, colStyle: {} }, { name: 'Username', value: "username", sort: false, direction: true, colStyle: {} }, { name: 'Joined Date', value: "joinedDate", sort: true, direction: true, colStyle: {} }, { name: 'Type', value: "roleId", sort: true, direction: true, colStyle: {} },]
 const showModalCell = ["staffCode", "username", "fullName"]
 const modalHeader = ["Staff Code", "Full Name", "Username", "Date of Birth", "Gender", "Joined Date", "Type", "Location"]
 
@@ -95,6 +95,7 @@ export const ManageUserComponent = (/*props: Props*/) => {
 			+ "page=" + param.page + "&"
 			+ "size=" + "20" + "&"
 			+ "sort=" + param.sort;
+		console.log(params);
 
 		setLoading(true)
 
@@ -241,8 +242,8 @@ export const ManageUserComponent = (/*props: Props*/) => {
 
 	// Dropdown Filter
 	let filterdata = [];
-	let data1 = { label: "Admin", value: Roles.ADMIN.toString(),  defaultChecked:true}
-	let data2 = { label: "Staff", value: Roles.STAFF.toString(), defaultChecked:true }
+	let data1 = { label: "Admin", value: Roles.ADMIN.toString(), defaultChecked: true }
+	let data2 = { label: "Staff", value: Roles.STAFF.toString(), defaultChecked: true }
 	filterdata.push(data1, data2);
 	//----------------------------
 
@@ -274,7 +275,7 @@ export const ManageUserComponent = (/*props: Props*/) => {
 						<>
 							<Row>
 								{/* this initfucntion */}
-								<TableComponent headers={header} datas={tableUser} auxData={modalUsers} auxHeader={modalHeader} buttons={buttons} setSortString={setParam} showModalCell={showModalCell} setDummy={setDummy} setModalData={setModalData} setModalShow={setModalShow} pre_button={undefined}  ></TableComponent>
+								<TableComponent headers={header} datas={tableUser} auxData={modalUsers} auxHeader={modalHeader} buttons={buttons} setSortString={setParam} showModalCell={showModalCell} setDummy={setDummy} setModalData={setModalData} setModalShow={setModalShow} pre_button={undefined} disableButton={[false]}  ></TableComponent>
 							</Row>
 							<PaginationComponent currentPage={param.page} setCurrentPage={setParam} totalPage={totalPage} setDummy={setPage} ></PaginationComponent>
 						</>

@@ -18,17 +18,17 @@ import { AssetModel } from '../../../models/AssetModel';
 
 
 
-const header = [{ name: 'Asset Code', value: "assetCode", sort: true, direction: true, colStyle: { width: "12%" } }, { name: 'Asset Name', value: "assetName", sort: true, direction: true, colStyle: { width: "40%" } }, { name: 'Category', value: "category", sort: false, direction: true, colStyle: {} }, { name: 'State', value: "state", sort: true, direction: true, colStyle: { width: "15%" } }]
+const header = [{ name: 'Asset Code', value: "assetCode", sort: true, direction: true, colStyle: { width: "12%" } }, { name: 'Asset Name', value: "name", sort: true, direction: true, colStyle: { width: "40%" } }, { name: 'Category', value: "category", sort: true, direction: true, colStyle: {} }, { name: 'State', value: "status", sort: true, direction: true, colStyle: { width: "15%" } }]
 const showModalCell = ["assetCode", "assetName"]
-const modalHeader = ["Staff Code", "Full Name", "Username", "Date of Birth", "Gender", "Joined Date", "Type", "Location"]
+const modalHeader = ["Asset Code", "Asset Name", "Category", "Installed Date", "State", "Location", "Specification"]
 
 
 export const ManageAssetComponent: React.FC = () => {
 	const navigate = useNavigate();
 
-	// const [modalUsers, setModalUsers] = useState<ModalUserModel[]>([]);
 
 	const [tableAsset, setTableAsset] = useState<AssetForTableModel[]>([]);
+	const [auxData, setAuxData] = useState<AssetModel[]>([]);
 
 	const [category, setCategory] = useState<CategoryModel[]>([]);
 
@@ -57,7 +57,7 @@ export const ManageAssetComponent: React.FC = () => {
 
 	const location = useLocation();
 
-	const [newAsset] = useState<AssetForTableModel>(location.state?.newAsset);
+	const [_newAsset] = useState<AssetForTableModel>(location.state?.newAsset);
 
 	const [modalShow, setModalShow] = useState(false);
 
@@ -119,29 +119,36 @@ export const ManageAssetComponent: React.FC = () => {
 		await getAsset(params).then((response) => {
 			const data = response.data.data;
 			setParam((p: any) => ({ ...p, page: data.currentPage }));
-			let assets: AssetForTableModel[] = data.content;
-			assets.forEach(e => { e.state = e.state.charAt(0) + e.state.replace(/_/g, " ").slice(1).toLowerCase() })
-      let assetTable : AssetForTableModel[] = [];
-      if (newAsset) {
-        assetTable.push(newAsset);
-        newAsset.state = newAsset.state.charAt(0) + newAsset.state.replace(/_/g, " ").slice(1).toLowerCase()
-        assets.forEach(e => {
-          if (e.assetCode !== newAsset.assetCode) {
-            assetTable.push(e);
-          }
-        });
-        setTableAsset(assetTable);
-      }
-      else {
-        setTableAsset(data.content)
-      }
+			let assets: AssetModel[] = data.content;
+			assets = assets.map(a => {
+				return {
+					assetCode: a.assetCode,
+					name: a.name,
+					category: a.category,
+					installedDate: a.installedDate,
+					state: a.state,
+					location: a.location,
+					specification: a.specification,
+				}
+			})
+			let assetsforTable: AssetForTableModel[] = assets.map(a => {
+				return {
+					assetCode: a.assetCode,
+					assetName: a.name,
+					category: a.category,
+					state: a.state
+				}
+			})
 
+			assetsforTable.forEach(e => { e.state = e.state.charAt(0) + e.state.replace(/_/g, " ").slice(1).toLowerCase() })
+			setTableAsset(assetsforTable)
+			setAuxData(assets);
 			setTotalPage(data.totalPage);
 		}).catch(e => {
 			message.error(e.message);
 		});
 		setLoading(false);
-		// window.history.replaceState({}, '')
+		window.history.replaceState({}, '')
 	}
 
 	// button
@@ -182,18 +189,20 @@ export const ManageAssetComponent: React.FC = () => {
 	// 		handleDelete(deleteAssetCode); // Call the Disable function
 	// 	}
 
-	//   const handleDeleteCancel = () => {
-	// 		setShowDisableModal(false);
-	// 		setDeleteAssetCode('') // Hide the Disable Modal
-	// 	}
+//   const handleDeleteCancel = () => {
+// 		setShowDisableModal(false);
+// 		setDeleteAssetCode('') // Hide the Disable Modal
+// 	}
+
+  const handleDeleteClick = (staffCode: string) => {
 		setShowDisableModal(true)
 		setDeleteAssetCode(staffCode); // Show the Disable Modal
 	}
 
-  function openModal(...data: any[]) {
-    console.log(data[1]);
+	function openModal(...data: any[]) {
+		console.log(data[1]);
 		handleDeleteClick(data[1].assetCode);
-  }
+	}
 
 	const editIcon: FunctionalIconModel = {
 		icon: faPencil,
@@ -224,6 +233,11 @@ export const ManageAssetComponent: React.FC = () => {
 
 	//----------------------------
 
+	//---------------------
+	let disableButtonArray = tableAsset.map(a => { return a.state === "Assigned" ? true : false });
+	///////////////////////
+
+
 	return (
 		<Container style={{ maxWidth: "100%" }} className="p-4">
 			<h4 className="ms-1" style={{ color: "red", fontWeight: "bold" }}>
@@ -253,22 +267,21 @@ export const ManageAssetComponent: React.FC = () => {
 						</Row> :
 						<>
 							<Row>
-								{/* this initfucntion */}
-								<TableComponent headers={header} datas={tableAsset} auxData={tableAsset} auxHeader={modalHeader} buttons={buttons} setSortString={setParam} showModalCell={showModalCell} setDummy={setDummy} setModalData={setModalData} setModalShow={setModalShow} pre_button={undefined}  ></TableComponent>
+								<TableComponent headers={header} datas={tableAsset} auxData={auxData} auxHeader={modalHeader} buttons={buttons} setSortString={setParam} showModalCell={showModalCell} setDummy={setDummy} setModalData={setModalData} setModalShow={setModalShow} pre_button={undefined} disableButton={disableButtonArray}  ></TableComponent>
 							</Row>
 							<PaginationComponent currentPage={param.page} setCurrentPage={setParam} totalPage={totalPage} setDummy={setPage} ></PaginationComponent>
 						</>
 					}
 				</>
 			}
-			{/* <UserInfoModalComponent
-        title={"Detailed User Infomation"}
-        show={modalShow}
-        onHide={() => setModalShow(false)}
-        label={modalHeader}
-        data={modalData}
-      /> */}
-			<ConfirmModalComponent show={showDisableModal} onConfirm={handleDeleteConfirm} onCancel={handleDeleteCancel} confirmTitle={'Are you sure?'} confirmQuestion={'Do you want to delete this asset?'} confirmBtnLabel={'Delete'} cancelBtnLabel={'Cancel'} modalSize={"md"} /> 
+			<UserInfoModalComponent
+				title={"Detailed User Infomation"}
+				show={modalShow}
+				onHide={() => setModalShow(false)}
+				label={modalHeader}
+				data={modalData}
+			/>
+			{/* <ConfirmModalComponent show={showDisableModal} onConfirm={handleDisableConfirm} onCancel={handleDisableCancel} confirmTitle={'Are you sure?'} confirmQuestion={'Do you want to disable this user?'} confirmBtnLabel={'Disable'} cancelBtnLabel={'Cancel'} modalSize={"md"} /> */}
 		</Container>
 	);
 }

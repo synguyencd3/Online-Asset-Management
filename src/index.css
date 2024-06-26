@@ -82,8 +82,13 @@ button:focus-visible {
   }
 }
 
+
 svg:hover {
   cursor: pointer;
+}
+
+.disable-icon:hover {
+  cursor: default;
 }
 
 /*------------------------------*/
@@ -128,12 +133,18 @@ tr:nth-child(even) {
 tr:hover {
   cursor: pointer;
 }
-.cell{
+
+.cell {
   width: auto;
 }
+
 .last-cell {
   width: fit-content;
   min-width: 60px;
+}
+
+.last-cell:hover {
+  cursor: default;
 }
 
 .last-cell .col {
@@ -162,7 +173,8 @@ tr:hover {
 }
 
 .form-check-input:focus,
-.form-control:focus, #dropdown-custom-2:focus {
+.form-control:focus,
+#dropdown-custom-2:focus {
   border-color: red;
   outline: 0;
   box-shadow: 0 0 0 .25rem transparent;
@@ -188,6 +200,7 @@ tr:hover {
   border: 1px solid red;
   border-radius: 0.375rem;
 }
+
 /* Loader */
 .loader {
   width: 50px;
@@ -204,6 +217,7 @@ tr:hover {
   mask-composite: subtract;
   animation: l3 0.8s infinite linear;
 }
+
 /* ------ */
 @keyframes l3 {
   to {
@@ -239,18 +253,20 @@ tr:hover {
   --bs-pagination-disabled-bg: white
 }
 
-#dropdown-custom-2:hover{
+#dropdown-custom-2:hover {
   background-color: transparent;
   text-align: left;
   color: black;
 }
 
-#dropdown-custom-2{
+#dropdown-custom-2 {
   background-color: transparent;
   text-align: left;
   color: black;
 }
-.dropdown-item.active, .dropdown-item:active {
+
+.dropdown-item.active,
+.dropdown-item:active {
   color: var(--DARK-400-COLOR);
   text-decoration: none;
   background-color: var(--SLIVER-200-COLOR);
@@ -258,4 +274,8 @@ tr:hover {
 
 #add-category-dropdown-item:active, #add-category-dropdown-item:hover, #add-category-dropdown-item:focus{
   background-color: transparent;
+}
+
+.disable-icon {
+  opacity: 50%;
 }

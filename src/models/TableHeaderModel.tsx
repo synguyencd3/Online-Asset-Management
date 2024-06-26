@@ -1,3 +1,3 @@
 export type TableHeaderModel = {
-	name: string, value: string, sort: boolean, direction: boolean ;colStyle: Object; 
+	name: string, value: string, sort: boolean, direction: boolean ; colStyle: Object; 
 }

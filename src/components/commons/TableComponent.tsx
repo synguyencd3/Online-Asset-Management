@@ -21,14 +21,11 @@ type Props = {
 	setModalData: any
 	setModalShow: any
 	pre_button: any
+	disableButton: boolean[]
 }
 
-export const TableComponent = ({ headers, datas, auxData, buttons, setSortString, showModalCell, setDummy, setModalData, setModalShow, pre_button }: Props) => {
-
+export const TableComponent = ({ headers, datas, auxData, buttons, setSortString, showModalCell, setDummy, setModalData, setModalShow, pre_button, disableButton }: Props) => {
 	const [header, setHeader] = useState(headers);
-
-
-
 
 	const handleClick = (e: React.MouseEvent<any>, key: object) => {
 		const targetElement = e.target as HTMLElement;
@@ -72,7 +69,7 @@ export const TableComponent = ({ headers, datas, auxData, buttons, setSortString
 					<tbody>
 						{datas?.map((data: Object, index) => (
 							<tr key={index} onClick={(e) => { handleClick(e, auxData[index]) }}>
-								{pre_button ? <td>{pre_button}</td>:""}
+								{pre_button ? <td>{pre_button}</td> : ""}
 								{
 									Object.entries(data).map(([key, value], idx) => {
 										if (showModalCell.includes(key)) {
@@ -98,8 +95,8 @@ export const TableComponent = ({ headers, datas, auxData, buttons, setSortString
 								<td className='last-cell'>
 									<Row className='g-3 justify-content-center'>
 										{buttons?.map((button: FunctionalIconModel, bIndex) => (
-											<Col key={bIndex} className='d-flex justify-content-end'>
-												<FontAwesomeIcon size='lg' icon={button.icon} onClick={(e) => { button.onClickfunction(e, auxData[index], data) }} style={button.style} />
+											<Col key={bIndex} id={'table_icon_' + bIndex + index} className='d-flex justify-content-end'>
+												<FontAwesomeIcon size='lg' className={disableButton[index] ? "disable-icon" : "normal-icon"} icon={button.icon} onClick={(e) => { disableButton[index] ? "" : button.onClickfunction(e, auxData[index], data) }} style={button.style} />
 											</Col>
 										))}
 									</Row>
