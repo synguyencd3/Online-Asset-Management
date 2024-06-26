@@ -41,7 +41,7 @@ export const ManageAssetComponent: React.FC = () => {
 	const isInitialRender = useRef(0);
 
 	// two for each useEffect when useStrictApp, the first useEffect declare that check isInitialRender will be the one that run ??? // need check
-	const totalFirstLoad = 0;
+	const totalFirstLoad = 1;
 
 	const [param, setParam] = useState({
 		search: "",
