@@ -3,7 +3,7 @@ import { ColorPalette } from "../../../utils/ColorPalette";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { AssetState } from "../../../utils/Enum";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -37,17 +37,25 @@ const assetValidationSchema = Yup.object({
 
 function formatAssetState(state: string) {
   state = state
-    .toLowerCase() 
-    .replace(/_/g, " "); 
-  state = state.charAt(0).toUpperCase() + state.slice(1); 
+    .toLowerCase()
+    .replace(/_/g, " ");
+  state = state.charAt(0).toUpperCase() + state.slice(1);
   return state;
 }
 
-export const EditAssetComponent = () => {
+type Props = {
+  setHeaderTitle: any
+}
+
+export const EditAssetComponent = (props: Props) => {
   const location = useLocation();
   const assetProps: AssetForTableModel = location.state.assetProps;
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    props.setHeaderTitle("Manage Asset > Edit Asset");
+  }, [])
 
   const formik = useFormik({
     initialValues: {

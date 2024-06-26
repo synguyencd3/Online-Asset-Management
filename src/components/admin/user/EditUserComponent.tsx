@@ -12,8 +12,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { getOneUser, updateUser } from "../../../services/UserService";
 
-type Props = {
-}
+
 const eighteenYearsAgo = new Date(new Date().setFullYear(new Date().getFullYear() - 18));
 
 const createUserValidationSchema = Yup.object({
@@ -32,7 +31,12 @@ function formatDate(date: string) {
     let d = date.split("/");
     return ([d[2], d[1], d[0]].join('-'))
 }
-export const EditUserComponent = (_props: Props) => {
+
+type Props = {
+    setHeaderTitle: any
+}
+
+export const EditUserComponent = (props: Props) => {
     const location = useLocation();
 
     const [user] = useState<ModalUserModel>(location.state.user);
@@ -43,6 +47,10 @@ export const EditUserComponent = (_props: Props) => {
 
     let staffcodearray = user.staffCode.match(/[A-Za-z]+/);
     const prefix = staffcodearray ? staffcodearray[0] : "SD";
+
+    useEffect(() => {
+        props.setHeaderTitle("Manage User > Edit User");
+    }, [])
 
     const formik = useFormik({
         initialValues: {

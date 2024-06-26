@@ -19,12 +19,18 @@ export const SidebarComponent: React.FC<SidebarProps> = ({ setHeaderTitle, roleI
         setActiveIndex(0);
         break;
       case '/admin/manage-users':
+      case '/admin/manage-users/new':
+      case '/admin/manage-users/edit':
         setActiveIndex(1);
         break;
       case '/admin/manage-assets':
+      case '/admin/manage-assets/new':
+      case '/admin/manage-assets/edit':
         setActiveIndex(2);
         break;
       case '/admin/manage-assignments':
+      case '/admin/manage-assignments/new':
+      case '/admin/manage-assignments/edit':
         setActiveIndex(3);
         break;
       case '/admin/request-returning':

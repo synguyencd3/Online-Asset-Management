@@ -22,8 +22,11 @@ const header = [{ name: 'Asset Code', value: "assetCode", sort: true, direction:
 const showModalCell = ["assetCode", "assetName"]
 const modalHeader = ["Asset Code", "Asset Name", "Category", "Installed Date", "State", "Location", "Specification"]
 
+type Props = {
+    setHeaderTitle: any
+}
 
-export const ManageAssetComponent: React.FC = () => {
+export const ManageAssetComponent: React.FC<Props> = (props: Props) => {
 	const navigate = useNavigate();
 
 
@@ -39,6 +42,10 @@ export const ManageAssetComponent: React.FC = () => {
 	const [_deleteAssetCode, setDeleteAssetCode] = useState('');
 
 	const isInitialRender = useRef(0);
+
+	useEffect(() => {
+        props.setHeaderTitle("Manage Asset");
+    }, [])
 
 	// two for each useEffect when useStrictApp, the first useEffect declare that check isInitialRender will be the one that run ??? // need check
 	const totalFirstLoad = 1;
