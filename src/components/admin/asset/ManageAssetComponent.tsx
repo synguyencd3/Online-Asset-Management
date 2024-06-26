@@ -68,9 +68,6 @@ export const ManageAssetComponent: React.FC = () => {
 	modalShow ? modalData ? "" : "" : "";
 
 	useEffect(() => {
-		if (isInitialRender.current < 1) {
-			return;
-		}
 		getCategory()
 	}, [])
 
