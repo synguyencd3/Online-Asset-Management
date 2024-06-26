@@ -18,3 +18,19 @@ export type AssetCreateModel = {
   installDate: string;
   assetState: string;
 };
+
+export type AssetDetailModel = {
+  assetCode: string;
+  name: string;
+  category: string;
+  specification: string;
+  installedDate: string;
+  state: AssetState;
+}
+
+export type AssetEditRequestModel = {
+  assetName: string;
+  specification: string;
+  installDate: string;
+  assetState: string;
+}

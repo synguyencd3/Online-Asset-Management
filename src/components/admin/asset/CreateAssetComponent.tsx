@@ -192,6 +192,7 @@ export const CreateAssetComponent = () => {
                             className="rounded-0"
                             style={{ height: "30px" }}
                             id="newCategoryName"
+                            maxLength={100}
                             {...categoryFormik.getFieldProps("name")}
                           />
                         </Col>

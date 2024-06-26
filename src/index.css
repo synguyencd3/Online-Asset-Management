@@ -256,6 +256,6 @@ tr:hover {
   background-color: var(--SLIVER-200-COLOR);
 }
 
-#add-category-dropdown-item:active, #add-category-dropdown-item:hover{
+#add-category-dropdown-item:active, #add-category-dropdown-item:hover, #add-category-dropdown-item:focus{
   background-color: transparent;
 }

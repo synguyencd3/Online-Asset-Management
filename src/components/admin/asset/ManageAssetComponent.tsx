@@ -148,7 +148,7 @@ export const ManageAssetComponent: React.FC = () => {
 	const buttons: FunctionalIconModel[] = [];
 
 	function editAsset(...data: any[]) {
-		navigate('/admin/manage-users/edit', { state: { user: data[1] } })
+		navigate('/admin/manage-assets/edit', { state: { assetProps: data[1] } })
 	}
 
 	// const handleDelete = async (assetCode: string) => {
