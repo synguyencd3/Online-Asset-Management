@@ -5,6 +5,7 @@ import { HeaderComponent } from './components/commons/HeaderComponent';
 import { LogInComponent } from './components/auth/LogInComponent';
 import { MainApp } from './components/MainApp';
 import { NotHavePermission } from './components/auth/NotHavePermission';
+import { logoSVG } from './utils/ImageFiles';
 
 function App() {
     const [headerTitle, setHeaderTitle] = useState<string>('Online Asset Management');
@@ -49,7 +50,7 @@ function App() {
     return (
         <Router>
             <div style={{ flexFlow: 'column', height: '100%' }}>
-                <HeaderComponent title={headerTitle} handleLogout={handleLogout} logo={isLoggedIn ? '' : '/nashtech_logo.svg'} username={username} />
+                <HeaderComponent title={headerTitle} handleLogout={handleLogout} logo={isLoggedIn ? '' : logoSVG} username={username} />
                 <Routes>
                     <Route
                         path='/'
