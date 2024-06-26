@@ -19,7 +19,16 @@ jobs:
   - group: Azure-Static-Web-Apps-mango-desert-0d3e9920f-variable-group
   steps:
   - checkout: self
-    submodules: true
+        submodules: true
+  - task: NodeTool@1
+    inputs:
+      version: '20.x'
+      checkLatest: true
+  - script: |
+      echo "##vso[task.setvariable variable=VITE_AZURE_BACKEND_DOMAIN]$(VITE_AZURE_BACKEND_DOMAIN)"
+      npm install
+      npm run build
+    displayName: 'Set environment variable, install dependencies and build'
   - task: AzureStaticWebApp@0
     inputs:
       azure_static_web_apps_api_token: $(AZURE_STATIC_WEB_APPS_API_TOKEN_MANGO_DESERT_0D3E9920F)
@@ -28,5 +37,7 @@ jobs:
       app_location: "/" # App source code path
       api_location: "" # Api source code path - optional
       output_location: "dist" # Built app content directory - optional
+    env:
+      VITE_AZURE_BACKEND_DOMAIN: $(VITE_AZURE_BACKEND_DOMAIN)
 ###### End of Repository/Build Configurations ######
 
