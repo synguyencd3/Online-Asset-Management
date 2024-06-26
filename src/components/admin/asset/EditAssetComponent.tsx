@@ -64,7 +64,7 @@ export const EditAssetComponent = () => {
         assetName: values.assetName,
         specification: values.specification,
         installDate: values.installedDate,
-        assetState: values.assetState.toUpperCase().replace(" ", "_"),
+        assetState: values.assetState.toUpperCase().replace(/ /g, "_"),
       };
       await updateAsset(assetProps.assetCode, data)
         .then((response) => {

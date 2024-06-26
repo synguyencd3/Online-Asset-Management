@@ -64,7 +64,7 @@ export const CreateAssetComponent = () => {
         categoryName: values.categoryName,
         specification: values.specification,
         installDate: values.installedDate,
-        assetState: values.assetState.toUpperCase(),
+        assetState: values.assetState.toUpperCase().replace(/ /g, "_"),
       };
 
       await createAsset(data)

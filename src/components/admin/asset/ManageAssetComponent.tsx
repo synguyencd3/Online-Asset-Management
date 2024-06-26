@@ -37,6 +37,7 @@ export const ManageAssetComponent: React.FC = () => {
 	const [_showDisableModal, setShowDisableModal] = useState(false);
 
 	const [_deleteAssetCode, setDeleteAssetCode] = useState('');
+
 	const isInitialRender = useRef(0);
 
 	// two for each useEffect when useStrictApp, the first useEffect declare that check isInitialRender will be the one that run ??? // need check
@@ -57,7 +58,8 @@ export const ManageAssetComponent: React.FC = () => {
 
 	const location = useLocation();
 
-	const [_newAsset] = useState<AssetForTableModel>(location.state?.newAsset);
+	const [newAsset] = useState<AssetModel>(location.state?.newAsset);
+	// const [newAsset] = useState<AssetForTableModel>(location.state?.newAsset);
 
 	const [modalShow, setModalShow] = useState(false);
 
@@ -113,6 +115,7 @@ export const ManageAssetComponent: React.FC = () => {
 			+ "page=" + param.page + "&"
 			+ "size=" + "20" + "&"
 			+ "sort=" + param.sort;
+		console.log(params);
 
 		setLoading(true)
 
@@ -136,11 +139,18 @@ export const ManageAssetComponent: React.FC = () => {
 					assetCode: a.assetCode,
 					assetName: a.name,
 					category: a.category,
-					state: a.state
+					state: a.state.charAt(0) + a.state.replace(/_/g, " ").slice(1).toLowerCase()
 				}
 			})
-
-			assetsforTable.forEach(e => { e.state = e.state.charAt(0) + e.state.replace(/_/g, " ").slice(1).toLowerCase() })
+			if (newAsset) {
+				assets = [newAsset, ...assets.filter(a => a.assetCode !== newAsset.assetCode)];
+				assetsforTable = [{
+					assetCode: newAsset.assetCode,
+					assetName: newAsset.name,
+					category: newAsset.category,
+					state: newAsset.state.charAt(0) + newAsset.state.replace(/_/g, " ").slice(1).toLowerCase()
+				}, ...assetsforTable.filter(a => a.assetCode !== newAsset.assetCode)]
+			}
 			setTableAsset(assetsforTable)
 			setAuxData(assets);
 			setTotalPage(data.totalPage);
@@ -189,12 +199,12 @@ export const ManageAssetComponent: React.FC = () => {
 	// 		handleDelete(deleteAssetCode); // Call the Disable function
 	// 	}
 
-//   const handleDeleteCancel = () => {
-// 		setShowDisableModal(false);
-// 		setDeleteAssetCode('') // Hide the Disable Modal
-// 	}
+	//   const handleDeleteCancel = () => {
+	// 		setShowDisableModal(false);
+	// 		setDeleteAssetCode('') // Hide the Disable Modal
+	// 	}
 
-  const handleDeleteClick = (staffCode: string) => {
+	const handleDeleteClick = (staffCode: string) => {
 		setShowDisableModal(true)
 		setDeleteAssetCode(staffCode); // Show the Disable Modal
 	}
