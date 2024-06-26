@@ -1,6 +1,6 @@
 import { message } from 'antd';
-import React, { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom';
+import React, { useEffect, useRef, useState } from 'react'
 import { FunctionalIconModel } from '../../../models/FunctionalIconModel';
 import { faPencil } from '@fortawesome/free-solid-svg-icons';
 import { Button, Col, Container, Row } from 'react-bootstrap';
@@ -12,8 +12,9 @@ import { PaginationComponent } from '../../commons/PaginationComponent';
 import { AssetForTableModel } from '../../../models/AssetForTableModel';
 import { faCircleXmark } from '@fortawesome/free-regular-svg-icons';
 import { CategoryModel } from '../../../models/CategoryModel';
-import { deleteAsset, getAsset, getCategories } from '../../../services/AssetService';
-import { ConfirmModalComponent } from '../../commons/ConfirmModalComponent';
+import { getAsset, getCategories } from '../../../services/AssetService';
+import { UserInfoModalComponent } from '../../commons/UserInfoModalComponent';
+import { AssetModel } from '../../../models/AssetModel';
 
 
 
@@ -33,9 +34,13 @@ export const ManageAssetComponent: React.FC = () => {
 
 	const [loading, setLoading] = useState(true);
 
-  const [showDisableModal, setShowDisableModal] = useState(false); 
+	const [_showDisableModal, setShowDisableModal] = useState(false);
 
-  const [deleteAssetCode, setDeleteAssetCode] = useState('');
+	const [_deleteAssetCode, setDeleteAssetCode] = useState('');
+	const isInitialRender = useRef(0);
+
+	// two for each useEffect when useStrictApp, the first useEffect declare that check isInitialRender will be the one that run ??? // need check
+	const totalFirstLoad = 4;
 
 	const [param, setParam] = useState({
 		search: "",
@@ -45,10 +50,9 @@ export const ManageAssetComponent: React.FC = () => {
 		size: 20,
 		sort: "assetCode,asc",
 	});
-	const [categoryLength, setCategoryLength] = useState(category.length);
 
-	const [dummy, setDummy] = useState(1);
-
+	const [dummy, setDummy] = useState(0);
+	const [page, setPage] = useState(0);
 	const [totalPage, setTotalPage] = useState(0);
 
 	const location = useLocation();
@@ -56,28 +60,43 @@ export const ManageAssetComponent: React.FC = () => {
 	const [newAsset] = useState<AssetForTableModel>(location.state?.newAsset);
 
 	const [modalShow, setModalShow] = useState(false);
+
 	const [modalData, setModalData] = useState<Object>({});
+
 	modalShow ? modalData ? "" : "" : "";
 
 	useEffect(() => {
+		if (isInitialRender.current < 1) {
+			return;
+		}
 		getCategory()
-		setCategoryLength(categoryLength);
 	}, [])
 
 	useEffect(() => {
-		setCategoryLength(categoryLength);
-		InitializeQuery()
-	}, [category])
-
-	useEffect(() => {
+		if (isInitialRender.current < totalFirstLoad) {
+			isInitialRender.current++;
+			return;
+		}
+		param.page = 0
 		InitializeQuery()
 	}, [dummy])
+
+	useEffect(() => {
+		if (isInitialRender.current < totalFirstLoad) {
+			isInitialRender.current++;
+			return;
+		}
+		else {
+			InitializeQuery()
+		}
+	}, [page])
 
 	async function getCategory() {
 		let a = await getCategories().then((response) => {
 			const data: CategoryModel[] = response.data.data;
 			setCategory(data);
 			setParam(p => ({ ...p, categories: data.map(obj => obj.id.toString()) }));
+			setDummy(Math.random())
 			return data.map(obj => obj.id.toString());
 		}).catch(e => {
 			message.error(e.message);
@@ -86,6 +105,7 @@ export const ManageAssetComponent: React.FC = () => {
 	}
 
 	async function InitializeQuery() {
+		setLoading(true)
 		let params = "?"
 			+ "search=" + encodeURIComponent(param.search) + "&"
 			+ "states=" + param.states.join() + "&"
@@ -94,7 +114,6 @@ export const ManageAssetComponent: React.FC = () => {
 			+ "size=" + "20" + "&"
 			+ "sort=" + param.sort;
 
-    console.log(params)
 		setLoading(true)
 
 		await getAsset(params).then((response) => {
@@ -132,43 +151,41 @@ export const ManageAssetComponent: React.FC = () => {
 		navigate('/admin/manage-users/edit', { state: { user: data[1] } })
 	}
 
-  const handleDelete = async (assetCode: string) => {
-    message.open({
-			type: 'loading',
-			content: 'Deleting asset...',
-		})
-			.then(async () => {
-				console.log(import.meta.env.VITE_AZURE_BACKEND_DOMAIN);
-				await deleteAsset(assetCode)
-					.then((res) => {
-						console.log(res);
-						if (res.status == 200) {
-							console.log(res.data);
-							message.success(res.data.message);
-							setDummy(Math.random());
-						}
-					})
-					.catch((err) => {
-						console.log(err.response);
-						console.log(process.env.REACT_APP_AZURE_BACKEND_DOMAIN);
-						// const errorData = err.response.data.substring(0, err.response.data.indexOf('}') + 1);
-						// const errorResponse: ErrorResponse = JSON.parse(errorData);
-						message.error(`${err.response.message}`);
-					});
-			});
-  }
+	// const handleDelete = async (assetCode: string) => {
+	// 	message.open({
+	// 		type: 'loading',
+	// 		content: 'Deleting asset...',
+	// 	})
+	// 		.then(async () => {
+	// 			console.log(import.meta.env.VITE_AZURE_BACKEND_DOMAIN);
+	// 			await deleteAsset(assetCode)
+	// 				.then((res) => {
+	// 					console.log(res);
+	// 					if (res.status == 200) {
+	// 						console.log(res.data);
+	// 						message.success(res.data.message);
+	// 						setDummy(Math.random());
+	// 					}
+	// 				})
+	// 				.catch((err) => {
+	// 					console.log(err.response);
+	// 					console.log(process.env.REACT_APP_AZURE_BACKEND_DOMAIN);
+	// 					// const errorData = err.response.data.substring(0, err.response.data.indexOf('}') + 1);
+	// 					// const errorResponse: ErrorResponse = JSON.parse(errorData);
+	// 					message.error(`${err.response.message}`);
+	// 				});
+	// 		});
+	// }
 
-  const handleDeleteConfirm = () => {
-		setShowDisableModal(false);
-		handleDelete(deleteAssetCode); // Call the Disable function
-	}
+	//   const handleDeleteConfirm = () => {
+	// 		setShowDisableModal(false);
+	// 		handleDelete(deleteAssetCode); // Call the Disable function
+	// 	}
 
-  const handleDeleteCancel = () => {
-		setShowDisableModal(false);
-		setDeleteAssetCode('') // Hide the Disable Modal
-	}
-
-  const handleDeleteClick = (staffCode: string) => {
+	//   const handleDeleteCancel = () => {
+	// 		setShowDisableModal(false);
+	// 		setDeleteAssetCode('') // Hide the Disable Modal
+	// 	}
 		setShowDisableModal(true)
 		setDeleteAssetCode(staffCode); // Show the Disable Modal
 	}
@@ -239,7 +256,7 @@ export const ManageAssetComponent: React.FC = () => {
 								{/* this initfucntion */}
 								<TableComponent headers={header} datas={tableAsset} auxData={tableAsset} auxHeader={modalHeader} buttons={buttons} setSortString={setParam} showModalCell={showModalCell} setDummy={setDummy} setModalData={setModalData} setModalShow={setModalShow} pre_button={undefined}  ></TableComponent>
 							</Row>
-							<PaginationComponent currentPage={param.page} setCurrentPage={setParam} totalPage={totalPage} setDummy={setDummy} ></PaginationComponent>
+							<PaginationComponent currentPage={param.page} setCurrentPage={setParam} totalPage={totalPage} setDummy={setPage} ></PaginationComponent>
 						</>
 					}
 				</>
