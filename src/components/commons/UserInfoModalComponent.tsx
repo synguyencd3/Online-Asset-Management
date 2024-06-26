@@ -37,7 +37,7 @@ export const UserInfoModalComponent = (props: Props) => {
                                 </Row>
                             )) : ""}
                         </Col>
-                        <Col >
+                        <Col style={{overflow:"auto"}}>
                             {props.data ? Object.values(props.data).map((value: any) => (
                                 <Row className="my-3 modal-value" key={value}>
                                     {value.toString() ?? ""}

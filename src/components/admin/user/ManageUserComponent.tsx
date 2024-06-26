@@ -2,7 +2,7 @@ import { Button, Col, Container, Row } from "react-bootstrap";
 import { TableComponent } from "../../commons/TableComponent";
 import { DropdownFilterComponent } from "../../commons/DropdownFilterComponent";
 import { SearchComponent } from "../../commons/SearchComponent";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { UserModel } from "../../../models/UserModel";
 import { UserForTableModel } from "../../../models/UserForTableModel";
 import { ModalUserModel } from "../../../models/ModalUserModel";
@@ -18,7 +18,7 @@ import { message } from "antd";
 import { disableUser, getUser } from "../../../services/UserService";
 import { UserInfoModalComponent } from "../../commons/UserInfoModalComponent";
 
-const header = [{ name: 'Staff Code', value: "staffCode", sort: true, direction: true, colStyle:{} }, { name: 'Full Name', value: "firstName", sort: true, direction: true, colStyle:{} }, { name: 'Username', value: "username", sort: false, direction: true, colStyle:{} }, { name: 'Joined Date', value: "joinedDate", sort: true, direction: true, colStyle:{} }, { name: 'Type', value: "roleId", sort: true, direction: true, colStyle:{} },]
+const header = [{ name: 'Staff Code', value: "staffCode", sort: true, direction: true, colStyle: {} }, { name: 'Full Name', value: "firstName", sort: true, direction: true, colStyle: {} }, { name: 'Username', value: "username", sort: false, direction: true, colStyle: {} }, { name: 'Joined Date', value: "joinedDate", sort: true, direction: true, colStyle: {} }, { name: 'Type', value: "roleId", sort: true, direction: true, colStyle: {} },]
 const showModalCell = ["staffCode", "username", "fullName"]
 const modalHeader = ["Staff Code", "Full Name", "Username", "Date of Birth", "Gender", "Joined Date", "Type", "Location"]
 
@@ -32,6 +32,11 @@ export const ManageUserComponent = (/*props: Props*/) => {
 
 	const [loading, setLoading] = useState(true);
 
+	const isInitialRender = useRef(0);
+
+	// two for each useEffect when useStrictApp, the first useEffect declare that check isInitialRender will be the one that run ??? // need check
+	const totalFirstLoad = 0;
+
 
 	// limit the API call per param properties by using dummy, use setDummy(Math.random()) to init the query with param
 	const [param, setParam] = useState({
@@ -42,6 +47,7 @@ export const ManageUserComponent = (/*props: Props*/) => {
 		size: 20
 	});
 	const [dummy, setDummy] = useState(1);
+	const [page, setPage] = useState(0);
 
 	const [totalPage, setTotalPage] = useState(0);
 
@@ -51,6 +57,7 @@ export const ManageUserComponent = (/*props: Props*/) => {
 
 	const [modalShow, setModalShow] = useState(false);
 	const [modalData, setModalData] = useState<Object>({});
+
 	const [showDisableModal, setShowDisableModal] = useState(false); // State for the Logout Modal
 	const [disableStaffCode, setDisableStaffCode] = useState(''); // State for the Logout Modal
 
@@ -60,9 +67,26 @@ export const ManageUserComponent = (/*props: Props*/) => {
 		let d = new Date(date);
 		return new Intl.DateTimeFormat("en-GB").format(d);
 	}
+
 	useEffect(() => {
+		if (isInitialRender.current < totalFirstLoad) {
+			isInitialRender.current++;
+			return;
+		}
+		param.page = 0
 		InitializeQuery()
 	}, [dummy])
+
+	useEffect(() => {
+		if (isInitialRender.current < totalFirstLoad) {
+			isInitialRender.current++;
+			return;
+		}
+		else {
+			InitializeQuery()
+		}
+	}, [page])
+
 
 	async function InitializeQuery() {
 		let params = "?"
@@ -71,6 +95,7 @@ export const ManageUserComponent = (/*props: Props*/) => {
 			+ "page=" + param.page + "&"
 			+ "size=" + "20" + "&"
 			+ "sort=" + param.sort;
+		console.log(params);
 
 		setLoading(true)
 
@@ -217,8 +242,8 @@ export const ManageUserComponent = (/*props: Props*/) => {
 
 	// Dropdown Filter
 	let filterdata = [];
-	let data1 = { label: "Admin", value: Roles.ADMIN.toString(),  defaultChecked:true}
-	let data2 = { label: "Staff", value: Roles.STAFF.toString(), defaultChecked:true }
+	let data1 = { label: "Admin", value: Roles.ADMIN.toString(), defaultChecked: true }
+	let data2 = { label: "Staff", value: Roles.STAFF.toString(), defaultChecked: true }
 	filterdata.push(data1, data2);
 	//----------------------------
 
@@ -250,9 +275,9 @@ export const ManageUserComponent = (/*props: Props*/) => {
 						<>
 							<Row>
 								{/* this initfucntion */}
-								<TableComponent headers={header} datas={tableUser} auxData={modalUsers} auxHeader={modalHeader} buttons={buttons} setSortString={setParam} showModalCell={showModalCell} setDummy={setDummy} setModalData={setModalData} setModalShow={setModalShow} pre_button={undefined}  ></TableComponent>
+								<TableComponent headers={header} datas={tableUser} auxData={modalUsers} auxHeader={modalHeader} buttons={buttons} setSortString={setParam} showModalCell={showModalCell} setDummy={setDummy} setModalData={setModalData} setModalShow={setModalShow} pre_button={undefined} disableButton={[false]}  ></TableComponent>
 							</Row>
-							<PaginationComponent currentPage={param.page} setCurrentPage={setParam} totalPage={totalPage} setDummy={setDummy} ></PaginationComponent>
+							<PaginationComponent currentPage={param.page} setCurrentPage={setParam} totalPage={totalPage} setDummy={setPage} ></PaginationComponent>
 						</>
 					}
 				</>

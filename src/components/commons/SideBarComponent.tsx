@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import '../../styles/SidebarStyle.css';
 import { logoPNG } from '../../utils/ImageFiles';
 
@@ -9,7 +9,34 @@ interface SidebarProps {
 }
 
 export const SidebarComponent: React.FC<SidebarProps> = ({ setHeaderTitle, roleId }) => {
-  const [activeIndex, setActiveIndex] = useState<number | null>(0);
+  const location = useLocation();
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
+
+  useEffect(() => {
+    switch (location.pathname) {
+      case '/admin/home':
+      case '/user/home':
+        setActiveIndex(0);
+        break;
+      case '/admin/manage-users':
+        setActiveIndex(1);
+        break;
+      case '/admin/manage-assets':
+        setActiveIndex(2);
+        break;
+      case '/admin/manage-assignments':
+        setActiveIndex(3);
+        break;
+      case '/admin/request-returning':
+        setActiveIndex(4);
+        break;
+      case '/admin/reports':
+        setActiveIndex(5);
+        break;
+      default:
+        setActiveIndex(null);
+    }
+  }, [location.pathname]);
 
   const handleOnClick = (index: number, title: string) => {
     setActiveIndex(index);
@@ -48,7 +75,6 @@ export const SidebarComponent: React.FC<SidebarProps> = ({ setHeaderTitle, roleI
           <Link onClick={() => handleOnClick(0, 'Home')} className='fs-5' to="/user/home">Home</Link>
         </li>
       </ul>)}
-
     </>
   )
 }

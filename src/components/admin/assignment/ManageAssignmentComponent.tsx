@@ -21,13 +21,12 @@ import React from 'react'
 // const showModalCell = ["staffCode", "username", "fullName"]
 // const modalHeader = ["Staff Code", "Full Name", "Username", "Date of Birth", "Gender", "Joined Date", "Type", "Location"]
 export const ManageAssignmentComponent: React.FC = () => {
-	return <div></div>
-
+	return <div>ManageAssignmentComponent: React.FC</div>
 //   const [filterParam, setFilterParam] = useState([AssignmentState.ACCEPTED, AssignmentState.DECLINED, AssignmentState.WATING_FOR_ACCEPTANCE]);
 
 //   const [searchParam, setSearchParam] = useState("");
 
-//   const [loading] = useState(false);
+//   const [loading, setLoading] = useState(false);
 
 //   const navigate = useNavigate();
   
@@ -44,9 +43,9 @@ export const ManageAssignmentComponent: React.FC = () => {
 // 		getAssigments(url);
 // 	}
 
-// //   async function getAssigments(url: string) {
+//   async function getAssigments(url: string) {
 
-// //   }
+//   }
 
   
 
@@ -60,9 +59,9 @@ export const ManageAssignmentComponent: React.FC = () => {
 // 		window.alert(data)
 // 	}
 
-// //   function refreshAssignment(...data: any[]) {
+//   function refreshAssignment(...data: any[]) {
 
-// //   }
+//   }
 
 // 	const editIcon: FunctionalIconModel = {
 // 		icon: faPencil,
@@ -127,5 +126,5 @@ export const ManageAssignmentComponent: React.FC = () => {
 // 				</>
 // 			}
 //     </Container>
+//   )
 }
-

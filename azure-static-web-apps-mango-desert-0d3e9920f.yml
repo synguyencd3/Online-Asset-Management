@@ -3,11 +3,11 @@ name: Azure Static Web Apps CI/CD
 pr:
   branches:
     include:
-      - deploy
+      - dev
 trigger:
   branches:
     include:
-      - deploy
+      - dev
 
 jobs:
   - job: build_and_deploy_job
@@ -16,7 +16,7 @@ jobs:
     pool:
       vmImage: ubuntu-latest
     variables:
-      - group: Azure-Static-Web-Apps-thankful-field-0c1fd520f-variable-group
+    - group: Azure-Static-Web-Apps-mango-desert-0d3e9920f-variable-group
     steps:
       - checkout: self
         submodules: true
@@ -43,12 +43,13 @@ jobs:
 
       - task: AzureStaticWebApp@0
         inputs:
-          azure_static_web_apps_api_token: $(AZURE_STATIC_WEB_APPS_API_TOKEN_THANKFUL_FIELD_0C1FD520F)
-          ###### Repository/Build Configurations - These values can be configured to match your app requirements. ######
-          # For more information regarding Static Web App workflow configurations, please visit: https://aka.ms/swaworkflowconfig
+          azure_static_web_apps_api_token: $(AZURE_STATIC_WEB_APPS_API_TOKEN_MANGO_DESERT_0D3E9920F)
+###### Repository/Build Configurations - These values can be configured to match your app requirements. ######
+# For more information regarding Static Web App workflow configurations, please visit: https://aka.ms/swaworkflowconfig
           app_location: "/" # App source code path
           api_location: "" # Api source code path - optional
           output_location: "dist" # Built app content directory - optional
         env:
           VITE_AZURE_BACKEND_DOMAIN: $(VITE_AZURE_BACKEND_DOMAIN)
 ###### End of Repository/Build Configurations ######
+

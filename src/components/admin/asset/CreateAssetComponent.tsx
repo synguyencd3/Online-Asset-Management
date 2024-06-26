@@ -58,21 +58,24 @@ export const CreateAssetComponent = () => {
     },
     validationSchema: assetValidationSchema,
     onSubmit: async (values) => {
-      setLoading(false);
-      const data : AssetCreateModel = {
+      setLoading(true);
+      const data: AssetCreateModel = {
         assetName: values.assetName,
         categoryName: values.categoryName,
         specification: values.specification,
         installDate: values.installedDate,
-        assetState: values.assetState.toUpperCase(),
-      }
+        assetState: values.assetState.toUpperCase().replace(/ /g, "_"),
+      };
 
       await createAsset(data)
         .then((response) => {
           message.success(response.data.message);
-          const newAsset : AssetForTableModel = response.data.data;
-          navigate('/admin/manage-assets', { replace: true, state: { newAsset: newAsset } });
+          const newAsset: AssetForTableModel = response.data.data;
           setLoading(false);
+          navigate("/admin/manage-assets", {
+            replace: true,
+            state: { newAsset: newAsset },
+          });
         })
         .catch((error) => {
           message.error(error.response.data.message);
@@ -189,6 +192,7 @@ export const CreateAssetComponent = () => {
                             className="rounded-0"
                             style={{ height: "30px" }}
                             id="newCategoryName"
+                            maxLength={100}
                             {...categoryFormik.getFieldProps("name")}
                           />
                         </Col>
@@ -314,7 +318,7 @@ export const CreateAssetComponent = () => {
                 className="mx-4"
                 style={{ minWidth: "100px" }}
                 type="submit"
-                disabled={!formik.dirty || !formik.isValid}
+                disabled={!formik.dirty || !formik.isValid || loading}
               >
                 {" "}
                 {loading ? <FontAwesomeIcon icon={faSpinner} spin /> : "Save"}

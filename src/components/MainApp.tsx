@@ -12,6 +12,7 @@ import { CreateUserComponent } from './admin/user/CreateUserComponent';
 import { EditUserComponent } from './admin/user/EditUserComponent';
 import { UserHomeComponent } from './user/UserHomeComponent';
 import { CreateAssetComponent } from './admin/asset/CreateAssetComponent';
+import { EditAssetComponent } from './admin/asset/EditAssetComponent';
 
 export const MainApp: React.FC<{ setHeaderTitle: (title: string) => void, roleId: number }> = ({ setHeaderTitle, roleId }) => {
     useEffect(() => {
@@ -33,6 +34,7 @@ export const MainApp: React.FC<{ setHeaderTitle: (title: string) => void, roleId
                             <Route path="manage-users/edit" element={<EditUserComponent />} />
                             <Route path="manage-assets" element={<ManageAssetComponent />} />
 							<Route path="manage-assets/new" element={<CreateAssetComponent />} />
+							<Route path="manage-assets/edit" element={<EditAssetComponent />} />
                             <Route path="manage-assignments" element={<ManageAssignmentComponent />} />
                             <Route path="request-returning" element={<RequestReturningConponent />} />
                             <Route path="reports" element={<ReportComponent />} />
