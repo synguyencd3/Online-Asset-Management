@@ -3,7 +3,7 @@ import { ColorPalette } from "../../../utils/ColorPalette";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { AssetState } from "../../../utils/Enum";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faClose, faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
@@ -37,7 +37,11 @@ const assetValidationSchema = Yup.object({
     .required("Installed date is required"),
 });
 
-export const CreateAssetComponent = () => {
+type Props = {
+  setHeaderTitle: any
+}
+
+export const CreateAssetComponent = (props: Props) => {
   const [loading, setLoading] = useState(false);
   const [addCategory, setAddCategory] = useState(false);
   const navigate = useNavigate();
@@ -47,6 +51,10 @@ export const CreateAssetComponent = () => {
     categoriesEndpoint,
     getCategories
   );
+
+  useEffect(() => {
+    props.setHeaderTitle("Manage Asset > Create Asset");
+}, [])
 
   const formik = useFormik({
     initialValues: {

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 // import { Button, Col, Container, Form, Row } from 'react-bootstrap'
 // import { DropdownFilterComponent } from '../../commons/DropdownFilterComponent'
 // import { SearchComponent } from '../../commons/SearchComponent'
@@ -20,7 +20,14 @@ import React from 'react'
 // const header = [{ name: 'No.', value: 'Number', sort: true, direction: true}, { name: 'Asset Code', value: 'AssetCode', sort: true, direction: true},{ name: 'Asset Name', value: 'AssetName', sort: true, direction: true},{ name: 'Assigned To', value: 'AssignedTo', sort: true, direction: true}, { name: 'Assigned By', value: 'AssignedBy', sort: true, direction: true}, { name: 'Assigned Date', value: 'Assigned Date', sort: true, direction:true}, { name: 'State', value: 'State', sort: true, direction:true}];
 // const showModalCell = ["staffCode", "username", "fullName"]
 // const modalHeader = ["Staff Code", "Full Name", "Username", "Date of Birth", "Gender", "Joined Date", "Type", "Location"]
-export const ManageAssignmentComponent: React.FC = () => {
+
+type Props = {
+    setHeaderTitle: any
+}
+export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
+	useEffect(() => {
+        props.setHeaderTitle("Manage Assignment");
+    }, [])
 	return <div>ManageAssignmentComponent: React.FC</div>
 //   const [filterParam, setFilterParam] = useState([AssignmentState.ACCEPTED, AssignmentState.DECLINED, AssignmentState.WATING_FOR_ACCEPTANCE]);
 

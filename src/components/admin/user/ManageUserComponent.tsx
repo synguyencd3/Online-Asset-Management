@@ -22,7 +22,11 @@ const header = [{ name: 'Staff Code', value: "staffCode", sort: true, direction:
 const showModalCell = ["staffCode", "username", "fullName"]
 const modalHeader = ["Staff Code", "Full Name", "Username", "Date of Birth", "Gender", "Joined Date", "Type", "Location"]
 
-export const ManageUserComponent = (/*props: Props*/) => {
+type Props = {
+    setHeaderTitle: any
+}
+
+export const ManageUserComponent = (props: Props) => {
 
 	const navigate = useNavigate();
 
@@ -67,6 +71,10 @@ export const ManageUserComponent = (/*props: Props*/) => {
 		let d = new Date(date);
 		return new Intl.DateTimeFormat("en-GB").format(d);
 	}
+
+	useEffect(() => {
+        props.setHeaderTitle("Manage User");
+    }, [])
 
 	useEffect(() => {
 		if (isInitialRender.current < totalFirstLoad) {
