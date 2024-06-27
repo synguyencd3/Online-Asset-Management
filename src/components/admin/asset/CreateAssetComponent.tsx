@@ -43,6 +43,7 @@ type Props = {
 
 export const CreateAssetComponent = (props: Props) => {
   const [loading, setLoading] = useState(false);
+  const [loadingCreateCategory, setLoadingCreateCategory] = useState(false);
   const [addCategory, setAddCategory] = useState(false);
   const navigate = useNavigate();
   const [showDropdown, setShowDropdown] = useState(false);
@@ -97,15 +98,27 @@ export const CreateAssetComponent = (props: Props) => {
       name: "",
       prefix: "",
     },
+    validationSchema: Yup.object({
+      name: Yup.string()
+        .max(100, "Category name must be at most 100 characters")
+        .required("Category name is required"),
+      prefix: Yup.string()
+        .max(2, "Prefix must be at most 2 characters")
+        .required("Prefix is required"),
+    }),
     onSubmit: async (values) => {
+      if (!categoryFormik.isValid) return;
+      setLoadingCreateCategory(true);
       await createCategories(values)
         .then((response) => {
+          setLoadingCreateCategory(false);
           message.success(response.data.message);
           mutateCategories();
           categoryFormik.resetForm();
         })
         .catch((error) => {
           message.error(error.response.data.message);
+          setLoadingCreateCategory(false);
         });
     },
   });
@@ -189,10 +202,7 @@ export const CreateAssetComponent = (props: Props) => {
                   <Dropdown.Divider className="border-dark" />
                   <Dropdown.Item id="add-category-dropdown-item">
                     {addCategory ? (
-                      <Form.Group
-                        className="d-flex"
-                        controlId="newCategoryName"
-                      >
+                      <Form.Group className="d-flex">
                         <Col sm={7}>
                           <Form.Control
                             type="text"
@@ -217,27 +227,37 @@ export const CreateAssetComponent = (props: Props) => {
                         </Col>
                         <Col className="d-flex ps-2">
                           <Col className="d-flex align-items-center justify-content-center">
-                            <FontAwesomeIcon
-                              size="lg"
-                              icon={faCheck}
-                              onClick={() =>
-                                categoryFormik.dirty
-                                  ? categoryFormik.handleSubmit()
-                                  : null
-                              }
-                              color={
-                                categoryFormik.dirty
-                                  ? ColorPalette.PRIMARY_COLOR
-                                  : ColorPalette.SLIVER_400_COLOR
-                              }
-                            />
+                            {loadingCreateCategory ? (
+                              <FontAwesomeIcon
+                                size="lg"
+                                icon={faSpinner}
+                                spin
+                                color={ColorPalette.PRIMARY_COLOR}
+                              />
+                            ) : (
+                              <FontAwesomeIcon
+                                size="lg"
+                                icon={faCheck}
+                                onClick={() =>
+                                  categoryFormik.dirty && categoryFormik.isValid
+                                    ? categoryFormik.handleSubmit()
+                                    : null
+                                }
+                                color={
+                                  categoryFormik.dirty && categoryFormik.isValid
+                                    ? ColorPalette.PRIMARY_COLOR
+                                    : ColorPalette.SLIVER_400_COLOR
+                                }
+                              />
+                            )}
                           </Col>
                           <Col className="d-flex align-items-center justify-content-center">
                             <FontAwesomeIcon
                               size="lg"
                               icon={faClose}
                               onClick={() => {
-                                toggleDropdown(false);
+                                setAddCategory(false);
+                                categoryFormik.resetForm();
                               }}
                             />
                           </Col>
