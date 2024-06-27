@@ -13,7 +13,7 @@ import { AssetForTableModel } from '../../../models/AssetForTableModel';
 import { faCircleXmark } from '@fortawesome/free-regular-svg-icons';
 import { CategoryModel } from '../../../models/CategoryModel';
 import { getAsset, getCategories } from '../../../services/AssetService';
-import { UserInfoModalComponent } from '../../commons/UserInfoModalComponent';
+import { DetailModalComponent } from '../../commons/DetailModalComponent';
 import { AssetModel } from '../../../models/AssetModel';
 
 
@@ -288,7 +288,7 @@ export const ManageAssetComponent: React.FC<Props> = (props: Props) => {
 					}
 				</>
 			}
-			<UserInfoModalComponent
+			<DetailModalComponent
 				title={"Detailed User Infomation"}
 				show={modalShow}
 				onHide={() => setModalShow(false)}

@@ -10,7 +10,7 @@ type Props = {
     data: Object
     label: Object[];
 }
-export const UserInfoModalComponent = (props: Props) => {
+export const DetailModalComponent = (props: Props) => {
     return (
         <Modal
             {...props}
