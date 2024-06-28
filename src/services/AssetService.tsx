@@ -7,7 +7,9 @@ export const assetsEndpoint = `${AZURE_SERVICE_API}/assets`;
 export const getAsset = async (params: string) => await axios.get(`${AZURE_SERVICE_API}/assets` + params, CORS_CONFIG);
 export const getCategories = async () => await axios.get(`${AZURE_SERVICE_API}/categories`, CORS_CONFIG);
 
-export const getOneAsset = async (staffCode: string) => await axios.get(`${AZURE_SERVICE_API}/assets/${staffCode}`, CORS_CONFIG);
+export const getOneAsset = async (assetCode: string) => await axios.get(`${AZURE_SERVICE_API}/assets/${assetCode}`, CORS_CONFIG);
+export const getOneAssetHistory = async (assetCode: string, page: string | number) => await axios.get(`${AZURE_SERVICE_API}/assets/history/${assetCode}?page=${page}`, CORS_CONFIG);
+export const getOneAssetHistoryOnly = async (assetCode: string, page: string | number) => await axios.get(`${AZURE_SERVICE_API}/assets/history/only/${assetCode}?page=${page}`, CORS_CONFIG);
 export const deleteAsset = async (assetCode: string) => await axios.delete(`${AZURE_SERVICE_API}/assets/${assetCode}`, CORS_CONFIG);
 
 export const createAsset = async (data: AssetCreateModel) => await axios.post(`${AZURE_SERVICE_API}/assets`, data, CORS_CONFIG);
