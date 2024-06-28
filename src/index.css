@@ -174,7 +174,8 @@ tr:hover {
 
 .form-check-input:focus,
 .form-control:focus,
-#dropdown-custom-2:focus {
+#dropdown-custom-2:focus,
+#dropdown-toggle-text:focus {
   border-color: red;
   outline: 0;
   box-shadow: 0 0 0 .25rem transparent;

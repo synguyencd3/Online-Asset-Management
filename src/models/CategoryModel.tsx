@@ -6,5 +6,4 @@ export type CategoryModel = {
 
 export type CategoryCreateModel = {
     name: string;
-    prefix: string
 }

@@ -38,8 +38,8 @@ const assetValidationSchema = Yup.object({
 });
 
 type Props = {
-  setHeaderTitle: any
-}
+  setHeaderTitle: any;
+};
 
 export const CreateAssetComponent = (props: Props) => {
   const [loading, setLoading] = useState(false);
@@ -55,7 +55,7 @@ export const CreateAssetComponent = (props: Props) => {
 
   useEffect(() => {
     props.setHeaderTitle("Manage Asset > Create Asset");
-}, [])
+  }, []);
 
   const formik = useFormik({
     initialValues: {
@@ -96,15 +96,11 @@ export const CreateAssetComponent = (props: Props) => {
   const categoryFormik = useFormik<CategoryCreateModel>({
     initialValues: {
       name: "",
-      prefix: "",
     },
     validationSchema: Yup.object({
       name: Yup.string()
         .max(100, "Category name must be at most 100 characters")
         .required("Category name is required"),
-      prefix: Yup.string()
-        .max(2, "Prefix must be at most 2 characters")
-        .required("Prefix is required"),
     }),
     onSubmit: async (values) => {
       if (!categoryFormik.isValid) return;
@@ -174,10 +170,16 @@ export const CreateAssetComponent = (props: Props) => {
                 <Dropdown.Toggle
                   variant="outline-dark"
                   id="dropdown-custom-2"
-                  className="form-select"
+                  className="w-100 pe-0"
                   style={{ height: "39px" }}
                 >
-                  {formik.values.categoryName}
+                  <input
+                    type="text"
+                    className="w-100 border-0 h-100 form-select ps-0 py-0"
+                    id="dropdown-toggle-text"
+                    readOnly
+                    {...formik.getFieldProps("categoryName")}
+                  />
                 </Dropdown.Toggle>
 
                 <Dropdown.Menu
@@ -187,23 +189,25 @@ export const CreateAssetComponent = (props: Props) => {
                   }}
                   className="border-dark"
                 >
-                  {categoriesResponse?.data.data.map(
-                    (category: CategoryModel) => (
-                      <Dropdown.Item
-                        key={category.id}
-                        onClick={() => {
-                          handleCategoryChange(category);
-                        }}
-                      >
-                        {category.name}
-                      </Dropdown.Item>
-                    )
-                  )}
-                  <Dropdown.Divider className="border-dark" />
-                  <Dropdown.Item id="add-category-dropdown-item">
+                  <div style={{ width: "fit-content" }}>
+                    {categoriesResponse?.data.data.map(
+                      (category: CategoryModel) => (
+                        <Dropdown.Item
+                          key={category.id}
+                          onClick={() => {
+                            handleCategoryChange(category);
+                          }}
+                        >
+                          {category.name}
+                        </Dropdown.Item>
+                      )
+                    )}
+                    <Dropdown.Divider className="border-dark" />
+                  </div>
+                  <div id="add-category-dropdown-item" className="px-3">
                     {addCategory ? (
                       <Form.Group className="d-flex">
-                        <Col sm={7}>
+                        <Col sm={10}>
                           <Form.Control
                             type="text"
                             placeholder="New Category Name"
@@ -212,17 +216,6 @@ export const CreateAssetComponent = (props: Props) => {
                             id="newCategoryName"
                             maxLength={100}
                             {...categoryFormik.getFieldProps("name")}
-                          />
-                        </Col>
-                        <Col sm={3}>
-                          <Form.Control
-                            type="text"
-                            placeholder="PF"
-                            className="rounded-0"
-                            style={{ height: "30px" }}
-                            maxLength={2}
-                            id="newCategoryPrefix"
-                            {...categoryFormik.getFieldProps("prefix")}
                           />
                         </Col>
                         <Col className="d-flex ps-2">
@@ -267,11 +260,12 @@ export const CreateAssetComponent = (props: Props) => {
                       <div
                         className="btn-link text-danger"
                         onClick={() => setAddCategory(true)}
+                        style={{ cursor: "pointer" }}
                       >
                         <i>Add New Category</i>
                       </div>
                     )}
-                  </Dropdown.Item>
+                  </div>
                 </Dropdown.Menu>
               </Dropdown>
               {formik.touched.categoryName && formik.errors.categoryName ? (
