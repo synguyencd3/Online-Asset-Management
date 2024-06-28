@@ -1,14 +1,30 @@
 import { AssetState, Location } from "../utils/Enum";
 
 export type AssetModel = {
-    // id: number;
-    assetCode: string;
-    name: string;
-    category: string;
-    installedDate: Date;
-    location: Location;
-    specification: string;
-    state: AssetState;
+  [key: string]: any; // Add an index signature to support dynamic property access
+
+  // id: number;
+  assetCode: string;
+  name: string;
+  category: string;
+  installedDate: Date;
+  location: Location;
+  specification: string;
+  state: AssetState;
+}
+export type AssetForTableModel = {
+  assetCode: string,
+  assetName: string,
+  category: string,
+  state: string;
+}
+
+export type AssetHistoryModel = {
+  [key: string]: any; // Add an index signature to support dynamic property access
+  date: Date;
+  assignedTo: string;
+  assignedBy: string;
+  returnedDate: Date;
 }
 export type AssetCreateModel = {
   assetName: string;

@@ -14,3 +14,6 @@ export const createAsset = async (data: AssetCreateModel) => await axios.post(`$
 export const updateAsset = async (assetCode: string, data: AssetEditRequestModel) => await axios.patch(`${AZURE_SERVICE_API}/assets/${assetCode}`, data, CORS_CONFIG);
 
 export const getOneAssetUrl = (assetCode: string) => `${AZURE_SERVICE_API}/assets/${assetCode}`;
+
+export const getOneAssetHistoryUrl = (assetCode: string, page: string | number) => `${AZURE_SERVICE_API}/assets/history/${assetCode}?page=${page}`;
+export const getHistoryOnlyUrl = (assetCode: string, page: string | number) => `${AZURE_SERVICE_API}/assets/history/only/${assetCode}?page=${page}`;

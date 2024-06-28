@@ -97,7 +97,7 @@ table {
   border-collapse: collapse;
   width: 100%;
   table-layout: auto;
-  border-spacing: 10px;
+  /* border-spacing: 10px; */
   min-width: 600px;
   overflow-x: auto;
 }
@@ -117,6 +117,7 @@ th {
 .cell,
 .cellnoClick {
   border-bottom: 1px solid rgb(142, 142, 142);
+
 }
 
 td {
@@ -278,5 +279,17 @@ tr:hover {
 }
 
 .disable-icon {
-  opacity: 20%;
+  opacity: 50%;
+}
+
+.asset-detail-modal{
+  max-width: 800px; /* Set your desired width here */
+  width: 100%;
+}
+.modal-header{
+  background-color: rgb(239, 241, 245);
+  border-bottom: 1px solid black;
+}
+.modal-content{
+  border: 1px solid black;
 }
