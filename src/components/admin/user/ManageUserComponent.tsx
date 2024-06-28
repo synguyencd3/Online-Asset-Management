@@ -55,6 +55,7 @@ export const ManageUserComponent = (props: Props) => {
 
 	const [totalPage, setTotalPage] = useState(0);
 
+	const [totalElement, setTotalElement] = useState(0);
 	const location = useLocation();
 
 	const [newUser] = useState<UserModel>(location.state?.newUser);
@@ -100,12 +101,9 @@ export const ManageUserComponent = (props: Props) => {
 			+ "search=" + encodeURIComponent(param.search) + "&"
 			+ "types=" + param.types.join() + "&"
 			+ "page=" + param.page + "&"
-			+ "size=" + "20" + "&"
+			+ "size=" + param.size + "&"
 			+ "sort=" + param.sort;
-		console.log(params);
-
 		setLoading(true)
-
 		await getUser(params).then((response) => {
 			let data = response.data.data;
 
@@ -170,6 +168,7 @@ export const ManageUserComponent = (props: Props) => {
 			setTableUser([...tableDatas]);
 			setParam((p: any) => ({ ...p, page: data.currentPage }));
 			setTotalPage(data.totalPage);
+			setTotalElement(data.totalElements)
 		}).catch(e => {
 			message.error(e.message);
 		});
@@ -185,8 +184,6 @@ export const ManageUserComponent = (props: Props) => {
 	}
 
 	function deleteUser(...data: any[]) {
-		// window.alert(data)
-		console.log(data[1]);
 		handleDisableClick(data[1].staffCode);
 	}
 
@@ -217,21 +214,14 @@ export const ManageUserComponent = (props: Props) => {
 			content: 'Disabling user...',
 		})
 			.then(async () => {
-				console.log(import.meta.env.VITE_AZURE_BACKEND_DOMAIN);
 				await disableUser(staffCode)
 					.then((res) => {
-						console.log(res);
 						if (res.status == 200) {
-							console.log(res.data);
 							message.success(res.data.message);
 							setDummy(Math.random());
 						}
 					})
 					.catch((err) => {
-						console.log(err.response);
-						console.log(process.env.REACT_APP_AZURE_BACKEND_DOMAIN);
-						// const errorData = err.response.data.substring(0, err.response.data.indexOf('}') + 1);
-						// const errorResponse: ErrorResponse = JSON.parse(errorData);
 						message.error(`${err.response.data.message}`);
 					});
 			});
@@ -280,11 +270,16 @@ export const ManageUserComponent = (props: Props) => {
 							<h4 className="text-center"> No User Found</h4>
 						</Row> :
 						<>
+							<Row className='ps-2'>
+								<p className='fs-5' style={{ color: "gray" }}>
+									Total : {totalElement}
+								</p>
+							</Row>
 							<Row>
 								{/* this initfucntion */}
 								<TableComponent headers={header} datas={tableUser} auxData={modalUsers} auxHeader={modalHeader} buttons={buttons} setSortString={setParam} showModalCell={showModalCell} setDummy={setDummy} setModalData={setModalData} setModalShow={setModalShow} pre_button={undefined} disableButton={[[false],[false]]} />
 							</Row>
-							<PaginationComponent currentPage={param.page} setCurrentPage={setParam} totalPage={totalPage} setDummy={setPage} />
+							<PaginationComponent currentPage={param.page} setParamsFunction={setParam} totalPage={totalPage} setDummy={setDummy} perPage={param.size} setPage={setPage} fixPageSize={false} ></PaginationComponent>
 						</>
 					}
 				</>
