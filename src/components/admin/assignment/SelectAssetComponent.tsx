@@ -35,7 +35,7 @@ export const SelectAssetComponent = (props: Props) => {
 
 	const [dummy, setDummy] = useState(0);
 
-	const [page, setPage] = useState(0);
+	const [_page, setPage] = useState(0);
 	const [selected, setSelected] = useState<String>("")
 
 	const [param, setParam] = useState({
@@ -130,7 +130,7 @@ export const SelectAssetComponent = (props: Props) => {
 								<Row>
 									<TableComponent headers={header} datas={tableAsset} auxData={auxData} auxHeader={[]} buttons={[]} setSortString={setParam} showModalCell={[]} setDummy={setDummy} setModalData={() => { }} setModalShow={undefined} pre_button={preButton} setSelect={setSelected} disableButton={[]}  ></TableComponent>
 								</Row>
-								<PaginationComponent currentPage={param.page} setCurrentPage={setParam} totalPage={totalPage} setDummy={setPage} ></PaginationComponent>
+								<PaginationComponent currentPage={param.page} totalPage={totalPage} setDummy={setPage} perPage={0} setParamsFunction={setParam} setPage={undefined} fixPageSize={false} ></PaginationComponent>
 							</>
 						}
 					</>

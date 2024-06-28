@@ -10,6 +10,7 @@ export type AssignmentModel = {
     assignedDate: Date;
     state: string;
     assignmentNote: string;
+    assignmentState: any;
 }
 
 export type AssignmentHomeViewModel = {

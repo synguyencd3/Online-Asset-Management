@@ -1,4 +1,4 @@
-import { AssignmentState } from "../utils/Enum";
+// import { AssignmentState } from "../utils/Enum";
 
 export type AssignmentForTableModel = {
     no: number;

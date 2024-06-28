@@ -3,7 +3,7 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch, faSpinner } from "@fortawesome/free-solid-svg-icons";
-import { FormEvent, RefAttributes, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { SelectUserComponent } from "./SelectUserComponent";
 import { SelectAssetComponent } from "./SelectAssetComponent";
@@ -106,9 +106,9 @@ export const CreateAssignmentComponent = (props: Props) => {
         console.log(selectedAsset)
     }, [selectedUser, selectedAsset])
 
-    function Submit(e: FormEvent<HTMLFormElement>) {
-        e.preventDefault();
-    }
+    // function Submit(e: FormEvent<HTMLFormElement>) {
+    //     e.preventDefault();
+    // }
     return (<>
         <Container>
             <Form className="p-5" style={{ maxWidth: "60%", minWidth: "300px", textAlign: "left" }} onSubmit={formik.handleSubmit}>
