@@ -67,6 +67,7 @@ export const ManageUserComponent = (props: Props) => {
 
 	const [messageApi, contextHolder] = message.useMessage();
 
+
 	function toDateString(date: string) {
 		let d = new Date(date);
 		return new Intl.DateTimeFormat("en-GB").format(d);
@@ -254,6 +255,11 @@ export const ManageUserComponent = (props: Props) => {
 	filterdata.push(data1, data2);
 	//----------------------------
 
+	let disableData: boolean[][] = [];
+	tableUser.forEach((_) => {
+		disableData.push([false, false]);
+	})
+
 	return (
 		<Container style={{ maxWidth: "100%" }} className="p-4">
 			{contextHolder}
@@ -282,7 +288,7 @@ export const ManageUserComponent = (props: Props) => {
 						<>
 							<Row>
 								{/* this initfucntion */}
-								<TableComponent headers={header} datas={tableUser} auxData={modalUsers} auxHeader={modalHeader} buttons={buttons} setSortString={setParam} showModalCell={showModalCell} setDummy={setDummy} setModalData={setModalData} setModalShow={setModalShow} pre_button={undefined} disableButton={[[false],[false]]} />
+								<TableComponent headers={header} datas={tableUser} auxData={modalUsers} auxHeader={modalHeader} buttons={buttons} setSortString={setParam} showModalCell={showModalCell} setDummy={setDummy} setModalData={setModalData} setModalShow={setModalShow} pre_button={undefined} disableButton={disableData} />
 							</Row>
 							<PaginationComponent currentPage={param.page} setCurrentPage={setParam} totalPage={totalPage} setDummy={setPage} />
 						</>
