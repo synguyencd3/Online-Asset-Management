@@ -23,7 +23,7 @@ const showModalCell = ["staffCode", "username", "fullName"]
 const modalHeader = ["Staff Code", "Full Name", "Username", "Date of Birth", "Gender", "Joined Date", "Type", "Location"]
 
 type Props = {
-    setHeaderTitle: any
+	setHeaderTitle: any
 }
 
 export const ManageUserComponent = (props: Props) => {
@@ -73,8 +73,8 @@ export const ManageUserComponent = (props: Props) => {
 	}
 
 	useEffect(() => {
-        props.setHeaderTitle("Manage User");
-    }, [])
+		props.setHeaderTitle("Manage User");
+	}, [])
 
 	useEffect(() => {
 		if (isInitialRender.current < totalFirstLoad) {
@@ -88,7 +88,6 @@ export const ManageUserComponent = (props: Props) => {
 	useEffect(() => {
 		if (isInitialRender.current < totalFirstLoad) {
 			isInitialRender.current++;
-			return;
 		}
 		else {
 			InitializeQuery()
@@ -283,9 +282,9 @@ export const ManageUserComponent = (props: Props) => {
 						<>
 							<Row>
 								{/* this initfucntion */}
-								<TableComponent headers={header} datas={tableUser} auxData={modalUsers} auxHeader={modalHeader} buttons={buttons} setSortString={setParam} showModalCell={showModalCell} setDummy={setDummy} setModalData={setModalData} setModalShow={setModalShow} pre_button={undefined} disableButton={[false]}  ></TableComponent>
+								<TableComponent headers={header} datas={tableUser} auxData={modalUsers} auxHeader={modalHeader} buttons={buttons} setSortString={setParam} showModalCell={showModalCell} setDummy={setDummy} setModalData={setModalData} setModalShow={setModalShow} pre_button={undefined} disableButton={[[false],[false]]} />
 							</Row>
-							<PaginationComponent currentPage={param.page} setCurrentPage={setParam} totalPage={totalPage} setDummy={setPage} ></PaginationComponent>
+							<PaginationComponent currentPage={param.page} setCurrentPage={setParam} totalPage={totalPage} setDummy={setPage} />
 						</>
 					}
 				</>

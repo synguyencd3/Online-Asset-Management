@@ -249,7 +249,7 @@ export const ManageAssetComponent: React.FC<Props> = (props: Props) => {
 	//----------------------------
 
 	//---------------------
-	let disableButtonArray = tableAsset.map(a => { return a.state === "Assigned" ? true : false });
+	let disableButtonArray: boolean[][] = tableAsset.map(a => { return a.state === "Assigned" ? [true, true] : [false, false] });
 	///////////////////////
 
 
