@@ -23,7 +23,7 @@ const showModalCell = ["assetCode", "assetName"]
 const modalHeader = ["Asset Code", "Asset Name", "Category", "Installed Date", "State", "Location", "Specification"]
 
 type Props = {
-    setHeaderTitle: any
+	setHeaderTitle: any
 }
 
 export const ManageAssetComponent: React.FC<Props> = (props: Props) => {
@@ -44,8 +44,8 @@ export const ManageAssetComponent: React.FC<Props> = (props: Props) => {
 	const isInitialRender = useRef(0);
 
 	useEffect(() => {
-        props.setHeaderTitle("Manage Asset");
-    }, [])
+		props.setHeaderTitle("Manage Asset");
+	}, [])
 
 	// two for each useEffect when useStrictApp, the first useEffect declare that check isInitialRender will be the one that run ??? // need check
 	const totalFirstLoad = 1;
@@ -195,15 +195,15 @@ export const ManageAssetComponent: React.FC<Props> = (props: Props) => {
 			});
 	}
 
-	  const handleDeleteConfirm = () => {
-			setShowDisableModal(false);
-			handleDelete(_deleteAssetCode); // Call the Disable function
-		}
+	const handleDeleteConfirm = () => {
+		setShowDisableModal(false);
+		handleDelete(_deleteAssetCode); // Call the Disable function
+	}
 
-	  const handleDeleteCancel = () => {
-			setShowDisableModal(false);
-			setDeleteAssetCode('') // Hide the Disable Modal
-		}
+	const handleDeleteCancel = () => {
+		setShowDisableModal(false);
+		setDeleteAssetCode('') // Hide the Disable Modal
+	}
 
 	const handleDeleteClick = (staffCode: string) => {
 		setShowDisableModal(true)
@@ -247,7 +247,6 @@ export const ManageAssetComponent: React.FC<Props> = (props: Props) => {
 	let disableButtonArray: boolean[][] = tableAsset.map(a => { return a.state === "Assigned" ? [true, true] : [false, false] });
 	///////////////////////
 
-
 	return (
 		<Container style={{ maxWidth: "100%" }} className="p-4">
 			<h4 className="ms-1" style={{ color: "red", fontWeight: "bold" }}>
@@ -289,13 +288,14 @@ export const ManageAssetComponent: React.FC<Props> = (props: Props) => {
 					}
 				</>
 			}
-			<AssetModalComponent
-				title={"Detailed Asset Infomation"}
-				show={modalShow}
-				onHide={() => setModalShow(false)}
-				data={modalData}
-			/>
-		 <ConfirmModalComponent show={_showDisableModal} onConfirm={handleDeleteConfirm} onCancel={handleDeleteCancel} confirmTitle={'Are you sure?'} confirmQuestion={'Do you want to delete this asset?'} confirmBtnLabel={'Delete'} cancelBtnLabel={'Cancel'} modalSize={"md"} /> 
+
+				<AssetModalComponent
+					title={"Detailed Asset Infomation"}
+					show={modalShow}
+					onHide={() => setModalShow(false)}
+					data={modalData?.assetCode}
+				/>
+			<ConfirmModalComponent show={_showDisableModal} onConfirm={handleDeleteConfirm} onCancel={handleDeleteCancel} confirmTitle={'Are you sure?'} confirmQuestion={'Do you want to delete this asset?'} confirmBtnLabel={'Delete'} cancelBtnLabel={'Cancel'} modalSize={"md"} />
 		</Container>
 	);
 }

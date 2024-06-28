@@ -8,7 +8,7 @@ export type AssignmentModel = {
     assignedBy: string;
     assignedTo: string;
     assignedDate: Date;
-    assignmentState: AssignmentState;
+    state: string;
     assignmentNote: string;
 }
 
@@ -38,5 +38,13 @@ export type AssignmentModalModel = {
     assignedBy: string,
     assignedDate: string,
     state: string,
+    note: string
+}
+
+
+export type AssignmentCreateModel = {
+    staffCode: string,
+    assetCode: string,
+    assignedDate: string,
     note: string
 }

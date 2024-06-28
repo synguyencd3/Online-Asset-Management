@@ -293,3 +293,6 @@ tr:hover {
 .modal-content{
   border: 1px solid black;
 }
+.show-more:hover{
+  cursor: pointer;
+}
