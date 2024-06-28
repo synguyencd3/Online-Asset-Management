@@ -18,9 +18,8 @@ import {
   getCategories,
 } from "../../../services/CategoryService";
 import { message } from "antd";
-import { AssetCreateModel } from "../../../models/AssetModel";
+import { AssetCreateModel, AssetForTableModel } from "../../../models/AssetModel";
 import { createAsset } from "../../../services/AssetService";
-import { AssetForTableModel } from "../../../models/AssetForTableModel";
 
 const assetValidationSchema = Yup.object({
   assetName: Yup.string()

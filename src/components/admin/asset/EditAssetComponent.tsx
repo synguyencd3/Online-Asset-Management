@@ -11,12 +11,12 @@ import { message } from "antd";
 import {
   AssetDetailModel,
   AssetEditRequestModel,
+  AssetForTableModel,
 } from "../../../models/AssetModel";
 import {
   getOneAssetUrl,
   updateAsset,
 } from "../../../services/AssetService";
-import { AssetForTableModel } from "../../../models/AssetForTableModel";
 import useSWR from "swr";
 import { getWithSWR } from "../../../services/swrService";
 
