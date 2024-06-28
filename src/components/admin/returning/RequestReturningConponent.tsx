@@ -1,6 +1,12 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 
-export const RequestReturningConponent: React.FC = () => {
+type Props = {
+  setHeaderTitle: any
+}
+export const RequestReturningConponent: React.FC<Props> = (props: Props) => {
+  useEffect(() => {
+    props.setHeaderTitle("Request for Returing");
+  }, [])
   return (
     <div>RequestReturningConponent: React.FC</div>
   )

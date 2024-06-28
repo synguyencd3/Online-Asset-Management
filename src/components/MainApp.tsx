@@ -28,21 +28,21 @@ export const MainApp: React.FC<{ setHeaderTitle: (title: string) => void, roleId
                 <Routes>
                     {roleId === 1 ? (
                         <Route element={<PermissionCheck allowedRoles={[1]} userRole={roleId} />}>
-                            <Route path="home" element={<AdminHomeComponent />} />
-                            <Route path="manage-users" element={<ManageUserComponent />} />
-                            <Route path="manage-users/new" element={<CreateUserComponent />} />
-                            <Route path="manage-users/edit" element={<EditUserComponent />} />
-                            <Route path="manage-assets" element={<ManageAssetComponent />} />
-							<Route path="manage-assets/new" element={<CreateAssetComponent />} />
-							<Route path="manage-assets/edit" element={<EditAssetComponent />} />
-                            <Route path="manage-assignments" element={<ManageAssignmentComponent />} />
-                            <Route path="request-returning" element={<RequestReturningConponent />} />
-                            <Route path="reports" element={<ReportComponent />} />
+                            <Route path="home" element={<AdminHomeComponent setHeaderTitle={setHeaderTitle} />} />
+                            <Route path="manage-users" element={<ManageUserComponent setHeaderTitle={setHeaderTitle} />} />
+                            <Route path="manage-users/new" element={<CreateUserComponent setHeaderTitle={setHeaderTitle} />} />
+                            <Route path="manage-users/edit" element={<EditUserComponent setHeaderTitle={setHeaderTitle} />} />
+                            <Route path="manage-assets" element={<ManageAssetComponent setHeaderTitle={setHeaderTitle} />} />
+							<Route path="manage-assets/new" element={<CreateAssetComponent setHeaderTitle={setHeaderTitle} />} />
+							<Route path="manage-assets/edit" element={<EditAssetComponent setHeaderTitle={setHeaderTitle} />} />
+                            <Route path="manage-assignments" element={<ManageAssignmentComponent setHeaderTitle={setHeaderTitle} />} />
+                            <Route path="request-returning" element={<RequestReturningConponent setHeaderTitle={setHeaderTitle} />} />
+                            <Route path="reports" element={<ReportComponent setHeaderTitle={setHeaderTitle} />} />
                             <Route path="*" element={<Navigate to={'/admin/home'} />} />
                         </Route>
                     ) : (
                         <Route element={<PermissionCheck allowedRoles={[2]} userRole={roleId} />}>
-                            <Route path="home" element={<UserHomeComponent />} />
+                            <Route path="home" element={<UserHomeComponent setHeaderTitle={setHeaderTitle} />} />
                             <Route path="*" element={<Navigate to={'/user/home'} />} />
                         </Route>
                     )}

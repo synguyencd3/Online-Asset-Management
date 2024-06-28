@@ -33,7 +33,7 @@
 } */
 
 .error-message {
-  max-width: 23em;
+  max-width: 23vw;
   margin-top: 2px;
   color: var(--PRIMARY-COLOR);
   font-size: 0.8em;

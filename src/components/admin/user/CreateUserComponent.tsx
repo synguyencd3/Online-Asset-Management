@@ -3,7 +3,7 @@ import { ColorPalette } from "../../../utils/ColorPalette";
 import * as Yup from 'yup';
 import { useFormik } from "formik";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { message } from "antd";
 import { UserModel } from "../../../models/UserModel";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -11,6 +11,7 @@ import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { createUser } from "../../../services/UserService";
 
 type Props = {
+    setHeaderTitle: any
 }
 
 const eighteenYearsAgo = new Date(new Date().setFullYear(new Date().getFullYear() - 18));
@@ -44,9 +45,12 @@ const createUserValidationSchema = Yup.object({
     gender: Yup.string().required('Gender is required')
 });
 
-export const CreateUserComponent = (_props: Props) => {
+export const CreateUserComponent = (props: Props) => {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false)
+    useEffect(() => {
+        props.setHeaderTitle("Manage User > Create User");
+    }, [])
 
     const formik = useFormik({
         initialValues: {

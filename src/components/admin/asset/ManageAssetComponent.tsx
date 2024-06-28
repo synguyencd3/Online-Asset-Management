@@ -12,9 +12,10 @@ import { PaginationComponent } from '../../commons/PaginationComponent';
 import { AssetForTableModel } from '../../../models/AssetForTableModel';
 import { faCircleXmark } from '@fortawesome/free-regular-svg-icons';
 import { CategoryModel } from '../../../models/CategoryModel';
-import { getAsset, getCategories } from '../../../services/AssetService';
-import { UserInfoModalComponent } from '../../commons/UserInfoModalComponent';
+import { deleteAsset, getAsset, getCategories } from '../../../services/AssetService';
+import { DetailModalComponent } from '../../commons/DetailModalComponent';
 import { AssetModel } from '../../../models/AssetModel';
+import { ConfirmModalComponent } from '../../commons/ConfirmModalComponent';
 
 
 
@@ -22,8 +23,11 @@ const header = [{ name: 'Asset Code', value: "assetCode", sort: true, direction:
 const showModalCell = ["assetCode", "assetName"]
 const modalHeader = ["Asset Code", "Asset Name", "Category", "Installed Date", "State", "Location", "Specification"]
 
+type Props = {
+    setHeaderTitle: any
+}
 
-export const ManageAssetComponent: React.FC = () => {
+export const ManageAssetComponent: React.FC<Props> = (props: Props) => {
 	const navigate = useNavigate();
 
 
@@ -39,6 +43,10 @@ export const ManageAssetComponent: React.FC = () => {
 	const [_deleteAssetCode, setDeleteAssetCode] = useState('');
 
 	const isInitialRender = useRef(0);
+
+	useEffect(() => {
+        props.setHeaderTitle("Manage Asset");
+    }, [])
 
 	// two for each useEffect when useStrictApp, the first useEffect declare that check isInitialRender will be the one that run ??? // need check
 	const totalFirstLoad = 1;
@@ -165,41 +173,41 @@ export const ManageAssetComponent: React.FC = () => {
 		navigate('/admin/manage-assets/edit', { state: { assetProps: data[1] } })
 	}
 
-	// const handleDelete = async (assetCode: string) => {
-	// 	message.open({
-	// 		type: 'loading',
-	// 		content: 'Deleting asset...',
-	// 	})
-	// 		.then(async () => {
-	// 			console.log(import.meta.env.VITE_AZURE_BACKEND_DOMAIN);
-	// 			await deleteAsset(assetCode)
-	// 				.then((res) => {
-	// 					console.log(res);
-	// 					if (res.status == 200) {
-	// 						console.log(res.data);
-	// 						message.success(res.data.message);
-	// 						setDummy(Math.random());
-	// 					}
-	// 				})
-	// 				.catch((err) => {
-	// 					console.log(err.response);
-	// 					console.log(process.env.REACT_APP_AZURE_BACKEND_DOMAIN);
-	// 					// const errorData = err.response.data.substring(0, err.response.data.indexOf('}') + 1);
-	// 					// const errorResponse: ErrorResponse = JSON.parse(errorData);
-	// 					message.error(`${err.response.message}`);
-	// 				});
-	// 		});
-	// }
+	const handleDelete = async (assetCode: string) => {
+		message.open({
+			type: 'loading',
+			content: 'Deleting asset...',
+		})
+			.then(async () => {
+				console.log(import.meta.env.VITE_AZURE_BACKEND_DOMAIN);
+				await deleteAsset(assetCode)
+					.then((res) => {
+						console.log(res);
+						if (res.status == 200) {
+							console.log(res.data);
+							message.success(res.data.message);
+							setDummy(Math.random());
+						}
+					})
+					.catch((err) => {
+						console.log(err.response);
+						console.log(process.env.REACT_APP_AZURE_BACKEND_DOMAIN);
+						// const errorData = err.response.data.substring(0, err.response.data.indexOf('}') + 1);
+						// const errorResponse: ErrorResponse = JSON.parse(errorData);
+						message.error(`${err.response.message}`);
+					});
+			});
+	}
 
-	//   const handleDeleteConfirm = () => {
-	// 		setShowDisableModal(false);
-	// 		handleDelete(deleteAssetCode); // Call the Disable function
-	// 	}
+	  const handleDeleteConfirm = () => {
+			setShowDisableModal(false);
+			handleDelete(_deleteAssetCode); // Call the Disable function
+		}
 
-	//   const handleDeleteCancel = () => {
-	// 		setShowDisableModal(false);
-	// 		setDeleteAssetCode('') // Hide the Disable Modal
-	// 	}
+	  const handleDeleteCancel = () => {
+			setShowDisableModal(false);
+			setDeleteAssetCode('') // Hide the Disable Modal
+		}
 
 	const handleDeleteClick = (staffCode: string) => {
 		setShowDisableModal(true)
@@ -241,7 +249,7 @@ export const ManageAssetComponent: React.FC = () => {
 	//----------------------------
 
 	//---------------------
-	let disableButtonArray = tableAsset.map(a => { return a.state === "Assigned" ? true : false });
+	let disableButtonArray: boolean[][] = tableAsset.map(a => { return a.state === "Assigned" ? [true, true] : [false, false] });
 	///////////////////////
 
 
@@ -281,14 +289,15 @@ export const ManageAssetComponent: React.FC = () => {
 					}
 				</>
 			}
-			<UserInfoModalComponent
+			<DetailModalComponent
 				title={"Detailed User Infomation"}
 				show={modalShow}
 				onHide={() => setModalShow(false)}
 				label={modalHeader}
 				data={modalData}
 			/>
-			{/* <ConfirmModalComponent show={showDisableModal} onConfirm={handleDisableConfirm} onCancel={handleDisableCancel} confirmTitle={'Are you sure?'} confirmQuestion={'Do you want to disable this user?'} confirmBtnLabel={'Disable'} cancelBtnLabel={'Cancel'} modalSize={"md"} /> */}
+		 <ConfirmModalComponent show={_showDisableModal} onConfirm={handleDeleteConfirm} onCancel={handleDeleteCancel} confirmTitle={'Are you sure?'} confirmQuestion={'Do you want to delete this asset?'} confirmBtnLabel={'Delete'} cancelBtnLabel={'Cancel'} modalSize={"md"} /> 
 		</Container>
 	);
 }
+
