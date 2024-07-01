@@ -291,7 +291,7 @@ export const ManageAssetComponent: React.FC<Props> = (props: Props) => {
 			}
 
 				<AssetModalComponent
-					title={"Detailed Asset Infomation"}
+					title={"Detailed Asset Information"}
 					show={modalShow}
 					onHide={() => setModalShow(false)}
 					data={modalData?.assetCode}

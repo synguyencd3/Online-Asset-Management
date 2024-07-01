@@ -107,7 +107,6 @@ export const AdminHomeComponent: React.FC<Props> = (props: Props) => {
             .then(async () => {
                 await responseAssignment(id, status)
                     .then((res: any) => {
-                        console.log(res.data);
                         if (res.status === 200) {
                             message.success(res.data.message);
                             getAssignmentData();
@@ -132,8 +131,6 @@ export const AdminHomeComponent: React.FC<Props> = (props: Props) => {
             .then((res: any) => {
                 if (res.status === 200) {
                     setAuxData(res.data.data.content)
-                    console.log("res.content", res.data.data.content)
-                    console.log("res.totalPage", res.data.data.totalPage)
                     setData(res.data.data.content.map((data: AssignmentHomeViewModel) => ({
                         assetCode: data.assetCode,
                         assetName: data.assetName,
@@ -158,7 +155,6 @@ export const AdminHomeComponent: React.FC<Props> = (props: Props) => {
                     setDisableButton(disableBtns);
                     setTotalPage(res.data.data.totalPage)
                     setParam((p: any) => ({ ...p, page: res.data.data.currentPage }));
-                    console.log("res.data", res.data.data)
                     setLoading(false)
                 }
             })

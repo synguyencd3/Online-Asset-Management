@@ -5,8 +5,15 @@ export type OwnPageableModel = {
 }
 
 export type PageableModel = {
-    searchKey: string;
+    search: string;
     page: number;
     size: number;
     sort: string;
 }
+
+export interface PageResponseModel<T> {
+    content: T[];
+    totalPage: number;
+    currentPage: number;
+    totalElements: number;
+  }

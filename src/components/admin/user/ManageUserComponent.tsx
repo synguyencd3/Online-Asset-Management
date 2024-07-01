@@ -290,7 +290,7 @@ export const ManageUserComponent = (props: Props) => {
 				</>
 			}
 			<DetailModalComponent
-				title={"Detailed User Infomation"}
+				title={"Detailed User Information"}
 				show={modalShow}
 				onHide={() => setModalShow(false)}
 				label={modalHeader}

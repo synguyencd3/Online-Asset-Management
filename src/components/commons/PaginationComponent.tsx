@@ -19,7 +19,6 @@ export const PaginationComponent = ({ currentPage, totalPage, setParamsFunction,
             return
         }
         setParamsFunction((p: any) => ({ ...p, page: page }))
-        console.log(page);
 
         setPage(Math.random())
     };

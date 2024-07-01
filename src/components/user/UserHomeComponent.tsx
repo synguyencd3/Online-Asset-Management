@@ -148,7 +148,7 @@ export const UserHomeComponent: React.FC<Props> = (props: Props) => {
             <TableComponent headers={header} datas={data} setSortString={setParam} auxData={auxData} auxHeader={auxHeader} buttons={buttons} showModalCell={showModalCell} setDummy={undefined} setModalData={setModalData} setModalShow={setModalDetailShow} pre_button={undefined} disableButton={disableButton} />
             <PaginationComponent currentPage={param.page} totalPage={totalPage} setParamsFunction={setParam} setDummy={setPage} perPage={20} setPage={undefined} fixPageSize={false} />
             <DetailModalComponent
-                title={"Detailed Assignment Infomation"}
+                title={"Detailed Assignment Information"}
                 show={modalDetailShow}
                 onHide={() => setModalDetailShow(false)}
                 label={modalHeader}

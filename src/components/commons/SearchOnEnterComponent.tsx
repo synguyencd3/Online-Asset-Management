@@ -1,19 +1,18 @@
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { FormEvent, RefAttributes } from "react";
+import React, { FormEvent, RefAttributes, useState } from "react";
 import { Button, Form, InputGroup, OverlayTrigger, Tooltip, TooltipProps } from "react-bootstrap";
 import { JSX } from "react/jsx-runtime";
 
 type Props = {
-    placeholder: string | null
-    params: string
+    placeholder: string | null;
     setParamsFunction: any;
-    setDummy: any;
-    style: Object
+    style: object;
 }
 
 
-export const SearchComponent = (props: Props) => {
+export const SearchOnEnterComponent = (props: Props) => {
+    const [search, setSearch] = useState<string>("");
 
     function SubmitSearch(e: FormEvent<HTMLFormElement>) {
         e.preventDefault();
@@ -30,9 +29,9 @@ export const SearchComponent = (props: Props) => {
     return (
         <Form onSubmit={(e) => { SubmitSearch(e) }} style={{  width: "60%", ...props.style, }}>
             <InputGroup id="search-group" className="" style={{ maxWidth: "" }}>
-                <Form.Control placeholder={props.placeholder ?? ""} id="search-input" name="search" onChange={(e) => { props.setParamsFunction((p: any) => ({ ...p, search: e.target.value })) }} />
+                <Form.Control placeholder={props.placeholder ?? ""} id="search-input" name="search" onChange={(e) => setSearch(e.target.value)} />
                 <OverlayTrigger placement="right" delay={{ show: 150, hide: 150 }} overlay={renderTooltip}>
-                    <Button type="button" variant="outline-dark" id="search-button" onClick={() => { props.setDummy(Math.random()); }}>
+                    <Button type="submit" variant="outline-dark" id="search-button" onClick={() => {props.setParamsFunction((p : object) => ({...p, search: search}))}}>
                         <FontAwesomeIcon size='lg' icon={faMagnifyingGlass} />
                     </Button>
                 </OverlayTrigger>
