@@ -42,7 +42,7 @@ export const MainApp: React.FC<{ setHeaderTitle: (title: string) => void, roleId
                         </Route>
                     ) : (
                         <Route element={<PermissionCheck allowedRoles={[2]} userRole={roleId} />}>
-                            <Route path="home" element={<UserHomeComponent />} />
+                            <Route path="home" element={<UserHomeComponent setHeaderTitle={setHeaderTitle} />} />
                             <Route path="*" element={<Navigate to={'/user/home'} />} />
                         </Route>
                     )}

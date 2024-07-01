@@ -21,17 +21,17 @@ type Props = {
 	setModalData: any
 	setModalShow: any
 	pre_button: any
-	disableButton: boolean[]
+	disableButton: boolean[][]
 }
 
 export const TableComponent = ({ headers, datas, auxData, buttons, setSortString, showModalCell, setDummy, setModalData, setModalShow, pre_button, disableButton }: Props) => {
 	const [header, setHeader] = useState(headers);
-
+	const cellCLickStyle = 'cell text-truncate'
 	const handleClick = (e: React.MouseEvent<any>, key: object) => {
 		const targetElement = e.target as HTMLElement;
 		const className = targetElement.className;
 		setModalData(key);
-		if (className === "cell" || className === "modalClick") {
+		if (className === cellCLickStyle || className === "modalClick") {
 			setModalShow(true);
 		}
 	};
@@ -47,7 +47,6 @@ export const TableComponent = ({ headers, datas, auxData, buttons, setSortString
 	return (
 		<>
 			<Container style={{ maxWidth: "100%", width: "100%" }}>
-
 				<Table hover responsive className='table' id='table'>
 					<thead id='table-header'>
 						<tr>
@@ -75,15 +74,15 @@ export const TableComponent = ({ headers, datas, auxData, buttons, setSortString
 										if (showModalCell.includes(key)) {
 											return (
 												<td key={idx} className='modalClick' style={headers[idx].colStyle}>
-													<div className='cell'>
+													<div className={cellCLickStyle}>
 														{value?.toString()}
 													</div>
 												</td>
 											)
 										} else {
 											return (
-												<td key={idx} style={headers[idx].colStyle}>
-													<div className='cellnoClick'>
+												<td key={idx} className='' style={headers[idx].colStyle}>
+													<div className='cellnoClick text-truncate'>
 														{value?.toString()}
 													</div>
 												</td>
@@ -92,11 +91,17 @@ export const TableComponent = ({ headers, datas, auxData, buttons, setSortString
 									}
 									)
 								}
-								<td className='last-cell'>
+								<td className='last-cell '>
 									<Row className='g-3 justify-content-center'>
 										{buttons?.map((button: FunctionalIconModel, bIndex) => (
 											<Col key={bIndex} id={'table_icon_' + bIndex + index} className='d-flex justify-content-end'>
-												<FontAwesomeIcon size='lg' className={disableButton[index] ? "disable-icon" : "normal-icon"} icon={button.icon} onClick={(e) => { disableButton[index] ? "" : button.onClickfunction(e, auxData[index], data) }} style={button.style} />
+												<FontAwesomeIcon 
+												size='lg' 
+												className={disableButton[index][bIndex] ? "disable-icon" : "normal-icon"} 
+												icon={button.icon} 
+												onClick={(e) => { disableButton[index][bIndex] ? "" : button.onClickfunction(e, auxData[index], data) }} 
+												fontWeight={700}
+												style={button.style} />
 											</Col>
 										))}
 									</Row>
@@ -106,6 +111,7 @@ export const TableComponent = ({ headers, datas, auxData, buttons, setSortString
 					</tbody>
 				</Table>
 			</Container>
+			<></>
 		</>
 	)
 }

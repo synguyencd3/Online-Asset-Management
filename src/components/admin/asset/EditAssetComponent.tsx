@@ -11,12 +11,12 @@ import { message } from "antd";
 import {
   AssetDetailModel,
   AssetEditRequestModel,
+  AssetForTableModel,
 } from "../../../models/AssetModel";
 import {
   getOneAssetUrl,
   updateAsset,
 } from "../../../services/AssetService";
-import { AssetForTableModel } from "../../../models/AssetForTableModel";
 import useSWR from "swr";
 import { getWithSWR } from "../../../services/swrService";
 
@@ -201,14 +201,14 @@ export const EditAssetComponent = (props: Props) => {
                 checked={formik.values.assetState === AssetState.NOT_AVAILABLE}
               />
               <Form.Check
-                label={AssetState.WATING_FOR_RECYCLING}
+                label={AssetState.WAITING_FOR_RECYCLING}
                 name="assetState"
-                value={AssetState.WATING_FOR_RECYCLING}
+                value={AssetState.WAITING_FOR_RECYCLING}
                 type="radio"
-                id={AssetState.WATING_FOR_RECYCLING}
+                id={AssetState.WAITING_FOR_RECYCLING}
                 onChange={formik.handleChange}
                 checked={
-                  formik.values.assetState === AssetState.WATING_FOR_RECYCLING
+                  formik.values.assetState === AssetState.WAITING_FOR_RECYCLING
                 }
               />
               <Form.Check

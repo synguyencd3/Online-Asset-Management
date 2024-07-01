@@ -9,21 +9,21 @@ import { SearchComponent } from '../../commons/SearchComponent';
 import { LoaderComponent } from '../../commons/LoaderComponent';
 import { TableComponent } from '../../commons/TableComponent';
 import { PaginationComponent } from '../../commons/PaginationComponent';
-import { AssetForTableModel } from '../../../models/AssetForTableModel';
 import { faCircleXmark } from '@fortawesome/free-regular-svg-icons';
 import { CategoryModel } from '../../../models/CategoryModel';
-import { getAsset, getCategories } from '../../../services/AssetService';
-import { UserInfoModalComponent } from '../../commons/UserInfoModalComponent';
-import { AssetModel } from '../../../models/AssetModel';
+import { deleteAsset, getAsset, getCategories } from '../../../services/AssetService';
+import { AssetForTableModel, AssetModel } from '../../../models/AssetModel';
+import { AssetModalComponent } from './AssetModalComponent';
+import { ConfirmModalComponent } from '../../commons/ConfirmModalComponent';
 
 
 
-const header = [{ name: 'Asset Code', value: "assetCode", sort: true, direction: true, colStyle: { width: "12%" } }, { name: 'Asset Name', value: "name", sort: true, direction: true, colStyle: { width: "40%" } }, { name: 'Category', value: "category", sort: true, direction: true, colStyle: {} }, { name: 'State', value: "status", sort: true, direction: true, colStyle: { width: "15%" } }]
+const header = [{ name: 'Asset Code', value: "assetCode", sort: true, direction: true, colStyle: { width: "12%" } }, { name: 'Asset Name', value: "name", sort: true, direction: true, colStyle: { width: "40%" } }, { name: 'Category', value: "category", sort: true, direction: true, colStyle: { maxWidth: '200px' } }, { name: 'State', value: "status", sort: true, direction: true, colStyle: { width: "15%" } }]
 const showModalCell = ["assetCode", "assetName"]
 const modalHeader = ["Asset Code", "Asset Name", "Category", "Installed Date", "State", "Location", "Specification"]
 
 type Props = {
-    setHeaderTitle: any
+	setHeaderTitle: any
 }
 
 export const ManageAssetComponent: React.FC<Props> = (props: Props) => {
@@ -44,8 +44,8 @@ export const ManageAssetComponent: React.FC<Props> = (props: Props) => {
 	const isInitialRender = useRef(0);
 
 	useEffect(() => {
-        props.setHeaderTitle("Manage Asset");
-    }, [])
+		props.setHeaderTitle("Manage Asset");
+	}, [])
 
 	// two for each useEffect when useStrictApp, the first useEffect declare that check isInitialRender will be the one that run ??? // need check
 	const totalFirstLoad = 1;
@@ -61,7 +61,9 @@ export const ManageAssetComponent: React.FC<Props> = (props: Props) => {
 
 	const [dummy, setDummy] = useState(0);
 	const [page, setPage] = useState(0);
+
 	const [totalPage, setTotalPage] = useState(0);
+	const [totalElement, setTotalElement] = useState(0);
 
 	const location = useLocation();
 
@@ -70,7 +72,7 @@ export const ManageAssetComponent: React.FC<Props> = (props: Props) => {
 
 	const [modalShow, setModalShow] = useState(false);
 
-	const [modalData, setModalData] = useState<Object>({});
+	const [modalData, setModalData] = useState<AssetModel>();
 
 	modalShow ? modalData ? "" : "" : "";
 
@@ -117,8 +119,9 @@ export const ManageAssetComponent: React.FC<Props> = (props: Props) => {
 			+ "states=" + param.states.join() + "&"
 			+ "categories=" + param.categories.join() + "&"
 			+ "page=" + param.page + "&"
-			+ "size=" + "20" + "&"
+			+ "size=" + param.size + "&"
 			+ "sort=" + param.sort;
+
 		console.log(params);
 
 		setLoading(true)
@@ -158,6 +161,7 @@ export const ManageAssetComponent: React.FC<Props> = (props: Props) => {
 			setTableAsset(assetsforTable)
 			setAuxData(assets);
 			setTotalPage(data.totalPage);
+			setTotalElement(data.totalElements)
 		}).catch(e => {
 			message.error(e.message);
 		});
@@ -172,41 +176,34 @@ export const ManageAssetComponent: React.FC<Props> = (props: Props) => {
 		navigate('/admin/manage-assets/edit', { state: { assetProps: data[1] } })
 	}
 
-	// const handleDelete = async (assetCode: string) => {
-	// 	message.open({
-	// 		type: 'loading',
-	// 		content: 'Deleting asset...',
-	// 	})
-	// 		.then(async () => {
-	// 			console.log(import.meta.env.VITE_AZURE_BACKEND_DOMAIN);
-	// 			await deleteAsset(assetCode)
-	// 				.then((res) => {
-	// 					console.log(res);
-	// 					if (res.status == 200) {
-	// 						console.log(res.data);
-	// 						message.success(res.data.message);
-	// 						setDummy(Math.random());
-	// 					}
-	// 				})
-	// 				.catch((err) => {
-	// 					console.log(err.response);
-	// 					console.log(process.env.REACT_APP_AZURE_BACKEND_DOMAIN);
-	// 					// const errorData = err.response.data.substring(0, err.response.data.indexOf('}') + 1);
-	// 					// const errorResponse: ErrorResponse = JSON.parse(errorData);
-	// 					message.error(`${err.response.message}`);
-	// 				});
-	// 		});
-	// }
+	const handleDelete = async (assetCode: string) => {
+		message.open({
+			type: 'loading',
+			content: 'Deleting asset...',
+		})
+			.then(async () => {
+				await deleteAsset(assetCode)
+					.then((res) => {
+						if (res.status == 200) {
+							message.success(res.data.message);
+							setDummy(Math.random());
+						}
+					})
+					.catch((err) => {
+						message.error(`${err.response.message}`);
+					});
+			});
+	}
 
-	//   const handleDeleteConfirm = () => {
-	// 		setShowDisableModal(false);
-	// 		handleDelete(deleteAssetCode); // Call the Disable function
-	// 	}
+	const handleDeleteConfirm = () => {
+		setShowDisableModal(false);
+		handleDelete(_deleteAssetCode); // Call the Disable function
+	}
 
-	//   const handleDeleteCancel = () => {
-	// 		setShowDisableModal(false);
-	// 		setDeleteAssetCode('') // Hide the Disable Modal
-	// 	}
+	const handleDeleteCancel = () => {
+		setShowDisableModal(false);
+		setDeleteAssetCode('') // Hide the Disable Modal
+	}
 
 	const handleDeleteClick = (staffCode: string) => {
 		setShowDisableModal(true)
@@ -214,7 +211,6 @@ export const ManageAssetComponent: React.FC<Props> = (props: Props) => {
 	}
 
 	function openModal(...data: any[]) {
-		console.log(data[1]);
 		handleDeleteClick(data[1].assetCode);
 	}
 
@@ -248,9 +244,8 @@ export const ManageAssetComponent: React.FC<Props> = (props: Props) => {
 	//----------------------------
 
 	//---------------------
-	let disableButtonArray = tableAsset.map(a => { return a.state === "Assigned" ? true : false });
+	let disableButtonArray: boolean[][] = tableAsset.map(a => { return a.state === "Assigned" ? [true, true] : [false, false] });
 	///////////////////////
-
 
 	return (
 		<Container style={{ maxWidth: "100%" }} className="p-4">
@@ -280,22 +275,28 @@ export const ManageAssetComponent: React.FC<Props> = (props: Props) => {
 							<h4 className="text-center"> No Asset Found</h4>
 						</Row> :
 						<>
+							<Row className='ps-2'>
+								<p className='fs-5' style={{ color: "gray" }}>
+									Total : {totalElement}
+								</p>
+							</Row>
 							<Row>
 								<TableComponent headers={header} datas={tableAsset} auxData={auxData} auxHeader={modalHeader} buttons={buttons} setSortString={setParam} showModalCell={showModalCell} setDummy={setDummy} setModalData={setModalData} setModalShow={setModalShow} pre_button={undefined} disableButton={disableButtonArray}  ></TableComponent>
 							</Row>
-							<PaginationComponent currentPage={param.page} setCurrentPage={setParam} totalPage={totalPage} setDummy={setPage} ></PaginationComponent>
+							<PaginationComponent currentPage={param.page} setParamsFunction={setParam} totalPage={totalPage} setDummy={setDummy} setPage={setPage} perPage={param.size} fixPageSize={false} ></PaginationComponent>
 						</>
 					}
 				</>
 			}
-			<UserInfoModalComponent
-				title={"Detailed User Infomation"}
-				show={modalShow}
-				onHide={() => setModalShow(false)}
-				label={modalHeader}
-				data={modalData}
-			/>
-			{/* <ConfirmModalComponent show={showDisableModal} onConfirm={handleDisableConfirm} onCancel={handleDisableCancel} confirmTitle={'Are you sure?'} confirmQuestion={'Do you want to disable this user?'} confirmBtnLabel={'Disable'} cancelBtnLabel={'Cancel'} modalSize={"md"} /> */}
+
+				<AssetModalComponent
+					title={"Detailed Asset Infomation"}
+					show={modalShow}
+					onHide={() => setModalShow(false)}
+					data={modalData?.assetCode}
+				/>
+			<ConfirmModalComponent show={_showDisableModal} onConfirm={handleDeleteConfirm} onCancel={handleDeleteCancel} confirmTitle={'Are you sure?'} confirmQuestion={'Do you want to delete this asset?'} confirmBtnLabel={'Delete'} cancelBtnLabel={'Cancel'} modalSize={"md"} />
 		</Container>
 	);
 }
+

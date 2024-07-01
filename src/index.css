@@ -97,7 +97,7 @@ table {
   border-collapse: collapse;
   width: 100%;
   table-layout: auto;
-  border-spacing: 10px;
+  /* border-spacing: 10px; */
   min-width: 600px;
   overflow-x: auto;
 }
@@ -117,6 +117,7 @@ th {
 .cell,
 .cellnoClick {
   border-bottom: 1px solid rgb(142, 142, 142);
+
 }
 
 td {
@@ -174,7 +175,8 @@ tr:hover {
 
 .form-check-input:focus,
 .form-control:focus,
-#dropdown-custom-2:focus {
+#dropdown-custom-2:focus,
+#dropdown-toggle-text:focus {
   border-color: red;
   outline: 0;
   box-shadow: 0 0 0 .25rem transparent;
@@ -278,4 +280,19 @@ tr:hover {
 
 .disable-icon {
   opacity: 50%;
+}
+
+.asset-detail-modal{
+  max-width: 800px; /* Set your desired width here */
+  width: 100%;
+}
+.modal-header{
+  background-color: rgb(239, 241, 245);
+  border-bottom: 1px solid black;
+}
+.modal-content{
+  border: 1px solid black;
+}
+.show-more:hover{
+  cursor: pointer;
 }
