@@ -124,6 +124,7 @@ export const ManageUserComponent = (props: Props) => {
 					type: RolesLowerCase[newUser.roleId],
 				};
 				tableDatas.push(data);
+				disableBtns.push([false, false]);	
 
 				let modal: ModalUserModel = {
 					staffCode: newUser.staffCode,
