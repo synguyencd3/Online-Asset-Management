@@ -21,11 +21,10 @@ type Props = {
 	setModalData: any
 	setModalShow: any
 	pre_button: any
-	setSelect?:any
 	disableButton: boolean[][]
 }
 
-export const TableComponent = ({ headers, datas, auxData, buttons, setSortString, showModalCell, setDummy, setModalData, setModalShow, pre_button, setSelect, disableButton }: Props) => {
+export const TableComponent = ({ headers, datas, auxData, buttons, setSortString, showModalCell, setDummy, setModalData, setModalShow, pre_button, disableButton }: Props) => {
 	const [header, setHeader] = useState(headers);
 	const cellCLickStyle = 'cell text-truncate'
 	const handleClick = (e: React.MouseEvent<any>, key: object) => {
@@ -69,7 +68,7 @@ export const TableComponent = ({ headers, datas, auxData, buttons, setSortString
 					<tbody>
 						{datas?.map((data: Object, index) => (
 							<tr key={index} onClick={(e) => { handleClick(e, auxData[index]) }}>
-								{pre_button ? <td>{pre_button(data,setSelect)}</td> : ""}
+								{pre_button ? <td>{pre_button}</td> : ""}
 								{
 									Object.entries(data).map(([key, value], idx) => {
 										if (showModalCell.includes(key)) {
