@@ -39,7 +39,7 @@ export const ManageUserComponent = (props: Props) => {
 	const isInitialRender = useRef(0);
 
 	// two for each useEffect when useStrictApp, the first useEffect declare that check isInitialRender will be the one that run ??? // need check
-	const totalFirstLoad = 0;
+	const totalFirstLoad = 3;
 
 
 	// limit the API call per param properties by using dummy, use setDummy(Math.random()) to init the query with param
