@@ -81,29 +81,27 @@ export const PaginationComponent = ({ currentPage, totalPage, setParamsFunction,
     };
 
     return (
-        <>
-            <Pagination className="justify-content-end">
-                {fixPageSize ? "" :
-                    <div className="me-5" style={{ maxWidth: "100%", minWidth: "50px", textAlign: "left" }}>
-                        <Form.Group as={Row} className="" controlId="location">
-                            <Form.Select name="location" defaultValue={perPage} style={{ width: "100%" }} onChange={(e) => { handlePerPageChange(e.target.value) }}>
-                                <option value="1" >1 / page</option>
-                                <option value="5" >5 / page</option>
-                                <option value="10" >10 / page</option>
-                                <option value="20" >20 / page</option>
-                                <option value="40" >40 / page</option>
-                            </Form.Select>
+        <Pagination className="justify-content-end">
+            {fixPageSize ? "" :
+                <div className="me-5" style={{ maxWidth: "100%", minWidth: "50px", textAlign: "left" }}>
+                    <Form.Group as={Row} className="" controlId="location">
+                        <Form.Select name="location" defaultValue={perPage} style={{ width: "100%" }} onChange={(e) => { handlePerPageChange(e.target.value) }}>
+                            <option value="1" >1 / page</option>
+                            <option value="5" >5 / page</option>
+                            <option value="10" >10 / page</option>
+                            <option value="20" >20 / page</option>
+                            <option value="40" >40 / page</option>
+                        </Form.Select>
 
-                        </Form.Group>
-                    </div>
-                }
+                    </Form.Group>
+                </div>
+            }
 
-                <Pagination.Prev disabled={isFirstPage || totalPage === 0} onClick={() => handlePageChange(currentPage - 1)}> Previous</Pagination.Prev>
+            <Pagination.Prev className="rounded-start" disabled={isFirstPage || totalPage === 0} onClick={() => handlePageChange(currentPage - 1)}>Previous</Pagination.Prev>
 
-                {renderPageItems()}
+            {renderPageItems()}
 
-                <Pagination.Next disabled={isLastPage || totalPage === 0} onClick={() => handlePageChange(currentPage + 1)}> Next</Pagination.Next >
-            </Pagination>
-        </>
+            <Pagination.Next disabled={isLastPage || totalPage === 0} onClick={() => handlePageChange(currentPage + 1)}>Next</Pagination.Next >
+        </Pagination>
     );
 }

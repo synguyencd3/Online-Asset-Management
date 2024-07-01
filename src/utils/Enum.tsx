@@ -29,8 +29,14 @@ export enum StaffState {
 // should change to number ?
 export enum AssignmentState {
     ACCEPTED = 'Accepted',
-    WAITING_FOR_ACCEPTANCE = 'Wating for Acceptance',
+    WAITING_FOR_ACCEPTANCE = 'Waiting for Acceptance',
     DECLINED = 'Declined',
+}
+
+export enum AssignmentRequestState {
+    ACCEPTED,
+    WAITING_FOR_ACCEPTANCE,
+    DECLINED,
 }
 
 export enum ReturningState {

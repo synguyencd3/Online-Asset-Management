@@ -6,12 +6,14 @@ import { FunctionalIconModel } from '../../../models/FunctionalIconModel';
 import { AssignmentHomeViewModel, AssignmentModel } from '../../../models/AssignmentModel';
 import { faCheck, faRotateBack, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { ColorPalette } from '../../../utils/ColorPalette';
-import { getOwnAssignmentDetails } from '../../../services/AssignmentService';
-import { AssignmentState } from '../../../utils/Enum';
+import { getOwnAssignmentDetails, responseAssignment } from '../../../services/AssignmentService';
+import { AssignmentRequestState, AssignmentState } from '../../../utils/Enum';
 import { OwnPageableModel } from '../../../models/PageableModel';
 import { PaginationComponent } from '../../commons/PaginationComponent';
 import { Row } from 'react-bootstrap';
 import { LoaderComponent } from '../../commons/LoaderComponent';
+import { message } from 'antd';
+import { ConfirmModalComponent } from '../../commons/ConfirmModalComponent';
 
 type Props = {
     setHeaderTitle: any
@@ -40,6 +42,9 @@ export const AdminHomeComponent: React.FC<Props> = (props: Props) => {
     const [page, setPage] = useState(0);
     const [totalPage, setTotalPage] = useState(0);
     const [loading, setLoading] = useState(false);
+    const [messageApi, contextHolder] = message.useMessage();
+    const [showConfirmModal, setShowConfirmModal] = useState(false); // State for the Logout Modal
+    const [responseData, setResponseData] = useState<{ id: number, status: string }>({ id: 0, status: '' });
 
     const [param, setParam] = useState({
         search: "",
@@ -49,12 +54,13 @@ export const AdminHomeComponent: React.FC<Props> = (props: Props) => {
         sort: "assetcode,asc",
     });
 
-
-    const acceptAssignment = () => {
-        window.alert("Accept Assignment");
+    const acceptAssignment = (...data: AssignmentModel[]) => {
+        setShowConfirmModal(true);
+        setResponseData({ id: data[1].id, status: AssignmentRequestState[AssignmentRequestState.ACCEPTED] });
     }
-    const declineAssignment = () => {
-        window.alert("Decline Assignment");
+    const declineAssignment = (...data: AssignmentModel[]) => {
+        setShowConfirmModal(true);
+        setResponseData({ id: data[1].id, status: AssignmentRequestState[AssignmentRequestState.DECLINED] });
     }
     const returnAsset = () => {
         window.alert("Return Asset");
@@ -92,6 +98,27 @@ export const AdminHomeComponent: React.FC<Props> = (props: Props) => {
     useEffect(() => {
         getAssignmentData();
     }, [page])
+
+    const responseOwnAssignment = async (id: number, status: string) => {
+        messageApi.open({
+            type: 'loading',
+            content: status == 'ACCEPTED' ? 'Accepting assignment...' : 'Declining assignment...',
+        })
+            .then(async () => {
+                await responseAssignment(id, status)
+                    .then((res: any) => {
+                        console.log(res.data);
+                        if (res.status === 200) {
+                            message.success(res.data.message);
+                            getAssignmentData();
+                        }
+                    })
+                    .catch((err) => {
+                        console.log(err.response);
+                        message.error(err.response.data.message);
+                    })
+            })
+    }
 
     const getAssignmentData = async () => {
         setLoading(true)
@@ -140,12 +167,22 @@ export const AdminHomeComponent: React.FC<Props> = (props: Props) => {
             });
     }
 
+    const handleModalConfirm = () => {
+        setShowConfirmModal(false);
+        responseOwnAssignment(responseData.id, responseData.status); // Call the Confirm function
+    }
+
+    const handleModalCancel = () => {
+        setShowConfirmModal(false); // Hide the Confirm Modal
+    }
+
     const handleClose = () => {
         setShowModal(false);
     };
 
     return (
         <div>
+            {contextHolder}
             <h4 style={{ color: ColorPalette.PRIMARY_COLOR }} className='fw-bold fs-4 ms-1 mt-5 mb-3'>My Assignment</h4>
             <DetailModalComponent
                 title={"Detailed Assignment Information"}
@@ -172,6 +209,7 @@ export const AdminHomeComponent: React.FC<Props> = (props: Props) => {
                 </>
             }
             <PasswordModalComponent show={showModal} onClose={handleClose} isFirstLoggedIn={firstLogin} />
+            <ConfirmModalComponent show={showConfirmModal} onConfirm={handleModalConfirm} onCancel={handleModalCancel} confirmTitle={'Are you sure?'} confirmQuestion={responseData.status == "ACCEPTED" ? 'Do you want to accept this assignment?' : 'Do you want to decline this assignment?'} confirmBtnLabel={responseData.status == 'ACCEPTED' ? 'Accept' : 'Decline'} cancelBtnLabel={'Cancel'} modalSize={'md'} />
         </div>
     );
 };
