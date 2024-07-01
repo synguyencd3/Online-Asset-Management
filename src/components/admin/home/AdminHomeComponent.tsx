@@ -6,22 +6,26 @@ import { FunctionalIconModel } from '../../../models/FunctionalIconModel';
 import { AssignmentHomeViewModel, AssignmentModel } from '../../../models/AssignmentModel';
 import { faCheck, faRotateBack, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { ColorPalette } from '../../../utils/ColorPalette';
-import { getAssignmentsDetails } from '../../../services/AssignmentService';
+import { getOwnAssignmentDetails } from '../../../services/AssignmentService';
 import { AssignmentState } from '../../../utils/Enum';
+import { OwnPageableModel } from '../../../models/PageableModel';
+import { PaginationComponent } from '../../commons/PaginationComponent';
+import { Row } from 'react-bootstrap';
+import { LoaderComponent } from '../../commons/LoaderComponent';
 
 type Props = {
     setHeaderTitle: any
 }
 
 const header = [
-    { name: 'Asset Code', value: "assetCode", sort: true, direction: true, colStyle: {} },
-    { name: 'Asset Name', value: "assetName", sort: true, direction: true, colStyle: {} },
+    { name: 'Asset Code', value: "assetcode", sort: true, direction: true, colStyle: {} },
+    { name: 'Asset Name', value: "assetname", sort: true, direction: true, colStyle: {} },
     { name: 'Category', value: "category", sort: true, direction: true, colStyle: {} },
-    { name: 'Assigned Date', value: "assignedDate", sort: true, direction: true, colStyle: {} },
+    { name: 'Assigned Date', value: "assigneddate", sort: true, direction: true, colStyle: {} },
     { name: 'State', value: "state", sort: true, direction: true, colStyle: {} },
     { name: '', value: "", sort: true, direction: true, colStyle: {} },
 ]
-const showModalCell = ["assetCode", "assetName", "category", "assignedDate", "state"];
+const showModalCell = ["assetcode", "assetname", "category", "assigneddate", "state"];
 const modalHeader = ["Asset Code", "Asset Name", "Category", "Specification", "Assigned to", "Assigned by", "Assigned Date", "State", "Note"];
 
 export const AdminHomeComponent: React.FC<Props> = (props: Props) => {
@@ -33,7 +37,17 @@ export const AdminHomeComponent: React.FC<Props> = (props: Props) => {
     const [auxData, setAuxData] = useState<AssignmentModel[]>([]);
     const [auxHeader] = useState<string[]>(modalHeader);
     const [disableButton, setDisableButton] = useState<boolean[][]>([])
+    const [page, setPage] = useState(0);
+    const [totalPage, setTotalPage] = useState(0);
+    const [loading, setLoading] = useState(false);
 
+    const [param, setParam] = useState({
+        search: "",
+        states: ["ASSIGNED", "AVAILABLE", "NOT_AVAILABLE"],
+        page: 0,
+        size: 20,
+        sort: "assetcode,asc",
+    });
 
 
     const acceptAssignment = () => {
@@ -75,13 +89,25 @@ export const AdminHomeComponent: React.FC<Props> = (props: Props) => {
         getAssignmentData();
     }, []);
 
+    useEffect(() => {
+        getAssignmentData();
+    }, [page])
+
     const getAssignmentData = async () => {
-        await getAssignmentsDetails()
+        setLoading(true)
+
+        const pageable: OwnPageableModel = {
+            page: param.page,
+            size: param.size,
+            sort: param.sort
+        }
+        await getOwnAssignmentDetails(pageable)
             .then((res: any) => {
                 if (res.status === 200) {
-                    setAuxData(res.data.data)
-                    console.log("res.data", res.data.data)
-                    setData(res.data.data.map((data: AssignmentHomeViewModel) => ({
+                    setAuxData(res.data.data.content)
+                    console.log("res.content", res.data.data.content)
+                    console.log("res.totalPage", res.data.data.totalPage)
+                    setData(res.data.data.content.map((data: AssignmentHomeViewModel) => ({
                         assetCode: data.assetCode,
                         assetName: data.assetName,
                         category: data.category,
@@ -90,7 +116,7 @@ export const AdminHomeComponent: React.FC<Props> = (props: Props) => {
                     })));
                     const tableData: AssignmentHomeViewModel[] = [];
                     const disableBtns: boolean[][] = [];
-                    res.data.data.map((data: AssignmentHomeViewModel) => {
+                    res.data.data.content.map((data: AssignmentHomeViewModel) => {
                         tableData.push({
                             assetCode: data.assetCode,
                             assetName: data.assetName,
@@ -103,7 +129,10 @@ export const AdminHomeComponent: React.FC<Props> = (props: Props) => {
                     })
                     setData(tableData);
                     setDisableButton(disableBtns);
+                    setTotalPage(res.data.data.totalPage)
+                    setParam((p: any) => ({ ...p, page: res.data.data.currentPage }));
                     console.log("res.data", res.data.data)
+                    setLoading(false)
                 }
             })
             .catch((err) => {
@@ -117,15 +146,31 @@ export const AdminHomeComponent: React.FC<Props> = (props: Props) => {
 
     return (
         <div>
-            <h4 style={{ color: ColorPalette.PRIMARY_COLOR }} className='fw-bold fs-4 ms-3 mt-5 mb-3'>My Assignment</h4>
-            <TableComponent headers={header} datas={data} setSortString={undefined} auxData={auxData} auxHeader={auxHeader} buttons={buttons} showModalCell={showModalCell} setDummy={undefined} setModalData={setModalData} setModalShow={setModalDetailShow} pre_button={undefined} disableButton={disableButton} />
+            <h4 style={{ color: ColorPalette.PRIMARY_COLOR }} className='fw-bold fs-4 ms-1 mt-5 mb-3'>My Assignment</h4>
             <DetailModalComponent
-                title={"Detailed Assignment Infomation"}
+                title={"Detailed Assignment Information"}
                 show={modalDetailShow}
                 onHide={() => setModalDetailShow(false)}
                 label={modalHeader}
                 data={modalData}
             />
+            {loading ?
+                <LoaderComponent></LoaderComponent>
+                :
+                <>
+                    {data.length === 0 ?
+                        <Row>
+                            <h5 className="text-center"> No Assignment Found</h5>
+                        </Row> :
+                        <>
+                            <Row>
+                                <TableComponent headers={header} datas={data} setSortString={setParam} auxData={auxData} auxHeader={auxHeader} buttons={buttons} showModalCell={showModalCell} setDummy={undefined} setModalData={setModalData} setModalShow={setModalDetailShow} pre_button={undefined} disableButton={disableButton} />
+                            </Row>
+                            <PaginationComponent currentPage={param.page} totalPage={totalPage} setParamsFunction={setParam} setDummy={setPage} perPage={param.size} setPage={setPage} fixPageSize={false} />
+                        </>
+                    }
+                </>
+            }
             <PasswordModalComponent show={showModal} onClose={handleClose} isFirstLoggedIn={firstLogin} />
         </div>
     );

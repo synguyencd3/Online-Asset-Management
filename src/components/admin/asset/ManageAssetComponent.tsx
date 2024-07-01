@@ -59,6 +59,7 @@ export const ManageAssetComponent: React.FC<Props> = (props: Props) => {
 		sort: "assetCode,asc",
 	});
 
+
 	const [dummy, setDummy] = useState(0);
 	const [page, setPage] = useState(0);
 
