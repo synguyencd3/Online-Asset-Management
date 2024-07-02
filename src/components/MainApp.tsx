@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { SidebarComponent } from './commons/SideBarComponent';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { ManageAssetComponent } from './admin/asset/ManageAssetComponent';
