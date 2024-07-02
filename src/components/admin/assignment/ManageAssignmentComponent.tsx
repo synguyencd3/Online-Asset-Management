@@ -95,7 +95,6 @@ const filterData = [
         defaultChecked: true,
     },
 ];
-
 type Props = {
   setHeaderTitle: (title: string) => void;
 };
@@ -104,10 +103,6 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
   useEffect(() => {
     props.setHeaderTitle("Manage Assignments");
   }, [props]);
-
-  // const location = useLocation();
-  // const newAssignment: AssignmentForTableModel = location.state?.newAssignment;
-  // console.log(newAssignment);
 
     const navigate = useNavigate();
 
@@ -144,9 +139,9 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
         getAssignments
     );
 
-    const handleDeleteConfirm = () => { };
+  const handleDeleteConfirm = () => { };
 
-    const handleDeleteCancel = () => { };
+  const handleDeleteCancel = () => { };
 
     function editAssignment(...data: AssignmentForTableModel[]) {
         navigate("/admin/manage-assignments/edit", { state: { user: data[1] } });
@@ -183,11 +178,11 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
   const setDisableButtonState = (data: AssignmentForTableModel[]) => {
     return data.map((item: AssignmentForTableModel) => [
       item.status.toLowerCase() !==
-        AssignmentState.WAITING_FOR_ACCEPTANCE.toLowerCase(),
+      AssignmentState.WAITING_FOR_ACCEPTANCE.toLowerCase(),
       item.status.toLowerCase() !==
-        AssignmentState.WAITING_FOR_ACCEPTANCE.toLowerCase(),
+      AssignmentState.WAITING_FOR_ACCEPTANCE.toLowerCase(),
       item.status.toLowerCase() !==
-        AssignmentState.ACCEPTED.toLowerCase(),
+      AssignmentState.ACCEPTED.toLowerCase(),
     ]);
   };
 
@@ -292,6 +287,11 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
             </Row>
           ) : (
             <>
+              <Row className="ps-2">
+                <p className="fs-5" style={{ color: "gray" }}>
+                  Total : {assignmentResponse.totalElements}
+                </p>
+              </Row>
               <Row>
                 <TableComponent
                   headers={header}
@@ -301,7 +301,7 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
                   buttons={buttons}
                   setSortString={setParam}
                   showModalCell={showModalCell}
-                  setDummy={() => {}}
+                  setDummy={() => { }}
                   setModalData={setModalData}
                   setModalShow={setModalShow}
                   pre_button={undefined}
@@ -314,10 +314,10 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
                 currentPage={param.page}
                 setParamsFunction={setParam}
                 totalPage={assignmentResponse.totalPage}
-                setDummy={() => {}}
+                setDummy={() => { }}
                 perPage={param.size}
                 fixPageSize={false}
-                setPage={() => {}}
+                setPage={() => { }}
               ></PaginationComponent>
             </>
           )}
