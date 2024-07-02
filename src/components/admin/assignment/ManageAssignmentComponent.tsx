@@ -23,6 +23,7 @@ import { message } from "antd";
 import { SearchOnEnterComponent } from "../../commons/SearchOnEnterComponent";
 import { AssignmentModelComponent } from "./AssignmentModalComponent";
 import { uppercaseStatusToText } from "../../../utils/utils";
+import { createReturnRequest } from "../../../services/ReturnRequestService";
 
 const header = [
   {
@@ -109,11 +110,11 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
   const newAssignment = location.state?.newAssignment;
 
   const [modalShow, setModalShow] = useState(false);
-
   const [modalData, setModalData] = useState<AssignmentForTableModel>();
-
+  const [messageApi, contextHolder] = message.useMessage();
   const [showDisableModal, setShowDisableModal] = useState(false);
   const [showReturnModal, setShowReturnModal] = useState(false);
+  const [returnAssignmentId, setReturnAssignment] = useState<number>(-1);
 
   const [param, setParam] = useState<AssignmentGetParams>({
     search: "",
@@ -149,8 +150,35 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
   const handleDeleteCancel = () => {};
 
   const handleReturnCancel = () => {
+    setReturnAssignment(-1);
     setShowReturnModal(false)
   };
+
+  const handleReturnConfirm = () => {
+    handleReturn()
+    setShowReturnModal(false)
+  };
+
+  const handleReturn = () => {
+    const request = {
+      assignmentId: returnAssignmentId
+    }
+    messageApi.open({
+			type: 'loading',
+			content: 'Disabling user...',
+		})
+			.then(async () => {
+				await createReturnRequest(request)
+					.then((res) => {
+						if (res.status == 200) {
+							message.success(res.data.message);
+						}
+					})
+					.catch((err) => {
+						message.error(`${err.response.data.message}`);
+					});
+			});
+  }
 
     function editAssignment(...data: AssignmentForTableModel[]) {
         navigate("/admin/manage-assignments/edit", { state: { user: data[1].id } });
@@ -163,6 +191,7 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
 
   function returnAssignment(...data: AssignmentForTableModel[]) {
     setShowReturnModal(true)
+    setReturnAssignment(data[1].id);
   }
 
   const buttons: FunctionalIconModel[] = [];
@@ -229,6 +258,7 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
 
   return (
     <Container style={{ maxWidth: "100%" }} className="p-4">
+      {contextHolder}
       <h4 className="ms-1" style={{ color: "red", fontWeight: "bold" }}>
         Assignment List
       </h4>
@@ -352,7 +382,7 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
       />
       <ConfirmModalComponent
         show={showReturnModal}
-        onConfirm={() =>{}}
+        onConfirm={handleReturnConfirm}
         onCancel={handleReturnCancel}
         confirmTitle={"Are you sure?"}
         confirmQuestion={"Do you want to create a returning request for this asset?"}
@@ -364,3 +394,4 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
     </Container>
   );
 };
+
