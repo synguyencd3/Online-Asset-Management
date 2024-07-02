@@ -11,7 +11,7 @@ type Props = {
 }
 
 
-export const SearchOnEnterComponent = (props: Props) => {
+export const SearchOnEnterComponent: React.FC<Props> = (props: Props) => {
     const [search, setSearch] = useState<string>("");
 
     function SubmitSearch(e: FormEvent<HTMLFormElement>) {

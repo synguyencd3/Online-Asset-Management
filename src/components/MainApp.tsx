@@ -16,10 +16,7 @@ import { EditAssetComponent } from './admin/asset/EditAssetComponent';
 import { CreateAssignmentComponent } from './admin/assignment/CreateAssignmentComponent';
 
 export const MainApp: React.FC<{ setHeaderTitle: (title: string) => void, roleId: number }> = ({ setHeaderTitle, roleId }) => {
-    useEffect(() => {
-        setHeaderTitle('Home');
-    }, [setHeaderTitle]);
-
+    
     return (
         <div className="d-flex flex-column flex-md-row mx-4 mt-5" style={{ minWidth: '20vw' }}>
             <aside className="sidebar-column col-12 col-md-3 col-lg-2 px-2">
