@@ -65,9 +65,7 @@ export const LogInComponent: React.FC<LoginProps> = ({ setIsLoggedIn, setUsernam
                         })
                         .catch((err) => {
                             setLoading(false);
-                            console.log(err.response.status);
                             if (err.response.status === 401) {
-                                console.log(err.response.data.message);
                                 message.error(err.response.data.message);
                             }
                             if (err.response.status == 403) {
