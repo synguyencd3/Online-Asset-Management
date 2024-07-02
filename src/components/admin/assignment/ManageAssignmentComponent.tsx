@@ -108,7 +108,7 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
   const location = useLocation();
   const newAssignment = location.state?.newAssignment;
 
-    const [_modalShow, setModalShow] = useState(false);
+  const [modalShow, setModalShow] = useState(false);
 
   const [modalData, setModalData] = useState<AssignmentForTableModel>();
 
@@ -143,13 +143,13 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
     }
   };
 
-  const handleDeleteConfirm = () => {};
+  const handleDeleteConfirm = () => { };
 
-  const handleDeleteCancel = () => {};
+  const handleDeleteCancel = () => { };
 
-    function editAssignment(...data: AssignmentForTableModel[]) {
-        navigate("/admin/manage-assignments/edit", { state: { user: data[1].id } });
-    }
+  function editAssignment(...data: AssignmentForTableModel[]) {
+    navigate("/admin/manage-assignments/edit", { state: { user: data[1].id } });
+  }
 
   function deleteAssignment(...data: AssignmentForTableModel[]) {
     setShowDisableModal(false);
@@ -184,7 +184,7 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
       item.status.toLowerCase() !==
       AssignmentState.WAITING_FOR_ACCEPTANCE.toLowerCase(),
       item.status.toLowerCase() !==
-        AssignmentState.WAITING_FOR_ACCEPTANCE.toLowerCase(),
+      AssignmentState.WAITING_FOR_ACCEPTANCE.toLowerCase(),
       item.status.toLowerCase() !== AssignmentState.ACCEPTED.toLowerCase(),
     ]);
   };
@@ -214,9 +214,9 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
         (item: AssignmentForTableModel) => item.id === newAssignmentRecord.id
       )
         ? assignmentList.filter(
-            (item: AssignmentForTableModel) =>
-              item.id !== newAssignmentRecord.id
-          )
+          (item: AssignmentForTableModel) =>
+            item.id !== newAssignmentRecord.id
+        )
         : assignmentList.slice(0, assignmentList.length - 1);
       assignmentList = [newAssignmentRecord, ...assignments];
     }
@@ -236,7 +236,7 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
                 data={filterData}
                 params={param.status}
                 setParamsFunction={handleSetParam}
-                setDummy={() => {}}
+                setDummy={() => { }}
                 style={{ width: "100%" }}
                 defaultAll={false}
                 paramName={"status"}
@@ -267,7 +267,7 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
         <Col
           sm={3}
           className="d-flex justify-content-end align-items-center"
-          //   style={{ maxWidth: "230px" }}
+        //   style={{ maxWidth: "230px" }}
         >
           <Button
             variant="danger"
