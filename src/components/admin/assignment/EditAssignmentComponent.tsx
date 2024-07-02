@@ -4,23 +4,25 @@ import { useFormik } from "formik";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch, faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { SelectUserComponent } from "./SelectUserComponent";
 import { SelectAssetComponent } from "./SelectAssetComponent";
 import { ColorPalette } from "../../../utils/ColorPalette";
 
 import { AssetForSelectTableModel } from "../../../models/AssetForSelectTableModel";
 import { UserForSelectTableModel } from "../../../models/UserForSelectTableModel";
-import { AssignmentCreateModel } from "../../../models/AssignmentModel";
-import { createAssignments } from "../../../services/AssignmentService";
-import { message } from "antd";
-import { AssignmentForTableModel } from "../../../models/AssignmentForTable";
+import {  AssignmentEditModel } from "../../../models/AssignmentModel";
+//import { editAssignments } from "../../../services/AssignmentService";
+//import { message } from "antd";
+
 
 type Props = {
     setHeaderTitle: any
 }
 
-export const CreateAssignmentComponent = (props: Props) => {
+export const EditAssignmentComponent = (props: Props) => {
+    const location = useLocation();
+    const [assignment] = useState<AssignmentEditModel>(location.state.user);
     let navigate = useNavigate();
     let [loading, setLoading] = useState(false)
     let [selectedAsset, setSelectedAsset] = useState<AssetForSelectTableModel>();
@@ -47,9 +49,7 @@ export const CreateAssignmentComponent = (props: Props) => {
     };
 
     const validationSchema = Yup.object({
-        user: Yup.string().required('User is required'),
-        asset: Yup.string().required('Asset is required'),
-        assignedDate: Yup.string().required('Assigned date is required'),
+       
     });
 
     const formik = useFormik({
@@ -59,36 +59,34 @@ export const CreateAssignmentComponent = (props: Props) => {
             assignedDate: "",
             note: ""
         },
-        enableReinitialize: true,
         validationSchema: validationSchema,
-        onSubmit: async (values) => {
+        onSubmit: /*async (values) => */ () =>{
             setLoading(true);
-            const data: AssignmentCreateModel = {
-                assetCode: selectedAsset?.assetCode ?? "",
-                staffCode: selectedUser?.staffCode ?? "",
-                note: values.note,
-                assignedDate: values.assignedDate
-            };
+            // const data: AssignmentEditModel = {
+            //     assetCode: selectedAsset?.assetCode ?? assignment.assetCode,
+            //     staffCode: selectedUser?.staffCode ?? assignment.staffCode,
+            //     note: values.note,
+            //     assignedTo: "",
+            //     assetName: "",
+            //     assignedDate: ""
+            // };
 
-            await createAssignments(data)
-                .then((response) => {
-                    message.success(response.data.message);
-                    const newAssignment: AssignmentForTableModel = response.data.data;
-                    setLoading(false);
-                    navigate("/admin/manage-assignments", {
-                        replace: true,
-                        state: { newAssignment: newAssignment },
-                    });
-                })
-                .catch((error) => {
-                    message.error(error.response.data.message);
-                    setLoading(false);
-                });
+            // await editAssignments(data, assignment.id)
+            //     .then((response) => {
+            //         message.success(response.data.message);
+            //         //const newAssignment: AssignmentForTableModel = response.data.data;
+            //         setLoading(false);
+            //         navigate("/admin/manage-assignments");
+            //     })
+            //     .catch((error) => {
+            //         message.error(error.response.data.message);
+            //         setLoading(false);
+            //     });
         },
     });
 
     useEffect(() => {
-        props.setHeaderTitle("Manage Assignments > Create New Assignment");
+        props.setHeaderTitle("Manage Assignments > Edit Assignment");
     }, [])
 
 
@@ -101,7 +99,7 @@ export const CreateAssignmentComponent = (props: Props) => {
         <Container>
             <Form className="p-5" style={{ maxWidth: "60%", minWidth: "300px", textAlign: "left" }} onSubmit={formik.handleSubmit}>
                 <h4 style={{ color: ColorPalette.PRIMARY_COLOR }} className="mb-4">
-                    Create New Assignment
+                    Edit Assignment
                 </h4>
                 <Form.Group as={Row} className="mb-3" >
                     <Form.Label column sm={3} >
@@ -115,7 +113,7 @@ export const CreateAssignmentComponent = (props: Props) => {
                                     <Form.Control
                                         type='text'
                                         {...getFieldProps('user')}
-                                        value={selectedUser == null ? "" : selectedUser?.fullName}
+                                        value={selectedUser == null ? assignment.assignedTo : selectedUser?.fullName}
                                         className="form-control border-0"
                                     />
                                     <InputGroup.Text className='bg-transparent border-0'>
@@ -155,7 +153,7 @@ export const CreateAssignmentComponent = (props: Props) => {
                                     <Form.Control
                                         type='text'
                                         {...getFieldProps('asset')}
-                                        value={selectedAsset == null ? " " : selectedAsset?.assetName}
+                                        value={selectedAsset == null ? assignment.assetName : selectedAsset?.assetName}
                                         className="form-control border-0"
                                     />
                                     <InputGroup.Text className='bg-transparent border-0'>
@@ -188,10 +186,7 @@ export const CreateAssignmentComponent = (props: Props) => {
                         <span className='mx-1' style={{ color: ColorPalette.PRIMARY_COLOR }}>*</span>
                     </Form.Label>
                     <Col sm={9}>
-                        <Form.Control type="date"  {...getFieldProps('assignedDate')} style={formik.errors.assignedDate ? { borderColor: "red" } : {}} />
-                        {formik.touched.assignedDate && formik.errors.assignedDate ? (
-                            <div className="error-message">{formik.errors.assignedDate}</div>
-                        ) : null}
+                        <Form.Control type="date"   value={assignment.assignedDate} disabled={true}  />
                     </Col>
                     
                 </Form.Group>
@@ -200,13 +195,13 @@ export const CreateAssignmentComponent = (props: Props) => {
                         Note
                     </Form.Label>
                     <Col sm={9}>
-                        <Form.Control as="textarea" {...getFieldProps('note')} />
+                        <Form.Control as="textarea" {...getFieldProps('note')} value={assignment.note}/>
                     </Col>
                 </Form.Group>
 
                 <Row>
                     <Col className="d-flex justify-content-end my-4">
-                        <Button variant="danger" className="mx-4" style={{ minWidth: "100px" }} type="submit" disabled={!formik.dirty || !formik.isValid || loading}> {loading ? <FontAwesomeIcon icon={faSpinner} spin /> : "Save"}</Button>
+                        <Button variant="danger" className="mx-4" style={{ minWidth: "100px" }} type="submit" disabled={!formik.isValid || loading}> {loading ? <FontAwesomeIcon icon={faSpinner} spin /> : "Save"}</Button>
                         <Button variant="outline-dark" className="ms-4" style={{ minWidth: "100px" }} onClick={() => { navigate(-1) }}>Cancel</Button>
                     </Col>
                 </Row>

@@ -5,12 +5,15 @@ import { ColorPalette } from "../../../utils/ColorPalette"
 import { LoaderComponent } from "../../commons/LoaderComponent"
 import { PaginationComponent } from "../../commons/PaginationComponent"
 import { useEffect, useState } from "react"
-import { getAsset } from "../../../services/AssetService"
+import { getAsset, getCategories } from "../../../services/AssetService"
 import { AssetModel } from "../../../models/AssetModel"
 import { message } from 'antd';
 import { AssetForSelectTableModel } from "../../../models/AssetForSelectTableModel"
 import { faSpinner } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import useSWR from "swr"
+import { categoriesEndpoint } from "../../../services/CategoryService"
+import { CategoryModel } from "../../../models/CategoryModel"
 
 const header = [
 	{ name: '', value: "", sort: false, direction: false, colStyle: { width: "20%" } },
@@ -37,15 +40,30 @@ export const SelectAssetComponent = (props: Props) => {
 
 	const [, setPage] = useState(0);
 	const [selected, setSelected] = useState<String>("")
+	//const [categories, setCategories] = useState<number[]>([])
+	
 
 	const [param, setParam] = useState({
 		search: "",
 		states: ["AVAILABLE"],
-		categories: ["1"],
+		categories: [],
 		page: 0,
 		size: 20,
 		sort: "assetCode,asc",
 	});
+
+	useSWR(
+		categoriesEndpoint,
+		getCategories,
+		{
+			onSuccess: (response) => {
+				const arrayId = response.data.data.map((category: CategoryModel) => category.id)
+				setParam((p: any) => ({ ...p, categories: arrayId }))
+				setDummy(Math.random())
+			}
+		}
+	
+	  );
 
 	async function InitializeQuery() {
 		setLoading(true)
@@ -56,7 +74,6 @@ export const SelectAssetComponent = (props: Props) => {
 			+ "page=" + param.page + "&"
 			+ "size=" + "20" + "&"
 			+ "sort=" + param.sort;
-		console.log(params);
 
 		setLoading(true)
 
@@ -100,7 +117,6 @@ export const SelectAssetComponent = (props: Props) => {
 	}
 
 	const save = () => {
-		console.log(selected);
 		props.setSelectedOnParent(selected);
 		props.closeDropdown()
 	}

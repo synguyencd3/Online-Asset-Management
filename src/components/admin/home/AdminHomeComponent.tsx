@@ -37,6 +37,7 @@ export const AdminHomeComponent: React.FC<Props> = (props: Props) => {
     const [firstLogin, setFirstLogin] = useState<boolean>(false);
     const [modalData, setModalData] = useState<AssignmentForTableModel>();
     const [data, setData] = useState<AssignmentHomeViewModel[]>([]);
+    const [totalElements, setTotalElements] = useState<number>(0);
     const [auxData, setAuxData] = useState<AssignmentModel[]>([]);
     const [auxHeader] = useState<string[]>(modalHeader);
     const [disableButton, setDisableButton] = useState<boolean[][]>([])
@@ -47,10 +48,6 @@ export const AdminHomeComponent: React.FC<Props> = (props: Props) => {
     const [showConfirmModal, setShowConfirmModal] = useState(false); // State for the Logout Modal
     const [responseData, setResponseData] = useState<{ id: number, status: string }>({ id: 0, status: '' });
     const [dummy, setDummy] = useState(1);
-
-    console.log("mark", modalDetailShow);
-
-
     const [param, setParam] = useState({
         search: "",
         states: ["ASSIGNED", "AVAILABLE", "NOT_AVAILABLE"],
@@ -98,7 +95,6 @@ export const AdminHomeComponent: React.FC<Props> = (props: Props) => {
 
     useEffect(() => {
         props.setHeaderTitle('Home');
-        console.log("first");
         const isLoggedInFirst = sessionStorage.getItem('isFirstLogin') ? sessionStorage.getItem('isFirstLogin') : 'true';
         if (isLoggedInFirst === 'true') {
             setShowModal(false);
@@ -127,7 +123,6 @@ export const AdminHomeComponent: React.FC<Props> = (props: Props) => {
                         }
                     })
                     .catch((err) => {
-                        console.log(err.response);
                         message.error(err.response.data.message);
                     })
             })
@@ -141,7 +136,6 @@ export const AdminHomeComponent: React.FC<Props> = (props: Props) => {
             size: param.size,
             sort: param.sort
         }
-        console.log(pageable.page)
         await getOwnAssignmentDetails(pageable)
             .then((res: any) => {
                 if (res.status === 200) {
@@ -168,13 +162,14 @@ export const AdminHomeComponent: React.FC<Props> = (props: Props) => {
                     })
                     setData(tableData);
                     setDisableButton(disableBtns);
-                    setTotalPage(res.data.data.totalPage)
+                    setTotalPage(res.data.data.totalPage);
+                    setTotalElements(res.data.data.totalElements);
                     setParam((p: any) => ({ ...p, page: res.data.data.currentPage }));
                     setLoading(false)
                 }
             })
             .catch((err) => {
-                console.log(err);
+                message.error(err.response.message);
             });
     }
 
@@ -195,7 +190,7 @@ export const AdminHomeComponent: React.FC<Props> = (props: Props) => {
         <div>
             {contextHolder}
             <h4 style={{ color: ColorPalette.PRIMARY_COLOR }} className='fw-bold fs-4 ms-1 mt-5 mb-3'>My Assignment</h4>
-            
+
             {loading ?
                 <LoaderComponent></LoaderComponent>
                 :
@@ -205,6 +200,11 @@ export const AdminHomeComponent: React.FC<Props> = (props: Props) => {
                             <h5 className="text-center"> No Assignment Found</h5>
                         </Row> :
                         <>
+                            <Row className='ps-2'>
+                                <p className='fs-5' style={{ color: "gray" }}>
+                                    Total : {totalElements}
+                                </p>
+                            </Row>
                             <Row>
                                 <TableComponent headers={header} datas={data} setSortString={setParam} auxData={auxData} auxHeader={auxHeader} buttons={buttons} showModalCell={showModalCell} setDummy={setDummy} setModalData={setModalData} setModalShow={setModalDetailShow} pre_button={undefined} disableButton={disableButton} />
                             </Row>

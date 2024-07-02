@@ -1,6 +1,6 @@
 import axios from "axios";
 import { AZURE_SERVICE_API, CORS_CONFIG } from "../utils/Config";
-import { AssignmentCreateModel } from "../models/AssignmentModel";
+import { AssignmentCreateModel, AssignmentEditModel } from "../models/AssignmentModel";
 import {
   OwnPageableModel,
   PageResponseModel,
@@ -12,6 +12,7 @@ import { uppercaseStatusToText } from "../utils/utils";
 
 // export const getAssignments = async (params: string) => await axios.get(`${AZURE_SERVICE_API}/assignments` + params, CORS_CONFIG);
 export const createAssignments = async (data: AssignmentCreateModel) => await axios.post(`${AZURE_SERVICE_API}/assignments`,data, CORS_CONFIG);
+export const editAssignments = async (data: AssignmentEditModel, id: number) => await axios.patch(`${AZURE_SERVICE_API}/assignments/${id}`,data, CORS_CONFIG);
 
 export interface AssignmentGetParams {
   [key: string]: string | Array<string> | number;
@@ -59,8 +60,8 @@ export const getAssignments = async (url: string) => {
       id: assignment.id,
       assetCode: assignment.assetCode,
       assetName: assignment.assetName,
-      assignedBy: assignment.assignedBy,
       assignedTo: assignment.assignedTo,
+      assignedBy: assignment.assignedBy,
       assignedDate: assignment.assignedDate,
       status: uppercaseStatusToText(assignment.status),
     };
