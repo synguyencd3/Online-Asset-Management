@@ -56,7 +56,6 @@ export const SelectUserComponent = (props: Props) => {
 			+ "page=" + param.page + "&"
 			+ "size=" + "20" + "&"
 			+ "sort=" + param.sort;
-		console.log(params);
 
 		setLoading(true)
 
@@ -71,7 +70,6 @@ export const SelectUserComponent = (props: Props) => {
 					type: RolesLowerCase[a.roleId],
 				}
 			})
-			console.log(usersforTable)
 			setTableUser(usersforTable)
 			setAuxData(users);
 			setTotalPage(data.totalPage);
@@ -88,7 +86,6 @@ export const SelectUserComponent = (props: Props) => {
 	}, [dummy])
 
 	useEffect(() => {
-		console.log(selected)
 		props.setSelectedOnParent(selected)
 	},[selected])
 
@@ -98,7 +95,6 @@ export const SelectUserComponent = (props: Props) => {
 				type={"radio"}
 				name="select_user"
 				onChange={() => {
-					console.log(user)
 					setUser(user)
 				}}
 			/>
@@ -106,7 +102,6 @@ export const SelectUserComponent = (props: Props) => {
 	}
 
 	const save = () => {
-		console.log(selected);
 		props.setSelectedOnParent(selected);
 		props.closeDropdown()
 	}

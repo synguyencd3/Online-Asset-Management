@@ -123,8 +123,6 @@ export const ManageAssetComponent: React.FC<Props> = (props: Props) => {
 			+ "size=" + param.size + "&"
 			+ "sort=" + param.sort;
 
-		console.log(params);
-
 		setLoading(true)
 
 		await getAsset(params).then((response) => {

@@ -39,12 +39,10 @@ export const CreateAssignmentComponent = (props: Props) => {
     };
 
     const closeDropdownUser = () => {
-        console.log("closing")
         setShowDropdownUser(false);
     };
 
     const closeDropdownAsset = () => {
-        console.log("closing")
         setShowDropdownAsset(false);
     };
 
@@ -64,7 +62,6 @@ export const CreateAssignmentComponent = (props: Props) => {
         enableReinitialize: true,
         validationSchema: validationSchema,
         onSubmit: async (values) => {
-            console.log("submitting")
             setLoading(true);
             const data: AssignmentCreateModel = {
                 assetCode: selectedAsset?.assetCode ?? "",
@@ -98,8 +95,6 @@ export const CreateAssignmentComponent = (props: Props) => {
     const { getFieldProps } = formik;
 
     useEffect(() => {
-        console.log(selectedUser)
-        console.log(selectedAsset)
     }, [selectedUser, selectedAsset])
 
     return (<>

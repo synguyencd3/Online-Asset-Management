@@ -61,7 +61,6 @@ export const PasswordModalComponent: React.FC<ChangePasswordModalProps> = ({ sho
 
                 await changePassword(changePswrdData)
                     .then((res) => {
-                        console.log(res);
                         if (res.status == 200) {
                             resetForm();
                             setIsFirstLogIn(true);
@@ -69,7 +68,6 @@ export const PasswordModalComponent: React.FC<ChangePasswordModalProps> = ({ sho
                             setSuccessMessage('Your password has been changed successfully!');
                         }
                     }).catch((err) => {
-                        console.log(String(err.response.data.message));
                         message.error(String(err.response.data.message));
                     });
             });

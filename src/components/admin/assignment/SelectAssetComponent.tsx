@@ -57,9 +57,7 @@ export const SelectAssetComponent = (props: Props) => {
 		getCategories,
 		{
 			onSuccess: (response) => {
-				console.log(response)
 				const arrayId = response.data.data.map((category: CategoryModel) => category.id)
-				console.log(arrayId)
 				setParam((p: any) => ({ ...p, categories: arrayId }))
 				setDummy(Math.random())
 			}
@@ -76,7 +74,6 @@ export const SelectAssetComponent = (props: Props) => {
 			+ "page=" + param.page + "&"
 			+ "size=" + "20" + "&"
 			+ "sort=" + param.sort;
-		console.log(params);
 
 		setLoading(true)
 
@@ -120,7 +117,6 @@ export const SelectAssetComponent = (props: Props) => {
 	}
 
 	const save = () => {
-		console.log(selected);
 		props.setSelectedOnParent(selected);
 		props.closeDropdown()
 	}

@@ -31,8 +31,6 @@ function App() {
         setIsLoggedIn(state);
         sessionStorage.setItem('isLoggedIn', 'true');
         setRoleId(roleId);
-        console.log(roleId);
-        console.log(typeof roleId);
     };
 
     const handleLogout = (state: boolean, title: string) => {

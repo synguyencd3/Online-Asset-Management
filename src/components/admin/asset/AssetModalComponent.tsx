@@ -60,7 +60,6 @@ export const AssetModalComponent = (props: Props) => {
     const { isLoading } = useSWR(props.data ? getOneAssetHistoryUrl(props.data, currentPage.page) : null, getWithSWR, {
         onSuccess: (response) => {
             const data = response.data.data;
-            console.log(data);
 
             const assetT: AssetModel = data.asset;
             const pageT = data.history;
