@@ -113,6 +113,7 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
   const [modalData, setModalData] = useState<AssignmentForTableModel>();
 
   const [showDisableModal, setShowDisableModal] = useState(false);
+  const [showReturnModal, setShowReturnModal] = useState(false);
 
   const [param, setParam] = useState<AssignmentGetParams>({
     search: "",
@@ -147,6 +148,10 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
 
   const handleDeleteCancel = () => {};
 
+  const handleReturnCancel = () => {
+    setShowReturnModal(false)
+  };
+
     function editAssignment(...data: AssignmentForTableModel[]) {
         navigate("/admin/manage-assignments/edit", { state: { user: data[1].id } });
     }
@@ -156,8 +161,8 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
     window.alert(data);
   }
 
-  function refreshAssignment(...data: AssignmentForTableModel[]) {
-    window.alert(data);
+  function returnAssignment(...data: AssignmentForTableModel[]) {
+    setShowReturnModal(true)
   }
 
   const buttons: FunctionalIconModel[] = [];
@@ -176,7 +181,7 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
   const refreshIcon: FunctionalIconModel = {
     icon: faRotateBack,
     style: "",
-    onClickfunction: refreshAssignment,
+    onClickfunction: returnAssignment,
   };
 
   const setDisableButtonState = (data: AssignmentForTableModel[]) => {
@@ -345,6 +350,17 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
         cancelBtnLabel={"Cancel"}
         modalSize={"md"}
       />
+      <ConfirmModalComponent
+        show={showReturnModal}
+        onConfirm={() =>{}}
+        onCancel={handleReturnCancel}
+        confirmTitle={"Are you sure?"}
+        confirmQuestion={"Do you want to create a returning request for this asset?"}
+        confirmBtnLabel={"Yes"}
+        cancelBtnLabel={"No"}
+        modalSize={"md"}
+      />
+      
     </Container>
   );
 };
