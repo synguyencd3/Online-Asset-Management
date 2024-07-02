@@ -60,8 +60,8 @@ export const getAssignments = async (url: string) => {
       id: assignment.id,
       assetCode: assignment.assetCode,
       assetName: assignment.assetName,
-      assignedBy: assignment.assignedBy,
       assignedTo: assignment.assignedTo,
+      assignedBy: assignment.assignedBy,
       assignedDate: assignment.assignedDate,
       status: uppercaseStatusToText(assignment.status),
     };
