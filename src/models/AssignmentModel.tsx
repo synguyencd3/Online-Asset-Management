@@ -53,10 +53,7 @@ export type AssignmentCreateModel = {
 }
 
 export type AssignmentEditModel = {
-    staffCode: string,
-    assignedTo: string,
-    assetName: string,
-    assignedDate: string,
+    username: string,
     assetCode: string,
     note: string
 }

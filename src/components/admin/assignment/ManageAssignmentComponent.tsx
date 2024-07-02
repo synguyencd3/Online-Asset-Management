@@ -147,9 +147,9 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
 
   const handleDeleteCancel = () => {};
 
-  function editAssignment(...data: AssignmentForTableModel[]) {
-    navigate("/admin/manage-assignments/edit", { state: { user: data[1] } });
-  }
+    function editAssignment(...data: AssignmentForTableModel[]) {
+        navigate("/admin/manage-assignments/edit", { state: { user: data[1].id } });
+    }
 
   function deleteAssignment(...data: AssignmentForTableModel[]) {
     setShowDisableModal(false);
@@ -182,7 +182,7 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
   const setDisableButtonState = (data: AssignmentForTableModel[]) => {
     return data.map((item: AssignmentForTableModel) => [
       item.status.toLowerCase() !==
-        AssignmentState.WAITING_FOR_ACCEPTANCE.toLowerCase(),
+      AssignmentState.WAITING_FOR_ACCEPTANCE.toLowerCase(),
       item.status.toLowerCase() !==
         AssignmentState.WAITING_FOR_ACCEPTANCE.toLowerCase(),
       item.status.toLowerCase() !== AssignmentState.ACCEPTED.toLowerCase(),
@@ -305,7 +305,7 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
                   buttons={buttons}
                   setSortString={handleSetParam}
                   showModalCell={showModalCell}
-                  setDummy={() => {}}
+                  setDummy={() => { }}
                   setModalData={setModalData}
                   setModalShow={setModalShow}
                   pre_button={undefined}
@@ -316,10 +316,10 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
                 currentPage={param.page}
                 setParamsFunction={handleSetParam}
                 totalPage={assignmentResponse.totalPage}
-                setDummy={() => {}}
+                setDummy={() => { }}
                 perPage={param.size}
                 fixPageSize={false}
-                setPage={() => {}}
+                setPage={() => { }}
               ></PaginationComponent>
             </>
           )}

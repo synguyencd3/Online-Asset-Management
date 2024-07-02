@@ -133,8 +133,8 @@ export const CreateAssignmentComponent = (props: Props) => {
                                         },
                                     },
                                 ],
-                            }} style={{ width: "200%" }}>
-                                <SelectUserComponent setSelectedOnParent={setSelectedUser} closeDropdown={closeDropdownUser} />
+                            }} style={{ width: "200%"}}>
+                                <SelectUserComponent setSelectedOnParent={setSelectedUser} closeDropdown={closeDropdownUser}/>
                             </Dropdown.Menu>
                         </Dropdown>
                         {formik.touched.user && formik.errors.user ? (

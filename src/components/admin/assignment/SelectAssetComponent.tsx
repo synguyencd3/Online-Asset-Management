@@ -11,8 +11,8 @@ import { message } from 'antd';
 import { AssetForSelectTableModel } from "../../../models/AssetForSelectTableModel"
 import { faSpinner } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import useSWR from "swr"
 import { categoriesEndpoint } from "../../../services/CategoryService"
+import useSWR from "swr"
 import { CategoryModel } from "../../../models/CategoryModel"
 
 const header = [
@@ -40,6 +40,8 @@ export const SelectAssetComponent = (props: Props) => {
 
 	const [, setPage] = useState(0);
 	const [selected, setSelected] = useState<String>("")
+	//const [categories, setCategories] = useState<number[]>([])
+	
 	//const [categories, setCategories] = useState<number[]>([])
 	
 
@@ -122,7 +124,7 @@ export const SelectAssetComponent = (props: Props) => {
 	}
 
 	return (
-		<Container>
+		<Container >
 			<Row>
 				<Col>
 					<h4 style={{ color: ColorPalette.PRIMARY_COLOR }} className="mb-4">
