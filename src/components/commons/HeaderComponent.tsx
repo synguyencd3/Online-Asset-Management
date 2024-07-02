@@ -30,10 +30,8 @@ export const HeaderComponent: React.FC<HeaderComponentProps> = ({ username, titl
             content: 'Logging out...',
         })
             .then(async () => {
-                console.log(import.meta.env.VITE_AZURE_BACKEND_DOMAIN);
                 await logout()
                     .then((res) => {
-                        console.log(res);
                         if (res.status == 200) {
                             handleLogout(true, 'Online Asset Management');
                             sessionStorage.removeItem('isLoggedIn');
@@ -42,13 +40,10 @@ export const HeaderComponent: React.FC<HeaderComponentProps> = ({ username, titl
                             sessionStorage.removeItem('roleId');
                             sessionStorage.removeItem('location');
                             navigator('/');
-                            console.log(res.data);
-                            console.log(res.status);
                             message.success(`Logout successfully!`);
                         }
                     })
                     .catch((err) => {
-                        console.log(process.env.REACT_APP_AZURE_BACKEND_DOMAIN);
                         const errorData = err.response.data.substring(0, err.response.data.indexOf('}') + 1);
                         const errorResponse: ErrorResponse = JSON.parse(errorData);
                         message.error(`${errorResponse.message}`);

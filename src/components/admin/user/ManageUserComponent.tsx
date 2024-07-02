@@ -67,7 +67,7 @@ export const ManageUserComponent = (props: Props) => {
 	const [disableStaffCode, setDisableStaffCode] = useState(''); // State for the Logout Modal
 
 	const [messageApi, contextHolder] = message.useMessage();
-
+	const [disableButton, setDisableButton] = useState<boolean[][]>([])
 
 	function toDateString(date: string) {
 		let d = new Date(date);
@@ -113,6 +113,7 @@ export const ManageUserComponent = (props: Props) => {
 			let tableDatas: UserForTableModel[] = [];
 
 			let modalDatas: ModalUserModel[] = [];
+			let disableBtns: boolean[][] = [];
 
 			if (newUser) {
 				let data: UserForTableModel = {
@@ -123,6 +124,7 @@ export const ManageUserComponent = (props: Props) => {
 					type: RolesLowerCase[newUser.roleId],
 				};
 				tableDatas.push(data);
+				disableBtns.push([false, false]);	
 
 				let modal: ModalUserModel = {
 					staffCode: newUser.staffCode,
@@ -162,6 +164,7 @@ export const ManageUserComponent = (props: Props) => {
 						location: user.location,
 					}
 					modalDatas.push(modal);
+					disableBtns.push([false, false]);
 				}
 			})
 
@@ -170,6 +173,7 @@ export const ManageUserComponent = (props: Props) => {
 			setParam((p: any) => ({ ...p, page: data.currentPage }));
 			setTotalPage(data.totalPage);
 			setTotalElement(data.totalElements)
+			setDisableButton(disableBtns);
 		}).catch(e => {
 			message.error(e.message);
 		});
@@ -283,7 +287,7 @@ export const ManageUserComponent = (props: Props) => {
 							</Row>
 							<Row>
 								{/* this initfucntion */}
-								<TableComponent headers={header} datas={tableUser} auxData={modalUsers} auxHeader={modalHeader} buttons={buttons} setSortString={setParam} showModalCell={showModalCell} setDummy={setDummy} setModalData={setModalData} setModalShow={setModalShow} pre_button={undefined} disableButton={disableData} />
+								<TableComponent headers={header} datas={tableUser} auxData={modalUsers} auxHeader={modalHeader} buttons={buttons} setSortString={setParam} showModalCell={showModalCell} setDummy={setDummy} setModalData={setModalData} setModalShow={setModalShow} pre_button={undefined} disableButton={disableButton} />
 							</Row>
 							<PaginationComponent currentPage={param.page} setParamsFunction={setParam} totalPage={totalPage} setDummy={setDummy} perPage={param.size} setPage={setPage} fixPageSize={false} ></PaginationComponent>
 						</>
@@ -291,7 +295,7 @@ export const ManageUserComponent = (props: Props) => {
 				</>
 			}
 			<DetailModalComponent
-				title={"Detailed User Infomation"}
+				title={"Detailed User Information"}
 				show={modalShow}
 				onHide={() => setModalShow(false)}
 				label={modalHeader}

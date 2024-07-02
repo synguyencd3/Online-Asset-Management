@@ -4,28 +4,32 @@ import { useFormik } from "formik";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch, faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { SelectUserComponent } from "./SelectUserComponent";
 import { SelectAssetComponent } from "./SelectAssetComponent";
 import { ColorPalette } from "../../../utils/ColorPalette";
-
-import { AssetForSelectTableModel } from "../../../models/AssetForSelectTableModel";
-import { UserForSelectTableModel } from "../../../models/UserForSelectTableModel";
-import { AssignmentCreateModel } from "../../../models/AssignmentModel";
-import { createAssignments } from "../../../services/AssignmentService";
+import {  AssignmentEditModel, AssignmentModalModel } from "../../../models/AssignmentModel";
+import { editAssignments, getOneAssignemnt, getOneAssignmentUrl } from "../../../services/AssignmentService";
+import useSWR from "swr";
+import { LoaderComponent } from "../../commons/LoaderComponent";
 import { message } from "antd";
-import { AssignmentForTableModel } from "../../../models/AssignmentForTable";
+import { UserForTableModel } from "../../../models/UserForTableModel";
+import { AssetForTableModel } from "../../../models/AssetModel";
+//import { editAssignments } from "../../../services/AssignmentService";
+//import { message } from "antd";
+
 
 type Props = {
     setHeaderTitle: any
 }
 
-export const CreateAssignmentComponent = (props: Props) => {
+export const EditAssignmentComponent = (props: Props) => {
+    const location = useLocation();
+    const [assignmentId] = useState<number>(location.state.user);
     let navigate = useNavigate();
     let [loading, setLoading] = useState(false)
-    let [selectedAsset, setSelectedAsset] = useState<AssetForSelectTableModel>();
-    let [selectedUser, setSelectedUser] = useState<UserForSelectTableModel>();
-
+    let [selectedAsset, setSelectedAsset] = useState<AssetForTableModel>();
+    let [selectedUser, setSelectedUser] = useState<UserForTableModel>();
     const [showDropdownUser, setShowDropdownUser] = useState(false);
     const [showDropdownAsset, setShowDropdownAsset] = useState(false);
 
@@ -47,9 +51,7 @@ export const CreateAssignmentComponent = (props: Props) => {
     };
 
     const validationSchema = Yup.object({
-        user: Yup.string().required('User is required'),
-        asset: Yup.string().required('Asset is required'),
-        assignedDate: Yup.string().required('Assigned date is required'),
+       
     });
 
     const formik = useFormik({
@@ -59,26 +61,21 @@ export const CreateAssignmentComponent = (props: Props) => {
             assignedDate: "",
             note: ""
         },
-        enableReinitialize: true,
         validationSchema: validationSchema,
-        onSubmit: async (values) => {
+        onSubmit: async (values) =>{
             setLoading(true);
-            const data: AssignmentCreateModel = {
-                assetCode: selectedAsset?.assetCode ?? "",
-                staffCode: selectedUser?.staffCode ?? "",
-                note: values.note,
-                assignedDate: values.assignedDate
+            const data: AssignmentEditModel = {
+                username: selectedUser?.username ?? (assignmentResponse?.assignedTo ?? "") ,
+                assetCode: selectedAsset?.assetCode ?? (assignmentResponse?.assetCode ?? ""),
+                note: values.note ?? assignmentResponse?.note
             };
 
-            await createAssignments(data)
+            await editAssignments(data, assignmentId)
                 .then((response) => {
                     message.success(response.data.message);
-                    const newAssignment: AssignmentForTableModel = response.data.data;
+                    //const newAssignment: AssignmentForTableModel = response.data.data;
                     setLoading(false);
-                    navigate("/admin/manage-assignments", {
-                        replace: true,
-                        state: { newAssignment: newAssignment },
-                    });
+                    navigate("/admin/manage-assignments");
                 })
                 .catch((error) => {
                     message.error(error.response.data.message);
@@ -88,11 +85,18 @@ export const CreateAssignmentComponent = (props: Props) => {
     });
 
     useEffect(() => {
-        props.setHeaderTitle("Manage Assignments > Create New Assignment");
+        props.setHeaderTitle("Manage Assignments > Edit Assignment");
     }, [])
 
 
     const { getFieldProps } = formik;
+
+    const { data: assignmentResponse, } = useSWR<AssignmentModalModel>(
+        getOneAssignmentUrl(assignmentId),
+        getOneAssignemnt,
+    );
+
+
 
     useEffect(() => {
     }, [selectedUser, selectedAsset])
@@ -101,8 +105,11 @@ export const CreateAssignmentComponent = (props: Props) => {
         <Container>
             <Form className="p-5" style={{ maxWidth: "60%", minWidth: "300px", textAlign: "left" }} onSubmit={formik.handleSubmit}>
                 <h4 style={{ color: ColorPalette.PRIMARY_COLOR }} className="mb-4">
-                    Create New Assignment
+                    Edit Assignment
                 </h4>
+                {!assignmentResponse ? (
+          <LoaderComponent />
+        ) : (<>
                 <Form.Group as={Row} className="mb-3" >
                     <Form.Label column sm={3} >
                         User
@@ -115,7 +122,7 @@ export const CreateAssignmentComponent = (props: Props) => {
                                     <Form.Control
                                         type='text'
                                         {...getFieldProps('user')}
-                                        value={selectedUser == null ? "" : selectedUser?.fullName}
+                                        value={selectedUser == null ? assignmentResponse.assignedTo : selectedUser?.fullName}
                                         className="form-control border-0"
                                     />
                                     <InputGroup.Text className='bg-transparent border-0'>
@@ -133,8 +140,8 @@ export const CreateAssignmentComponent = (props: Props) => {
                                         },
                                     },
                                 ],
-                            }} style={{ width: "200%"}}>
-                                <SelectUserComponent setSelectedOnParent={setSelectedUser} closeDropdown={closeDropdownUser}/>
+                            }} style={{ width: "200%" }}>
+                                <SelectUserComponent setSelectedOnParent={setSelectedUser} closeDropdown={closeDropdownUser} />
                             </Dropdown.Menu>
                         </Dropdown>
                         {formik.touched.user && formik.errors.user ? (
@@ -155,7 +162,7 @@ export const CreateAssignmentComponent = (props: Props) => {
                                     <Form.Control
                                         type='text'
                                         {...getFieldProps('asset')}
-                                        value={selectedAsset == null ? " " : selectedAsset?.assetName}
+                                        value={selectedAsset == null ? assignmentResponse.assetName : selectedAsset?.assetName}
                                         className="form-control border-0"
                                     />
                                     <InputGroup.Text className='bg-transparent border-0'>
@@ -188,10 +195,7 @@ export const CreateAssignmentComponent = (props: Props) => {
                         <span className='mx-1' style={{ color: ColorPalette.PRIMARY_COLOR }}>*</span>
                     </Form.Label>
                     <Col sm={9}>
-                        <Form.Control type="date"  {...getFieldProps('assignedDate')} style={formik.errors.assignedDate ? { borderColor: "red" } : {}} />
-                        {formik.touched.assignedDate && formik.errors.assignedDate ? (
-                            <div className="error-message">{formik.errors.assignedDate}</div>
-                        ) : null}
+                        <Form.Control type="date"   value={assignmentResponse.assignedDate} disabled={true}  />
                     </Col>
                     
                 </Form.Group>
@@ -200,16 +204,18 @@ export const CreateAssignmentComponent = (props: Props) => {
                         Note
                     </Form.Label>
                     <Col sm={9}>
-                        <Form.Control as="textarea" {...getFieldProps('note')} />
+                        <Form.Control as="textarea" {...getFieldProps('note')} defaultValue={assignmentResponse.note}/>
                     </Col>
                 </Form.Group>
 
                 <Row>
                     <Col className="d-flex justify-content-end my-4">
-                        <Button variant="danger" className="mx-4" style={{ minWidth: "100px" }} type="submit" disabled={!formik.dirty || !formik.isValid || loading}> {loading ? <FontAwesomeIcon icon={faSpinner} spin /> : "Save"}</Button>
+                        <Button variant="danger" className="mx-4" style={{ minWidth: "100px" }} type="submit" disabled={!formik.isValid || loading}> {loading ? <FontAwesomeIcon icon={faSpinner} spin /> : "Save"}</Button>
                         <Button variant="outline-dark" className="ms-4" style={{ minWidth: "100px" }} onClick={() => { navigate(-1) }}>Cancel</Button>
                     </Col>
                 </Row>
+                </>
+        )}
             </Form>
         </Container >
     </>)

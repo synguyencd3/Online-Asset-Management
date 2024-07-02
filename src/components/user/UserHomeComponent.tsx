@@ -1,12 +1,19 @@
+import { faCheck, faXmark, faRotateBack } from '@fortawesome/free-solid-svg-icons';
+import { message } from 'antd';
 import React, { useEffect, useState } from 'react';
-import { faCheck, faRotateBack, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { Row } from 'react-bootstrap';
+import { AssignmentForTableModel } from '../../models/AssignmentForTable';
 import { AssignmentHomeViewModel, AssignmentModel } from '../../models/AssignmentModel';
 import { FunctionalIconModel } from '../../models/FunctionalIconModel';
-import { getAssignmentsDetails } from '../../services/AssignmentService';
+import { OwnPageableModel } from '../../models/PageableModel';
+import { responseAssignment, getOwnAssignmentDetails } from '../../services/AssignmentService';
 import { ColorPalette } from '../../utils/ColorPalette';
-import { AssignmentState } from '../../utils/Enum';
+import { AssignmentRequestState, AssignmentState } from '../../utils/Enum';
+import { AssignmentModelComponent } from '../admin/assignment/AssignmentModalComponent';
 import { PasswordModalComponent } from '../auth/PasswordModalComponent';
-import { DetailModalComponent } from '../commons/DetailModalComponent';
+import { ConfirmModalComponent } from '../commons/ConfirmModalComponent';
+import { LoaderComponent } from '../commons/LoaderComponent';
+import { PaginationComponent } from '../commons/PaginationComponent';
 import { TableComponent } from '../commons/TableComponent';
 
 type Props = {
@@ -28,19 +35,35 @@ export const UserHomeComponent: React.FC<Props> = (props: Props) => {
     const [showModal, setShowModal] = useState(false);
     const [modalDetailShow, setModalDetailShow] = useState(false);
     const [firstLogin, setFirstLogin] = useState<boolean>(false);
-    const [modalData, setModalData] = useState<Object>({});
+    const [modalData, setModalData] = useState<AssignmentForTableModel>();
     const [data, setData] = useState<AssignmentHomeViewModel[]>([]);
     const [auxData, setAuxData] = useState<AssignmentModel[]>([]);
     const [auxHeader] = useState<string[]>(modalHeader);
     const [disableButton, setDisableButton] = useState<boolean[][]>([])
+    const [page, setPage] = useState(0);
+    const [totalPage, setTotalPage] = useState(0);
+    const [loading, setLoading] = useState(false);
+    const [messageApi, contextHolder] = message.useMessage();
+    const [showConfirmModal, setShowConfirmModal] = useState(false); // State for the Logout Modal
+    const [responseData, setResponseData] = useState<{ id: number, status: string }>({ id: 0, status: '' });
+    const [dummy, setDummy] = useState(1);
 
 
+    const [param, setParam] = useState({
+        search: "",
+        states: ["ASSIGNED", "AVAILABLE", "NOT_AVAILABLE"],
+        page: 0,
+        size: 20,
+        sort: "assetcode,asc",
+    });
 
-    const acceptAssignment = () => {
-        window.alert("Accept Assignment");
+    const acceptAssignment = (...data: AssignmentModel[]) => {
+        setShowConfirmModal(true);
+        setResponseData({ id: data[1].id, status: AssignmentRequestState[AssignmentRequestState.ACCEPTED] });
     }
-    const declineAssignment = () => {
-        window.alert("Decline Assignment");
+    const declineAssignment = (...data: AssignmentModel[]) => {
+        setShowConfirmModal(true);
+        setResponseData({ id: data[1].id, status: AssignmentRequestState[AssignmentRequestState.DECLINED] });
     }
     const returnAsset = () => {
         window.alert("Return Asset");
@@ -75,13 +98,42 @@ export const UserHomeComponent: React.FC<Props> = (props: Props) => {
         getAssignmentData();
     }, []);
 
+    useEffect(() => {
+        getAssignmentData();
+    }, [page, dummy]);
+
+    const responseOwnAssignment = async (id: number, status: string) => {
+        messageApi.open({
+            type: 'loading',
+            content: status == 'ACCEPTED' ? 'Accepting assignment...' : 'Declining assignment...',
+        })
+            .then(async () => {
+                await responseAssignment(id, status)
+                    .then((res: any) => {
+                        if (res.status === 200) {
+                            message.success(res.data.message);
+                            getAssignmentData();
+                        }
+                    })
+                    .catch((err) => {
+                        message.error(err.response.data.message);
+                    })
+            })
+    }
+
     const getAssignmentData = async () => {
-        await getAssignmentsDetails()
-            .then((res) => {
+        setLoading(true)
+
+        const pageable: OwnPageableModel = {
+            page: param.page,
+            size: param.size,
+            sort: param.sort
+        }
+        await getOwnAssignmentDetails(pageable)
+            .then((res: any) => {
                 if (res.status === 200) {
-                    setAuxData(res.data.data)
-                    console.log("res.data", res.data.data)
-                    setData(res.data.data.map((data: AssignmentHomeViewModel) => ({
+                    setAuxData(res.data.data.content)
+                    setData(res.data.data.content.map((data: AssignmentHomeViewModel) => ({
                         assetCode: data.assetCode,
                         assetName: data.assetName,
                         category: data.category,
@@ -90,7 +142,7 @@ export const UserHomeComponent: React.FC<Props> = (props: Props) => {
                     })));
                     const tableData: AssignmentHomeViewModel[] = [];
                     const disableBtns: boolean[][] = [];
-                    res.data.data.map((data: AssignmentHomeViewModel) => {
+                    res.data.data.content.map((data: AssignmentHomeViewModel) => {
                         tableData.push({
                             assetCode: data.assetCode,
                             assetName: data.assetName,
@@ -98,17 +150,28 @@ export const UserHomeComponent: React.FC<Props> = (props: Props) => {
                             assignedDate: data.assignedDate,
                             status: AssignmentState[data.status as unknown as keyof typeof AssignmentState],
                         });
-                        data.status.toString() == "WAITING_FOR_ACCEPTANCE" ? disableBtns.push([false, false, true]) : disableBtns.push([true, true, false]);
+                        data.status.toString() === "WAITING_FOR_ACCEPTANCE" ? disableBtns.push([false, false, true]) : disableBtns.push([true, true, false]);
 
                     })
                     setData(tableData);
                     setDisableButton(disableBtns);
-                    console.log("res.data", res.data.data)
+                    setTotalPage(res.data.data.totalPage)
+                    setParam((p: any) => ({ ...p, page: res.data.data.currentPage }));
+                    setLoading(false)
                 }
             })
             .catch((err) => {
-                console.log(err);
+                message.error(err.response.message);
             });
+    }
+
+    const handleModalConfirm = () => {
+        setShowConfirmModal(false);
+        responseOwnAssignment(responseData.id, responseData.status); // Call the Confirm function
+    }
+
+    const handleModalCancel = () => {
+        setShowConfirmModal(false); // Hide the Confirm Modal
     }
 
     const handleClose = () => {
@@ -117,16 +180,38 @@ export const UserHomeComponent: React.FC<Props> = (props: Props) => {
 
     return (
         <div>
-            <h4 style={{ color: ColorPalette.PRIMARY_COLOR }} className='fw-bold fs-4 ms-3 mt-5 mb-3'>My Assignment</h4>
-            <TableComponent headers={header} datas={data} setSortString={undefined} auxData={auxData} auxHeader={auxHeader} buttons={buttons} showModalCell={showModalCell} setDummy={undefined} setModalData={setModalData} setModalShow={setModalDetailShow} pre_button={undefined} disableButton={disableButton} />
-            <DetailModalComponent
-                title={"Detailed Assignment Infomation"}
-                show={modalDetailShow}
-                onHide={() => setModalDetailShow(false)}
-                label={modalHeader}
-                data={modalData}
-            />
+            {contextHolder}
+            <h4 style={{ color: ColorPalette.PRIMARY_COLOR }} className='fw-bold fs-4 ms-1 mt-5 mb-3'>My Assignment</h4>
+            
+            {loading ?
+                <LoaderComponent></LoaderComponent>
+                :
+                <>
+                    {data.length === 0 ?
+                        <Row>
+                            <h5 className="text-center"> No Assignment Found</h5>
+                        </Row> :
+                        <>
+                            <Row>
+                                <TableComponent headers={header} datas={data} setSortString={setParam} auxData={auxData} auxHeader={auxHeader} buttons={buttons} showModalCell={showModalCell} setDummy={setDummy} setModalData={setModalData} setModalShow={setModalDetailShow} pre_button={undefined} disableButton={disableButton} />
+                            </Row>
+                            <PaginationComponent currentPage={param.page} totalPage={totalPage} setParamsFunction={setParam} setDummy={setPage} perPage={param.size} setPage={setPage} fixPageSize={false} />
+                        </>
+                    }
+                </>
+            }
+            {modalData ? (
+                <AssignmentModelComponent
+                    title={"Detailed Assignment Information"}
+                    show={modalDetailShow}
+                    onHide={() => setModalDetailShow(false)}
+                    data={modalData}
+                />
+            ) : (
+                ""
+            )}
             <PasswordModalComponent show={showModal} onClose={handleClose} isFirstLoggedIn={firstLogin} />
+            <ConfirmModalComponent show={showConfirmModal} onConfirm={handleModalConfirm} onCancel={handleModalCancel} confirmTitle={'Are you sure?'} confirmQuestion={responseData.status == "ACCEPTED" ? 'Do you want to accept this assignment?' : 'Do you want to decline this assignment?'} confirmBtnLabel={responseData.status == 'ACCEPTED' ? 'Accept' : 'Decline'} cancelBtnLabel={'Cancel'} modalSize={'md'} />
         </div>
     );
 };

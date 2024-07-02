@@ -16,8 +16,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 const header = [
 	{ name: '', value: "", sort: false, direction: false, colStyle: { width: "20%" } },
 	{ name: 'Staff Code', value: "staffCode", sort: true, direction: true, colStyle: { width: "15%" } },
-	{ name: 'Full Name', value: "fullName", sort: false, direction: true, colStyle: { width: "50%" } },
-	{ name: 'Type', value: "type", sort: true, direction: true, colStyle: { width: "25%" } },
+	{ name: 'Username', value: "username", sort: true, direction: true, colStyle: { width: "15%" } },
+	{ name: 'Full Name', value: "fullName", sort: true, direction: true, colStyle: { width: "50%" } },
+	{ name: 'Type', value: "type", sort: true, direction: true, colStyle: { width: "5%" } },
 
 ]
 
@@ -36,7 +37,7 @@ export const SelectUserComponent = (props: Props) => {
 
 	const [dummy, setDummy] = useState(0);
 
-	const [_page, setPage] = useState(0);
+	const [, setPage] = useState(0);
 	const [selected, setSelected] = useState<String>("")
 
 	const [param, setParam] = useState({
@@ -56,7 +57,6 @@ export const SelectUserComponent = (props: Props) => {
 			+ "page=" + param.page + "&"
 			+ "size=" + "20" + "&"
 			+ "sort=" + param.sort;
-		console.log(params);
 
 		setLoading(true)
 
@@ -67,11 +67,11 @@ export const SelectUserComponent = (props: Props) => {
 			let usersforTable: UserForSelectTableModel[] = users.map(a => {
 				return {
 					staffCode: a.staffCode,
+					username: a.username,
 					fullName : a.firstName+" "+a.lastName,
 					type: RolesLowerCase[a.roleId],
 				}
 			})
-			console.log(usersforTable)
 			setTableUser(usersforTable)
 			setAuxData(users);
 			setTotalPage(data.totalPage);
@@ -88,7 +88,6 @@ export const SelectUserComponent = (props: Props) => {
 	}, [dummy])
 
 	useEffect(() => {
-		console.log(selected)
 		props.setSelectedOnParent(selected)
 	},[selected])
 
@@ -98,7 +97,6 @@ export const SelectUserComponent = (props: Props) => {
 				type={"radio"}
 				name="select_user"
 				onChange={() => {
-					console.log(user)
 					setUser(user)
 				}}
 			/>
@@ -106,7 +104,6 @@ export const SelectUserComponent = (props: Props) => {
 	}
 
 	const save = () => {
-		console.log(selected);
 		props.setSelectedOnParent(selected);
 		props.closeDropdown()
 	}
@@ -136,7 +133,7 @@ export const SelectUserComponent = (props: Props) => {
 								<Row>
 									<TableComponent headers={header} datas={tableUser} auxData={auxData} auxHeader={[]} buttons={[]} setSortString={setParam} showModalCell={[]} setDummy={setDummy} setModalData={() => { }} setModalShow={undefined} pre_button={preButton} setSelect={setSelected} disableButton={[]}  ></TableComponent>
 								</Row>
-								<PaginationComponent currentPage={param.page} totalPage={totalPage} setDummy={setPage} perPage={0} setParamsFunction={setParam} setPage={undefined} fixPageSize={false} ></PaginationComponent>
+								<PaginationComponent currentPage={param.page} totalPage={totalPage} setDummy={setPage} perPage={0} setParamsFunction={setParam} setPage={setPage} fixPageSize={false} ></PaginationComponent>
 							</>
 						}
 					</>
