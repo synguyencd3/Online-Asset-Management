@@ -1,6 +1,6 @@
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { FormEvent, RefAttributes, useState } from "react";
+import { FormEvent, RefAttributes, useState } from "react";
 import { Button, Form, InputGroup, OverlayTrigger, Tooltip, TooltipProps } from "react-bootstrap";
 import { JSX } from "react/jsx-runtime";
 

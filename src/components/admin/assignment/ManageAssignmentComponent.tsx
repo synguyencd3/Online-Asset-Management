@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, Col, Container, Form, Row } from "react-bootstrap";
 import { DropdownFilterComponent } from "../../commons/DropdownFilterComponent";
 import { useNavigate } from "react-router-dom";
@@ -8,7 +8,7 @@ import { LoaderComponent } from "../../commons/LoaderComponent";
 import { TableComponent } from "../../commons/TableComponent";
 import { PaginationComponent } from "../../commons/PaginationComponent";
 import { FunctionalIconModel } from "../../../models/FunctionalIconModel";
-import { faPencil, faRefresh } from "@fortawesome/free-solid-svg-icons";
+import { faPencil, faRotateBack } from "@fortawesome/free-solid-svg-icons";
 import { faCircleXmark } from "@fortawesome/free-regular-svg-icons/faCircleXmark";
 import { ConfirmModalComponent } from "../../commons/ConfirmModalComponent";
 import { AssignmentForTableModel } from "../../../models/AssignmentForTable";
@@ -22,6 +22,7 @@ import { PageResponseModel } from "../../../models/PageableModel";
 import { message } from "antd";
 import { SearchOnEnterComponent } from "../../commons/SearchOnEnterComponent";
 import { AssignmentModelComponent } from "./AssignmentModalComponent";
+// import { uppercaseStatusToText } from "../../../utils/utils";
 
 const header = [
   {
@@ -75,16 +76,7 @@ const header = [
   },
 ];
 const showModalCell = ["assetCode", "assetName"];
-const modalHeader = [
-  "Staff Code",
-  "Full Name",
-  "Username",
-  "Date of Birth",
-  "Gender",
-  "Joined Date",
-  "Type",
-  "Location",
-];
+const modalHeader: string[] = [];
 
 const filterData = [
   {
@@ -104,14 +96,24 @@ const filterData = [
   },
 ];
 
-export const ManageAssignmentComponent: React.FC = () => {
-  const [newAssignment] = useState<AssignmentForTableModel>();
+type Props = {
+  setHeaderTitle: (title: string) => void;
+};
+
+export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
+  useEffect(() => {
+    props.setHeaderTitle("Manage Assignments");
+  }, [props]);
+
+  // const location = useLocation();
+  // const newAssignment: AssignmentForTableModel = location.state?.newAssignment;
+  // console.log(newAssignment);
 
   const navigate = useNavigate();
 
   const [modalShow, setModalShow] = useState(false);
 
-  const [modalData, setModalData] = useState<AssignmentForTableModel>({});
+  const [modalData, setModalData] = useState<AssignmentForTableModel>();
 
   const [showDisableModal, setShowDisableModal] = useState(false);
 
@@ -127,6 +129,11 @@ export const ManageAssignmentComponent: React.FC = () => {
     size: 20,
     sort: "assetCode,asc",
   });
+
+  // const handleSetParam = (param: AssignmentGetParams) => {
+  //   setParam(param);
+  //   navigate(location.pathname, { state: { newAssignment: undefined } });
+  // };
 
   const {
     data: assignmentResponse,
@@ -168,9 +175,20 @@ export const ManageAssignmentComponent: React.FC = () => {
   };
 
   const refreshIcon: FunctionalIconModel = {
-    icon: faRefresh,
+    icon: faRotateBack,
     style: "",
     onClickfunction: refreshAssignment,
+  };
+
+  const setDisableButtonState = (data: AssignmentForTableModel[]) => {
+    return data.map((item: AssignmentForTableModel) => [
+      item.status.toLowerCase() !==
+        AssignmentState.WAITING_FOR_ACCEPTANCE.toLowerCase(),
+      item.status.toLowerCase() !==
+        AssignmentState.WAITING_FOR_ACCEPTANCE.toLowerCase(),
+      item.status.toLowerCase() !==
+        AssignmentState.ACCEPTED.toLowerCase(),
+    ]);
   };
 
   buttons.push(editIcon, deleteIcon, refreshIcon);
@@ -179,6 +197,31 @@ export const ManageAssignmentComponent: React.FC = () => {
     message.error(assignmentError.message);
     return <LoaderComponent></LoaderComponent>;
   }
+
+  // if (assignmentResponse && newAssignment) {
+  //   console.log(assignmentResponse);
+  //   const newAssignmentRecord : AssignmentForTableModel = {
+  //     id: newAssignment.id,
+  //     assetCode: newAssignment.assetCode,
+  //     assetName: newAssignment.assetName,
+  //     assignedBy: newAssignment.assignedBy,
+  //     assignedTo: newAssignment.assignedTo,
+  //     assignedDate: newAssignment.assignedDate,
+  //     status: uppercaseStatusToText(newAssignment.status),
+  //   }
+  //   const assignments = assignmentResponse.content.find(
+  //     (item: AssignmentForTableModel) => item.id === newAssignmentRecord.id
+  //   )
+  //     ? assignmentResponse.content.filter(
+  //         (item: AssignmentForTableModel) => item.id === newAssignmentRecord.id
+  //       )
+  //     : assignmentResponse.content.slice(
+  //         0,
+  //         assignmentResponse.content.length - 1
+  //       );
+
+  //   assignmentResponse.content = [newAssignmentRecord, ...assignments];
+  // }
 
   return (
     <Container style={{ maxWidth: "100%" }} className="p-4">
@@ -239,11 +282,11 @@ export const ManageAssignmentComponent: React.FC = () => {
         </Col>
       </Row>
 
-      {isAssignmentLoading ? (
+      {isAssignmentLoading || !assignmentResponse ? (
         <LoaderComponent></LoaderComponent>
       ) : (
         <>
-          {assignmentResponse?.content.length === 0 ? (
+          {assignmentResponse.content.length === 0 ? (
             <Row>
               <h4 className="text-center"> No Assignment Found</h4>
             </Row>
@@ -252,8 +295,8 @@ export const ManageAssignmentComponent: React.FC = () => {
               <Row>
                 <TableComponent
                   headers={header}
-                  datas={assignmentResponse?.content || []}
-                  auxData={assignmentResponse?.content || []}
+                  datas={assignmentResponse.content}
+                  auxData={assignmentResponse.content}
                   auxHeader={modalHeader}
                   buttons={buttons}
                   setSortString={setParam}
@@ -262,13 +305,15 @@ export const ManageAssignmentComponent: React.FC = () => {
                   setModalData={setModalData}
                   setModalShow={setModalShow}
                   pre_button={undefined}
-                  disableButton={[[false], [false]]}
+                  disableButton={setDisableButtonState(
+                    assignmentResponse.content
+                  )}
                 ></TableComponent>
               </Row>
               <PaginationComponent
                 currentPage={param.page}
                 setParamsFunction={setParam}
-                totalPage={assignmentResponse?.totalPage || 0}
+                totalPage={assignmentResponse.totalPage}
                 setDummy={() => {}}
                 perPage={param.size}
                 fixPageSize={false}
@@ -278,12 +323,16 @@ export const ManageAssignmentComponent: React.FC = () => {
           )}
         </>
       )}
-      <AssignmentModelComponent
-        title={"Detailed Assignment Information"}
-        show={modalShow}
-        onHide={() => setModalShow(false)}
-        data={modalData}
-      />
+      {modalData ? (
+        <AssignmentModelComponent
+          title={"Detailed Assignment Information"}
+          show={modalShow}
+          onHide={() => setModalShow(false)}
+          data={modalData}
+        />
+      ) : (
+        ""
+      )}
       <ConfirmModalComponent
         show={showDisableModal}
         onConfirm={handleDeleteConfirm}

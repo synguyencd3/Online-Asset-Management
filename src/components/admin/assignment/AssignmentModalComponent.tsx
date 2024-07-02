@@ -34,7 +34,7 @@ export const AssignmentModelComponent = (props: Props) => {
 
   useEffect(() => {}, [readMore]);
   const { data: assignment, isLoading } = useSWR<AssignmentModalModel>(
-    props.data ? getOneAssignmentUrl(props.data.id) : null,
+    props.data && props.data.id ? getOneAssignmentUrl(props.data.id) : null,
     getOneAssignemnt
   );
 

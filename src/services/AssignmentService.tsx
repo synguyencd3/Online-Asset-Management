@@ -94,6 +94,7 @@ export const getOneAssignmentUrl = (id: number) => {
 export const getOneAssignemnt = async (url: string) => {
   const response = await axios.get(url, CORS_CONFIG);
   const assignment: AssignmentModalModel = response.data.data;
+  assignment.status = uppercaseStatusToText(assignment.status);
   return assignment;
 
 }

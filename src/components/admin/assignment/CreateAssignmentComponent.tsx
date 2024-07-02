@@ -84,7 +84,7 @@ export const CreateAssignmentComponent = (props: Props) => {
                     setLoading(false);
                     navigate("/admin/manage-assignments", {
                         replace: true,
-                        state: { newAssgnment: newAssignment },
+                        state: { newAssignment: newAssignment },
                     });
                 })
                 .catch((error) => {
