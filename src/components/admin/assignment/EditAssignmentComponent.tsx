@@ -41,12 +41,10 @@ export const EditAssignmentComponent = (props: Props) => {
     };
 
     const closeDropdownUser = () => {
-        console.log("closing")
         setShowDropdownUser(false);
     };
 
     const closeDropdownAsset = () => {
-        console.log("closing")
         setShowDropdownAsset(false);
     };
 
@@ -63,7 +61,6 @@ export const EditAssignmentComponent = (props: Props) => {
         },
         validationSchema: validationSchema,
         onSubmit: /*async (values) => */ () =>{
-            console.log("submitting")
             setLoading(true);
             // const data: AssignmentEditModel = {
             //     assetCode: selectedAsset?.assetCode ?? assignment.assetCode,
@@ -96,7 +93,6 @@ export const EditAssignmentComponent = (props: Props) => {
     const { getFieldProps } = formik;
 
     useEffect(() => {
-        console.log(assignment)
     }, [selectedUser, selectedAsset])
 
     return (<>
