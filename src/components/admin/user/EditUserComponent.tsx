@@ -73,7 +73,7 @@ export const EditUserComponent = (props: Props) => {
                 type: values.roleId
             }
             if (!formik.dirty) {
-                messageApi.open({ type: 'warning', content: 'Please Change Infomation before Submit', });
+                messageApi.open({ type: 'warning', content: 'Please Change Information before Submit', });
                 setLoading(false);
                 return;
             }

@@ -98,11 +98,11 @@ export const AssetModalComponent = (props: Props) => {
                                 value = asset[header.value].substring(0,60);
                             }
                             return (
-                                <Row className="my-3 justify-content-between" key={header.name} id={"asset_modal_row_" + header.value}>
-                                    <Col sm={2} className="">
+                                <Row className="my-3 justify-content-between" key={header.name} name={"asset_modal_row"}>
+                                    <Col sm={2} className="" name={"asset_modal_row_header"}>
                                         {header.name}
                                     </Col>
-                                    <Col sm={10} id={"asset_modal_row_" + header.value} style={{  overflow: "auto" }}>
+                                    <Col sm={10} name={"asset_modal_row_data"} style={{  overflow: "auto" }}>
                                         {value}
                                         <span id={"show_more_" + header.value} onClick={() => { readMore[index] = !readMore[index]; setReadMore(() => [...readMore]) }} className="show-more" style={{ color: "red" }}>
                                             {isLongerThan60 ? readMore[index] ? " Show more": " Show less" : ""}

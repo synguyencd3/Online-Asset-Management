@@ -279,11 +279,16 @@ tr:hover {
 }
 
 .disable-icon {
-  opacity: 50%;
+  opacity: 20%;
 }
 
 .asset-detail-modal{
   max-width: 800px; /* Set your desired width here */
+  width: 100%;
+}
+
+.assignment-detail-modal{
+  max-width: 600px; /* Set your desired width here */
   width: 100%;
 }
 .modal-header{

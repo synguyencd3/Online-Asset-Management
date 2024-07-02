@@ -8,7 +8,7 @@ export type AssignmentModel = {
     assignedBy: string;
     assignedTo: string;
     assignedDate: Date;
-    assignmentState: AssignmentState;
+    state: string;
     assignmentNote: string;
 }
 
@@ -25,11 +25,14 @@ export type AssignmentTableModel = {
     assetName: string;
     category: string;
     assignedDate: string;
+    note: string;
     state: AssignmentState;
     disableButton: boolean[];
 }
 
 export type AssignmentModalModel = {
+    [key: string]: string | number; 
+    id: number;
     assetCode: string,
     assetName: string,
     category: string,
@@ -37,6 +40,23 @@ export type AssignmentModalModel = {
     assignedTo: string,
     assignedBy: string,
     assignedDate: string,
-    state: string,
+    status: string,
+    note: string
+}
+
+
+export type AssignmentCreateModel = {
+    staffCode: string,
+    assetCode: string,
+    assignedDate: string,
+    note: string
+}
+
+export type AssignmentEditModel = {
+    staffCode: string,
+    assignedTo: string,
+    assetName: string,
+    assignedDate: string,
+    assetCode: string,
     note: string
 }

@@ -59,6 +59,7 @@ export const ManageAssetComponent: React.FC<Props> = (props: Props) => {
 		sort: "assetCode,asc",
 	});
 
+
 	const [dummy, setDummy] = useState(0);
 	const [page, setPage] = useState(0);
 
@@ -290,7 +291,7 @@ export const ManageAssetComponent: React.FC<Props> = (props: Props) => {
 			}
 
 				<AssetModalComponent
-					title={"Detailed Asset Infomation"}
+					title={"Detailed Asset Information"}
 					show={modalShow}
 					onHide={() => setModalShow(false)}
 					data={modalData?.assetCode}
