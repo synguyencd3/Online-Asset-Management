@@ -4,7 +4,7 @@ import { TableComponent } from "../../commons/TableComponent"
 import { ColorPalette } from "../../../utils/ColorPalette"
 import { LoaderComponent } from "../../commons/LoaderComponent"
 import { PaginationComponent } from "../../commons/PaginationComponent"
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
 import { message } from 'antd';
 import { UserModel } from "../../../models/UserModel"
 import { UserForSelectTableModel } from "../../../models/UserForSelectTableModel"
@@ -15,10 +15,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
 const header = [
 	{ name: '', value: "", sort: false, direction: false, colStyle: { width: "20%" } },
-	{ name: 'Staff Code', value: "staffCode", sort: true, direction: true, colStyle: { width: "20%" } },
-	{ name: 'Username', value: "username", sort: true, direction: true, colStyle: { width: "40%" } },
-	{ name: 'Full Name', value: "", sort: false, direction: false, colStyle: { width: "50%" } },
-	{ name: 'Type', value: "roleId", sort: true, direction: true, colStyle: { width: "10%" } },
+	{ name: 'Staff Code', value: "staffCode", sort: true, direction: true, colStyle: { width: "15%" } },
+	{ name: 'Username', value: "username", sort: true, direction: true, colStyle: { width: "15%" } },
+	{ name: 'Full Name', value: "fullName", sort: true, direction: true, colStyle: { width: "50%" } },
+	{ name: 'Type', value: "type", sort: true, direction: true, colStyle: { width: "5%" } },
 
 ]
 
@@ -37,8 +37,7 @@ export const SelectUserComponent = (props: Props) => {
 
 	const [dummy, setDummy] = useState(0);
 
-	const [page, setPage] = useState(0);
-
+	const [, setPage] = useState(0);
 	const [selected, setSelected] = useState<String>("")
 
 	const [param, setParam] = useState({
@@ -56,7 +55,7 @@ export const SelectUserComponent = (props: Props) => {
 			+ "search=" + encodeURIComponent(param.search) + "&"
 			+ "types=" + param.types.join() + "&"
 			+ "page=" + param.page + "&"
-			+ "size=" + param.size + "&"
+			+ "size=" + "20" + "&"
 			+ "sort=" + param.sort;
 
 		setLoading(true)
@@ -88,6 +87,9 @@ export const SelectUserComponent = (props: Props) => {
 		InitializeQuery()
 	}, [dummy])
 
+	useEffect(() => {
+		props.setSelectedOnParent(selected)
+	},[selected])
 
 	const preButton = (user: UserModel, setUser:any) => {
 		return (
@@ -102,14 +104,9 @@ export const SelectUserComponent = (props: Props) => {
 	}
 
 	const save = () => {
-
 		props.setSelectedOnParent(selected);
 		props.closeDropdown()
 	}
-
-	useEffect(() => {
-			InitializeQuery()
-	}, [page])
 
 	return (
 		<Container>
@@ -136,7 +133,7 @@ export const SelectUserComponent = (props: Props) => {
 								<Row>
 									<TableComponent headers={header} datas={tableUser} auxData={auxData} auxHeader={[]} buttons={[]} setSortString={setParam} showModalCell={[]} setDummy={setDummy} setModalData={() => { }} setModalShow={undefined} pre_button={preButton} setSelect={setSelected} disableButton={[]}  ></TableComponent>
 								</Row>
-								<PaginationComponent currentPage={param.page} totalPage={totalPage} setDummy={setPage} perPage={param.size} setParamsFunction={setParam} setPage={setPage} fixPageSize={false} ></PaginationComponent>
+								<PaginationComponent currentPage={param.page} totalPage={totalPage} setDummy={setPage} perPage={0} setParamsFunction={setParam} setPage={setPage} fixPageSize={false} ></PaginationComponent>
 							</>
 						}
 					</>
