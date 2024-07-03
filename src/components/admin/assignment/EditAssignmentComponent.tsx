@@ -101,7 +101,7 @@ export const EditAssignmentComponent = (props: Props) => {
     useEffect(() => {
     }, [selectedUser, selectedAsset])
 
-    return (<>
+    return (
         <Container>
             <Form className="p-5" style={{ maxWidth: "60%", minWidth: "300px", textAlign: "left" }} onSubmit={formik.handleSubmit}>
                 <h4 style={{ color: ColorPalette.PRIMARY_COLOR }} className="mb-4">
@@ -218,5 +218,5 @@ export const EditAssignmentComponent = (props: Props) => {
         )}
             </Form>
         </Container >
-    </>)
+    )
 }
