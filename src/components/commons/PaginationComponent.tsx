@@ -1,5 +1,5 @@
 import { message } from "antd";
-import { Form, Pagination, Row } from "react-bootstrap";
+import { Col, Container, Form, Pagination, Row } from "react-bootstrap";
 
 type Props = {
     currentPage: number;
@@ -19,7 +19,6 @@ export const PaginationComponent = ({ currentPage, totalPage, setParamsFunction,
             return
         }
         setParamsFunction((p: any) => ({ ...p, page: page }))
-
         setPage(Math.random())
     };
 
@@ -80,27 +79,34 @@ export const PaginationComponent = ({ currentPage, totalPage, setParamsFunction,
     };
 
     return (
-        <Pagination className="justify-content-end">
-            {fixPageSize ? "" :
-                <div className="me-5" style={{ maxWidth: "100%", minWidth: "50px", textAlign: "left" }}>
-                    <Form.Group as={Row} className="" controlId="location">
-                        <Form.Select name="location" defaultValue={perPage} style={{ width: "100%" }} onChange={(e) => { handlePerPageChange(e.target.value) }}>
-                            <option value="1" >1 / page</option>
-                            <option value="5" >5 / page</option>
-                            <option value="10" >10 / page</option>
-                            <option value="20" >20 / page</option>
-                            <option value="40" >40 / page</option>
-                        </Form.Select>
+        <>
+            <Container>
+                <Row className="justify-content-end gy-4 py-4">
+                    <Col sm={2} style={{ width: "fit-content" }}>
+                        {fixPageSize ? "" :
+                            <div className="me-5" style={{ maxWidth: "100%", minWidth: "50px", width: "fit-content", textAlign: "left" }}>
+                                <Form.Group as={Row} className="" controlId="location">
+                                    <Form.Select name="location" defaultValue={perPage} style={{ width: "100%" }} onChange={(e) => { handlePerPageChange(e.target.value) }}>
+                                        <option value="5" >5 / page</option>
+                                        <option value="10" >10 / page</option>
+                                        <option value="20" >20 / page</option>
+                                    </Form.Select>
+                                </Form.Group>
+                            </div>
+                        }
+                    </Col>
+                    <Col sm={4} style={{ width: "fit-content" }}>
+                        <Pagination className="justify-content-end">
 
-                    </Form.Group>
-                </div>
-            }
+                            <Pagination.Prev disabled={isFirstPage || totalPage === 0} onClick={() => handlePageChange(currentPage - 1)}> Previous</Pagination.Prev>
 
-            <Pagination.Prev className="rounded-start" disabled={isFirstPage || totalPage === 0} onClick={() => handlePageChange(currentPage - 1)}>Previous</Pagination.Prev>
+                            {renderPageItems()}
 
-            {renderPageItems()}
-
-            <Pagination.Next disabled={isLastPage || totalPage === 0} onClick={() => handlePageChange(currentPage + 1)}>Next</Pagination.Next >
-        </Pagination>
+                            <Pagination.Next disabled={isLastPage || totalPage === 0} onClick={() => handlePageChange(currentPage + 1)}> Next</Pagination.Next >
+                        </Pagination>
+                    </Col>
+                </Row>
+            </Container>
+        </>
     );
 }

@@ -17,6 +17,7 @@ export const SearchComponent = (props: Props) => {
 
     function SubmitSearch(e: FormEvent<HTMLFormElement>) {
         e.preventDefault();
+        props.setDummy(Math.random());
     }
 
     const renderTooltip = (props: JSX.IntrinsicAttributes & TooltipProps & RefAttributes<HTMLDivElement>) => {
@@ -32,7 +33,7 @@ export const SearchComponent = (props: Props) => {
             <InputGroup id="search-group" className="" style={{ maxWidth: "" }}>
                 <Form.Control placeholder={props.placeholder ?? ""} id="search-input" name="search" onChange={(e) => { props.setParamsFunction((p: any) => ({ ...p, search: e.target.value })) }} />
                 <OverlayTrigger placement="right" delay={{ show: 150, hide: 150 }} overlay={renderTooltip}>
-                    <Button type="button" variant="outline-dark" id="search-button" onClick={() => { props.setDummy(Math.random()); }}>
+                    <Button type="submit" variant="outline-dark" id="search-button">
                         <FontAwesomeIcon size='lg' icon={faMagnifyingGlass} />
                     </Button>
                 </OverlayTrigger>

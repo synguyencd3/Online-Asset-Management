@@ -58,9 +58,9 @@ export const TableComponent = ({ headers, datas, auxData, buttons, setSortString
 											{h.name}
 											{h.sort ?
 												<FontAwesomeIcon values={h.name} icon={h.direction ? faSortDown : faSortUp} onClick={() => { onClickSort(h, index); }} style={{ marginLeft: "10px" }} />
-												: ""}
+												:""}
 										</div>
-										: ""
+										: '\u200B'
 									}
 								</th>
 							))}
@@ -76,7 +76,7 @@ export const TableComponent = ({ headers, datas, auxData, buttons, setSortString
 											return (
 												<td key={idx} className='modalClick' style={headers[idx].colStyle}>
 													<div className={cellCLickStyle}>
-														{value?.toString()}
+														{value?.toString()  || '\u200B'}
 													</div>
 												</td>
 											)
@@ -84,7 +84,7 @@ export const TableComponent = ({ headers, datas, auxData, buttons, setSortString
 											return (
 												<td key={idx} className='' style={headers[idx].colStyle}>
 													<div className='cellnoClick text-truncate'>
-														{value?.toString()}
+														{value?.toString()  || '\u200B'}
 													</div>
 												</td>
 											)
