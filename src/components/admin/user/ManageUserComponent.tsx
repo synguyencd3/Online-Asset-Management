@@ -18,7 +18,13 @@ import { message } from "antd";
 import { disableUser, getUser } from "../../../services/UserService";
 import { DetailModalComponent } from "../../commons/DetailModalComponent";
 
-const header = [{ name: 'Staff Code', value: "staffCode", sort: true, direction: true, colStyle: {} }, { name: 'Full Name', value: "firstName", sort: true, direction: true, colStyle: {} }, { name: 'Username', value: "username", sort: false, direction: true, colStyle: {} }, { name: 'Joined Date', value: "joinedDate", sort: true, direction: true, colStyle: {} }, { name: 'Type', value: "roleId", sort: true, direction: true, colStyle: {} },]
+const header = [
+	{ name: 'Staff Code', value: "staffCode", sort: true, direction: true, colStyle: {} }, 
+	{ name: 'Full Name', value: "firstName", sort: true, direction: true, colStyle: {} }, 
+	{ name: 'Username', value: "username", sort: false, direction: true, colStyle: {} }, 
+	{ name: 'Joined Date', value: "joinedDate", sort: true, direction: true, colStyle: {} }, 
+	{ name: 'Type', value: "roleId", sort: true, direction: true, colStyle: {} },
+]
 const showModalCell = ["staffCode", "username", "fullName"]
 const modalHeader = ["Staff Code", "Full Name", "Username", "Date of Birth", "Gender", "Joined Date", "Type", "Location"]
 
