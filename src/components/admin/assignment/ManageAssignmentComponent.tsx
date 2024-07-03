@@ -133,9 +133,13 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
     isLoading: isAssignmentLoading,
     error: assignmentError,
     mutate: mutateAssignment,
+    isValidating: isAssignmentValidating,
   } = useSWR<PageResponseModel<AssignmentForTableModel>>(
     getAssignmentsUrl(param),
-    getAssignments
+    getAssignments,
+    {
+      revalidateOnFocus: false,
+    }
   );
 
   const handleSetParam = (func:(p : AssignmentGetParams) => AssignmentGetParams) => {
@@ -150,10 +154,14 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
   };
 
   const handleDeleteConfirm = async () => {
+    setShowDisableModal(false);
+    message.loading("Deleting assignment",1.2);
     await deleteAssignmentById(_deletedAssignmentId)
       .then((response) => {
         message.success(response.data.message);
-        setShowDisableModal(false);
+        if (newAssignment) {
+          navigate(location.pathname, { state: { newAssignment: undefined } });
+        }
         mutateAssignment();
       })
       .catch((error) => {
@@ -312,7 +320,7 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
         </Col>
       </Row>
 
-      {isAssignmentLoading || !assignmentResponse ? (
+      {isAssignmentLoading || !assignmentResponse || isAssignmentValidating ? (
         <LoaderComponent></LoaderComponent>
       ) : (
         <>

@@ -27,7 +27,7 @@ type Props = {
 export const ManageAssetComponent: React.FC<Props> = (props: Props) => {
 	const navigate = useNavigate();
 
-	const [messageApi, contextHolder] = message.useMessage();
+	// const [messageApi, contextHolder] = message.useMessage();
 	const [tableAsset, setTableAsset] = useState<AssetForTableModel[]>([]);
 	const [auxData, setAuxData] = useState<AssetModel[]>([]);
 
@@ -169,13 +169,13 @@ export const ManageAssetComponent: React.FC<Props> = (props: Props) => {
 			.then(async () => {
 				await deleteAsset(assetCode)
 					.then((res) => {
-						if (res.status == 200) {
-							message.success(res.data.message);
+						if (res.status == 204) {
+							message.success("Asset deleted successfully");
 							setDummy(Math.random());
 						}
 					})
 					.catch((err) => {
-						message.error(`${err.response.message}`);
+						message.error(`${err.response.data.message}`);
 					});
 			});
 	}
@@ -234,7 +234,7 @@ export const ManageAssetComponent: React.FC<Props> = (props: Props) => {
 
 	return (
 		<Container style={{ maxWidth: "100%" }} className="p-4">
-			{contextHolder}
+			{/* {contextHolder} */}
 			<h4 className="ms-1" style={{ color: "red", fontWeight: "bold" }}>
 				Asset List
 			</h4>
