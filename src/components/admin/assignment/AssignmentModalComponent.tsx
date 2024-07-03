@@ -2,7 +2,7 @@ import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Col, Container, Modal, Row } from "react-bootstrap";
 import useSWR from "swr";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { LoaderComponent } from "../../commons/LoaderComponent";
 import {
   getOneAssignemnt,
@@ -10,6 +10,8 @@ import {
 } from "../../../services/AssignmentService";
 import { AssignmentModalModel } from "../../../models/AssignmentModel";
 import { AssignmentForTableModel } from "../../../models/AssignmentForTable";
+import { message } from "antd";
+import { toDateString, uppercaseStatusToText } from "../../../utils/utils";
 
 type Props = {
   title: string;
@@ -30,13 +32,32 @@ const headers = [
 ];
 
 export const AssignmentModelComponent = (props: Props) => {
-  const [readMore, setReadMore] = useState<boolean[]>([]);
+  const [isShowFull, setIsShowFull] = useState<boolean[]>([]);
 
-  useEffect(() => {}, [readMore]);
-  const { data: assignment, isLoading } = useSWR<AssignmentModalModel>(
+  const {
+    data: assignmentData,
+    isLoading
+  } = useSWR<AssignmentModalModel>(
     props.data && props.data.id ? getOneAssignmentUrl(props.data.id) : null,
-    getOneAssignemnt
+    getOneAssignemnt,
+    {
+      onError: (error) => {
+        message.error(error.response.data.message);
+        props.onHide();
+      },
+    }
   );
+
+  const formatData = (data: AssignmentModalModel): AssignmentModalModel => {
+    const formattedData : AssignmentModalModel = { ...data };
+    formattedData.assignedDate = toDateString(data.assignedDate);
+    formattedData.status = uppercaseStatusToText(data.status);
+    return formattedData;
+  };
+
+  const assignment: AssignmentModalModel | undefined = assignmentData
+      ? formatData(assignmentData)
+      : undefined;
 
   return (
     <Modal
@@ -57,14 +78,17 @@ export const AssignmentModelComponent = (props: Props) => {
               icon={faXmark}
               id="close-modal-button"
               className="px-1"
-              onClick={props.onHide}
+              onClick={() => {
+                setIsShowFull([]);
+                props.onHide();
+              }}
               style={{ border: "3px red solid", borderRadius: "5px" }}
             ></FontAwesomeIcon>
           </Modal.Title>
         </Container>
       </Modal.Header>
       <Modal.Body>
-        {isLoading ? (
+        {isLoading || !assignment ? (
           <LoaderComponent />
         ) : (
           <Container style={{ maxWidth: "95%" }}>
@@ -73,7 +97,7 @@ export const AssignmentModelComponent = (props: Props) => {
                 let value = assignment[header.value];
                 const isLongerThan60 =
                   assignment[header.value].toString().length > 60;
-                if (isLongerThan60 && readMore[index]) {
+                if (isLongerThan60 && !isShowFull[index]) {
                   value = assignment[header.value].toString().substring(0, 60);
                 }
                 return (
@@ -94,14 +118,14 @@ export const AssignmentModelComponent = (props: Props) => {
                       <span
                         id={"show_more_" + header.value}
                         onClick={() => {
-                          readMore[index] = !readMore[index];
-                          setReadMore(() => [...readMore]);
+                          isShowFull[index] = !isShowFull[index];
+                          setIsShowFull(() => [...isShowFull]);
                         }}
                         className="show-more"
                         style={{ color: "red" }}
                       >
                         {isLongerThan60
-                          ? readMore[index]
+                          ? !isShowFull[index]
                             ? " Show more"
                             : " Show less"
                           : ""}

@@ -4,7 +4,7 @@ import { Col, Container, Modal, Row, Table } from "react-bootstrap";
 import { AssetHistoryModel, AssetModel } from "../../../models/AssetModel";
 import useSWR from "swr";
 import { getOneAssetHistoryUrl } from "../../../services/AssetService";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { getWithSWR } from "../../../services/swrService";
 import { PaginationComponent } from "../../commons/PaginationComponent";
 import { LoaderComponent } from "../../commons/LoaderComponent";

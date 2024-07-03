@@ -15,6 +15,7 @@ import { ConfirmModalComponent } from '../commons/ConfirmModalComponent';
 import { LoaderComponent } from '../commons/LoaderComponent';
 import { PaginationComponent } from '../commons/PaginationComponent';
 import { TableComponent } from '../commons/TableComponent';
+import { toDateString } from '../../utils/utils';
 
 type Props = {
     setHeaderTitle: any
@@ -147,7 +148,7 @@ export const UserHomeComponent: React.FC<Props> = (props: Props) => {
                             assetCode: data.assetCode,
                             assetName: data.assetName,
                             category: data.category,
-                            assignedDate: data.assignedDate,
+                            assignedDate: toDateString(data.assignedDate),
                             status: AssignmentState[data.status as unknown as keyof typeof AssignmentState],
                         });
                         data.status.toString() === "WAITING_FOR_ACCEPTANCE" ? disableBtns.push([false, false, true]) : disableBtns.push([true, true, false]);

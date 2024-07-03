@@ -23,7 +23,7 @@ import { PageResponseModel } from "../../../models/PageableModel";
 import { message } from "antd";
 import { SearchOnEnterComponent } from "../../commons/SearchOnEnterComponent";
 import { AssignmentModelComponent } from "./AssignmentModalComponent";
-import { uppercaseStatusToText } from "../../../utils/utils";
+import { toDateString, uppercaseStatusToText } from "../../../utils/utils";
 
 const header = [
   {
@@ -138,8 +138,12 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
     getAssignments
   );
 
-  const handleSetParam = (param: AssignmentGetParams) => {
-    setParam(param);
+  const handleSetParam = (func:(p : AssignmentGetParams) => AssignmentGetParams) => {
+    const newParam = func(param);
+    if (newParam.page === param.page) {
+      newParam.page = 0;
+    }
+    setParam(newParam);
     if (newAssignment) {
       navigate(location.pathname, { state: { newAssignment: undefined } });
     }
@@ -189,9 +193,23 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
 
   const refreshIcon: FunctionalIconModel = {
     icon: faRotateBack,
-    style: "",
+    style: { color: 'blue', rotate: '70deg' },
     onClickfunction: refreshAssignment,
   };
+
+  const formatRecordList = (records: AssignmentForTableModel[]) => {
+    return records.map((record: AssignmentForTableModel) => {
+      return {
+        id: record.id,
+        assetCode: record.assetCode,
+        assetName: record.assetName,
+        assignedTo: record.assignedTo,
+        assignedBy: record.assignedBy,
+        assignedDate: toDateString(record.assignedDate),
+        status: uppercaseStatusToText(record.status),
+      };
+    });
+  }
 
   const setDisableButtonState = (data: AssignmentForTableModel[]) => {
     return data.map((item: AssignmentForTableModel) => [
@@ -220,7 +238,7 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
         assignedBy: newAssignment.assignBy,
         assignedTo: newAssignment.assignTo,
         assignedDate: newAssignment.assignedDate,
-        status: uppercaseStatusToText(newAssignment.status),
+        status: newAssignment.status,
       };
 
       const assignments = assignmentList.find(
@@ -251,7 +269,7 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
                 setParamsFunction={handleSetParam}
                 setDummy={() => {}}
                 style={{ width: "100%" }}
-                defaultAll={false}
+                defaultAll={true}
                 paramName={"status"}
               ></DropdownFilterComponent>
             </Col>
@@ -260,10 +278,10 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
                 type="date"
                 placeholder="Assigned Date"
                 onChange={(e) =>
-                  handleSetParam({
-                    ...param,
+                  handleSetParam((p : AssignmentGetParams) =>({
+                    ...p,
                     assignedDate: e.target.value,
-                  })
+                  }))
                 }
               />
             </Col>
@@ -312,7 +330,7 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
               <Row>
                 <TableComponent
                   headers={header}
-                  datas={assignmentList}
+                  datas={formatRecordList(assignmentList)}
                   auxData={assignmentList}
                   auxHeader={modalHeader}
                   buttons={buttons}
