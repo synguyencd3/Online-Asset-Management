@@ -14,6 +14,7 @@ import { ConfirmModalComponent } from "../../commons/ConfirmModalComponent";
 import { AssignmentForTableModel } from "../../../models/AssignmentForTable";
 import {
   AssignmentGetParams,
+  deleteAssignmentById,
   getAssignments,
   getAssignmentsUrl,
 } from "../../../services/AssignmentService";
@@ -109,10 +110,10 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
   const newAssignment = location.state?.newAssignment;
 
   const [modalShow, setModalShow] = useState(false);
-
   const [modalData, setModalData] = useState<AssignmentForTableModel>();
-
   const [showDisableModal, setShowDisableModal] = useState(false);
+
+  const [_deletedAssignmentId, setDeletedAssignmentId] = useState<number>(0);
 
   const [param, setParam] = useState<AssignmentGetParams>({
     search: "",
@@ -131,6 +132,7 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
     data: assignmentResponse,
     isLoading: isAssignmentLoading,
     error: assignmentError,
+    mutate: mutateAssignment,
   } = useSWR<PageResponseModel<AssignmentForTableModel>>(
     getAssignmentsUrl(param),
     getAssignments
@@ -143,17 +145,29 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
     }
   };
 
-  const handleDeleteConfirm = () => {};
+  const handleDeleteConfirm = async () => {
+    await deleteAssignmentById(_deletedAssignmentId)
+      .then((response) => {
+        message.success(response.data.message);
+        setShowDisableModal(false);
+        mutateAssignment();
+      })
+      .catch((error) => {
+        message.error(error.response.data.message);
+      });
+  };
 
-  const handleDeleteCancel = () => {};
+  const handleDeleteCancel = () => {
+    setShowDisableModal(false);
+  };
 
     function editAssignment(...data: AssignmentForTableModel[]) {
         navigate("/admin/manage-assignments/edit", { state: { user: data[1].id } });
     }
 
   function deleteAssignment(...data: AssignmentForTableModel[]) {
-    setShowDisableModal(false);
-    window.alert(data);
+    setShowDisableModal(true);
+    setDeletedAssignmentId(data[1].id);
   }
 
   function refreshAssignment(...data: AssignmentForTableModel[]) {
@@ -183,8 +197,7 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
     return data.map((item: AssignmentForTableModel) => [
       item.status.toLowerCase() !==
       AssignmentState.WAITING_FOR_ACCEPTANCE.toLowerCase(),
-      item.status.toLowerCase() !==
-        AssignmentState.WAITING_FOR_ACCEPTANCE.toLowerCase(),
+      item.status.toLowerCase() === AssignmentState.ACCEPTED.toLowerCase(),
       item.status.toLowerCase() !== AssignmentState.ACCEPTED.toLowerCase(),
     ]);
   };
@@ -340,7 +353,7 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
         onConfirm={handleDeleteConfirm}
         onCancel={handleDeleteCancel}
         confirmTitle={"Are you sure?"}
-        confirmQuestion={"Do you want to delete this asset?"}
+        confirmQuestion={"Do you want to delete this assignment?"}
         confirmBtnLabel={"Delete"}
         cancelBtnLabel={"Cancel"}
         modalSize={"md"}

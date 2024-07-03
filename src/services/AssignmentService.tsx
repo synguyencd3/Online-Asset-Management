@@ -88,3 +88,4 @@ export const getOneAssignemnt = async (url: string) => {
 export const getOwnAssignmentDetails = (pageable: OwnPageableModel) => axios.get(`${AZURE_SERVICE_API}/assignments/own?page=${pageable.page}&size=${pageable.size}&sort=${pageable.sort}`, CORS_CONFIG);
 export const getAssignmentsDetails = (pageable: PageableModel) => axios.get(`${AZURE_SERVICE_API}/assignments?search=${pageable.search}&page=${pageable.page}&size=${pageable.size}&sort=${pageable.sort}`, CORS_CONFIG);
 export const responseAssignment = (id: number, status: string) => axios.patch(`${AZURE_SERVICE_API}/assignments/response/${id}?status=${status}`, null, CORS_CONFIG);
+export const deleteAssignmentById = (id: number) => axios.delete(`${AZURE_SERVICE_API}/assignments/${id}`, CORS_CONFIG);
