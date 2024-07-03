@@ -27,6 +27,7 @@ export const CreateAssignmentComponent = (props: Props) => {
     const [selectedUser, setSelectedUser] = useState<UserForSelectTableModel>();
     const [showDropdownUser, setShowDropdownUser] = useState(false);
     const [isDirty, setDirty] = useState(true);
+    const date = new Date();
     const [showDropdownAsset, setShowDropdownAsset] = useState(false);
     const [isDisable, setDisable] = useState(true)
     //const [dummy, setDummy] = useState(0)
@@ -49,6 +50,12 @@ export const CreateAssignmentComponent = (props: Props) => {
         setShowDropdownAsset(false);
     };
 
+    function yesterday():Date {
+        var d = new Date();
+        d.setDate(date.getDate() - 1);
+        return d
+    }
+
     function formatDate(date: Date) {
         const day = String(date.getDate()).padStart(2, '0');
         const month = String(date.getMonth() + 1).padStart(2, '0'); 
@@ -59,7 +66,7 @@ export const CreateAssignmentComponent = (props: Props) => {
     const validationSchema = Yup.object({
         user: Yup.string().required('User is required').max(300, "Maximum length is 300"),
         asset: Yup.string().required('Asset is required').max(300, "Maximum length is 300"),
-        //assignedDate: Yup.string().required('Assigned date is required'),
+        assignedDate: Yup.date().min(yesterday(), "Assigned date must be from the current date or later").required("Assigned date is required"),
         note:Yup.string().notRequired().max(300, "Maximum length is 300"),
     });
 
@@ -221,7 +228,7 @@ export const CreateAssignmentComponent = (props: Props) => {
                         <Form.Control 
                         type="date"  
                         {...getFieldProps('assignedDate')} 
-                        min={formatDate(new Date())}
+                        //min={formatDate(new Date())}
                         style={formik.errors.assignedDate ? { borderColor: "red" } : {}} />
                         {formik.touched.assignedDate && formik.errors.assignedDate ? (
                             <div className="error-message">{formik.errors.assignedDate}</div>

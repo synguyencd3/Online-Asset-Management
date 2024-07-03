@@ -60,7 +60,7 @@ export const ManageAssetComponent: React.FC<Props> = (props: Props) => {
 
 	const location = useLocation();
 
-	const [newAsset] = useState<AssetModel>(location.state?.newAsset);
+	const [newAsset, setNewAsset] = useState<AssetModel | undefined>(location.state?.newAsset);
 	// const [newAsset] = useState<AssetForTableModel>(location.state?.newAsset);
 
 	const [modalShow, setModalShow] = useState(false);
@@ -169,6 +169,10 @@ export const ManageAssetComponent: React.FC<Props> = (props: Props) => {
 			.then(async () => {
 				await deleteAsset(assetCode)
 					.then((res) => {
+						if (newAsset) {
+							navigate(location.pathname, { state: { newAsset: undefined } });
+							setNewAsset(undefined);
+						}
 						if (res.status == 204) {
 							message.success("Asset deleted successfully");
 							setDummy(Math.random());

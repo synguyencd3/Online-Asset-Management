@@ -190,7 +190,7 @@ export const CreateAssetComponent = (props: Props) => {
                   }}
                   className="border-dark"
                 >
-                  <div style={{ width: "fit-content" }}>
+                  <div style={{ minWidth: "fit-content"}}>
                     {categoriesResponse?.data.data.map(
                       (category: CategoryModel) => (
                         <Dropdown.Item
