@@ -5,7 +5,7 @@ import { Row } from 'react-bootstrap';
 import { AssignmentForTableModel } from '../../models/AssignmentForTable';
 import { AssignmentHomeViewModel, AssignmentModel } from '../../models/AssignmentModel';
 import { FunctionalIconModel } from '../../models/FunctionalIconModel';
-import { OwnPageableModel } from '../../models/PageableModel';
+import { PageableModel } from '../../models/PageableModel';
 import { responseAssignment, getOwnAssignmentDetails } from '../../services/AssignmentService';
 import { ColorPalette } from '../../utils/ColorPalette';
 import { AssignmentRequestState, AssignmentState } from '../../utils/Enum';
@@ -125,7 +125,7 @@ export const UserHomeComponent: React.FC<Props> = (props: Props) => {
     const getAssignmentData = async () => {
         setLoading(true)
 
-        const pageable: OwnPageableModel = {
+        const pageable: PageableModel = {
             page: param.page,
             size: param.size,
             sort: param.sort

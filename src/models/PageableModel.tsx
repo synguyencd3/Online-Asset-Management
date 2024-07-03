@@ -1,10 +1,10 @@
-export type OwnPageableModel = {
+export type PageableModel = {
     page: number;
     size: number;
     sort: string;
 }
 
-export type PageableModel = {
+export type SearchPageableModel = {
     search: string;
     page: number;
     size: number;

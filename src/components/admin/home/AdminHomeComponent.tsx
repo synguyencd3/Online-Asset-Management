@@ -7,7 +7,7 @@ import { faCheck, faRotateBack, faXmark } from '@fortawesome/free-solid-svg-icon
 import { ColorPalette } from '../../../utils/ColorPalette';
 import { getOwnAssignmentDetails, responseAssignment } from '../../../services/AssignmentService';
 import { AssignmentRequestState, AssignmentState } from '../../../utils/Enum';
-import { OwnPageableModel } from '../../../models/PageableModel';
+import { PageableModel } from '../../../models/PageableModel';
 import { PaginationComponent } from '../../commons/PaginationComponent';
 import { Row } from 'react-bootstrap';
 import { LoaderComponent } from '../../commons/LoaderComponent';
@@ -132,7 +132,7 @@ export const AdminHomeComponent: React.FC<Props> = (props: Props) => {
     const getAssignmentData = async () => {
         setLoading(true)
 
-        const pageable: OwnPageableModel = {
+        const pageable: PageableModel = {
             page: param.page,
             size: param.size,
             sort: param.sort
