@@ -236,7 +236,7 @@ export const CreateAssignmentComponent = (props: Props) => {
                     <Col sm={9}>
                         <Form.Control type="text" as="textarea" {...getFieldProps("note")}/>
                         {formik.touched.note && formik.errors.note? (
-                            <div className="error-message">{formik.errors.assignedDate}</div>
+                            <div className="error-message">{formik.errors.note}</div>
                         ) : null}
                     </Col>
                 </Form.Group>

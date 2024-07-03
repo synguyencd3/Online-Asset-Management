@@ -51,7 +51,7 @@ export const EditAssignmentComponent = (props: Props) => {
     };
 
     const validationSchema = Yup.object({
-       
+       note: Yup.string().max(300, "Maximum length is 300")
     });
 
     const formik = useFormik({
@@ -205,6 +205,9 @@ export const EditAssignmentComponent = (props: Props) => {
                     </Form.Label>
                     <Col sm={9}>
                         <Form.Control as="textarea" {...getFieldProps('note')} defaultValue={assignmentResponse.note}/>
+                        {formik.touched.note && formik.errors.note? (
+                            <div className="error-message">{formik.errors.note}</div>
+                        ) : null}
                     </Col>
                 </Form.Group>
 
