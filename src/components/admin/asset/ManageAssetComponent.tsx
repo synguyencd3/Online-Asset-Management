@@ -16,9 +16,7 @@ import { AssetForTableModel, AssetModel } from '../../../models/AssetModel';
 import { AssetModalComponent } from './AssetModalComponent';
 import { ConfirmModalComponent } from '../../commons/ConfirmModalComponent';
 
-
-
-const header = [{ name: 'Asset Code', value: "assetCode", sort: true, direction: true, colStyle: { width: "12%" } }, { name: 'Asset Name', value: "name", sort: true, direction: true, colStyle: { width: "40%" } }, { name: 'Category', value: "category", sort: true, direction: true, colStyle: { maxWidth: '200px' } }, { name: 'State', value: "status", sort: true, direction: true, colStyle: { width: "15%" } }]
+const header = [{ name: 'Asset Code', value: "assetCode", sort: true, direction: true, colStyle: { width: "12%" } }, { name: 'Asset Name', value: "name", sort: true, direction: true, colStyle: { width: "40%" } }, { name: 'Category', value: "category.name", sort: true, direction: true, colStyle: { maxWidth: '200px' } }, { name: 'State', value: "status", sort: true, direction: true, colStyle: { width: "15%" } }]
 const showModalCell = ["assetCode", "assetName"]
 const modalHeader = ["Asset Code", "Asset Name", "Category", "Installed Date", "State", "Location", "Specification"]
 
@@ -29,26 +27,20 @@ type Props = {
 export const ManageAssetComponent: React.FC<Props> = (props: Props) => {
 	const navigate = useNavigate();
 
-
+	// const [messageApi, contextHolder] = message.useMessage();
 	const [tableAsset, setTableAsset] = useState<AssetForTableModel[]>([]);
 	const [auxData, setAuxData] = useState<AssetModel[]>([]);
 
-	const [category, setCategory] = useState<CategoryModel[]>([]);
+	const [category, setCategory] = useState<CategoryModel[]>();
 
 	const [loading, setLoading] = useState(true);
 
 	const [_showDisableModal, setShowDisableModal] = useState(false);
 
 	const [_deleteAssetCode, setDeleteAssetCode] = useState('');
-
-	const isInitialRender = useRef(0);
-
 	useEffect(() => {
 		props.setHeaderTitle("Manage Asset");
 	}, [])
-
-	// two for each useEffect when useStrictApp, the first useEffect declare that check isInitialRender will be the one that run ??? // need check
-	const totalFirstLoad = 1;
 
 	const [param, setParam] = useState({
 		search: "",
@@ -59,7 +51,7 @@ export const ManageAssetComponent: React.FC<Props> = (props: Props) => {
 		sort: "assetCode,asc",
 	});
 
-
+	const isFirstLoad = useRef(true);
 	const [dummy, setDummy] = useState(0);
 	const [page, setPage] = useState(0);
 
@@ -78,39 +70,34 @@ export const ManageAssetComponent: React.FC<Props> = (props: Props) => {
 	modalShow ? modalData ? "" : "" : "";
 
 	useEffect(() => {
-		getCategory()
+		if (isFirstLoad.current) {
+			isFirstLoad.current = false;
+			getCategory()
+		}
 	}, [])
 
 	useEffect(() => {
-		if (isInitialRender.current < totalFirstLoad) {
-			isInitialRender.current++;
-			return;
+		if (category != undefined) {
+			param.page = 0
+			InitializeQuery();
 		}
-		param.page = 0
-		InitializeQuery()
 	}, [dummy])
 
 	useEffect(() => {
-		if (isInitialRender.current < totalFirstLoad) {
-			isInitialRender.current++;
-			return;
-		}
-		else {
+		if (category != undefined) {
 			InitializeQuery()
 		}
 	}, [page])
 
 	async function getCategory() {
-		let a = await getCategories().then((response) => {
+		await getCategories().then((response) => {
 			const data: CategoryModel[] = response.data.data;
 			setCategory(data);
 			setParam(p => ({ ...p, categories: data.map(obj => obj.id.toString()) }));
 			setDummy(Math.random())
-			return data.map(obj => obj.id.toString());
 		}).catch(e => {
 			message.error(e.message);
 		});
-		return a;
 	}
 
 	async function InitializeQuery() {
@@ -122,9 +109,7 @@ export const ManageAssetComponent: React.FC<Props> = (props: Props) => {
 			+ "page=" + param.page + "&"
 			+ "size=" + param.size + "&"
 			+ "sort=" + param.sort;
-
-		setLoading(true)
-
+		// console.log(params);
 		await getAsset(params).then((response) => {
 			const data = response.data.data;
 			setParam((p: any) => ({ ...p, page: data.currentPage }));
@@ -161,9 +146,10 @@ export const ManageAssetComponent: React.FC<Props> = (props: Props) => {
 			setAuxData(assets);
 			setTotalPage(data.totalPage);
 			setTotalElement(data.totalElements)
+
 		}).catch(e => {
 			message.error(e.message);
-		});
+		})
 		setLoading(false);
 		window.history.replaceState({}, '')
 	}
@@ -183,13 +169,13 @@ export const ManageAssetComponent: React.FC<Props> = (props: Props) => {
 			.then(async () => {
 				await deleteAsset(assetCode)
 					.then((res) => {
-						if (res.status == 200) {
-							message.success(res.data.message);
+						if (res.status == 204) {
+							message.success("Asset deleted successfully");
 							setDummy(Math.random());
 						}
 					})
 					.catch((err) => {
-						message.error(`${err.response.message}`);
+						message.error(`${err.response.data.message}`);
 					});
 			});
 	}
@@ -238,7 +224,7 @@ export const ManageAssetComponent: React.FC<Props> = (props: Props) => {
 	filterState.push(state1, state2, state3, state4, state5);
 
 	let filterCategory: { label: string; value: string; defaultChecked: boolean; }[] = [];
-	category.forEach(c => { filterCategory.push({ label: c.name, value: c.id.toString(), defaultChecked: true }) });
+	category ? category.forEach(c => { filterCategory.push({ label: c.name, value: c.id.toString(), defaultChecked: true }) }) : "";
 
 	//----------------------------
 
@@ -248,6 +234,7 @@ export const ManageAssetComponent: React.FC<Props> = (props: Props) => {
 
 	return (
 		<Container style={{ maxWidth: "100%" }} className="p-4">
+			{/* {contextHolder} */}
 			<h4 className="ms-1" style={{ color: "red", fontWeight: "bold" }}>
 				Asset List
 			</h4>
@@ -288,12 +275,12 @@ export const ManageAssetComponent: React.FC<Props> = (props: Props) => {
 				</>
 			}
 
-				<AssetModalComponent
-					title={"Detailed Asset Information"}
-					show={modalShow}
-					onHide={() => setModalShow(false)}
-					data={modalData?.assetCode}
-				/>
+			<AssetModalComponent
+				title={"Detailed Asset Information"}
+				show={modalShow}
+				onHide={() => setModalShow(false)}
+				data={modalData?.assetCode}
+			/>
 			<ConfirmModalComponent show={_showDisableModal} onConfirm={handleDeleteConfirm} onCancel={handleDeleteCancel} confirmTitle={'Are you sure?'} confirmQuestion={'Do you want to delete this asset?'} confirmBtnLabel={'Delete'} cancelBtnLabel={'Cancel'} modalSize={"md"} />
 		</Container>
 	);

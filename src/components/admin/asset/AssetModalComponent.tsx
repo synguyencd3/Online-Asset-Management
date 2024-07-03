@@ -4,7 +4,7 @@ import { Col, Container, Modal, Row, Table } from "react-bootstrap";
 import { AssetHistoryModel, AssetModel } from "../../../models/AssetModel";
 import useSWR from "swr";
 import { getOneAssetHistoryUrl } from "../../../services/AssetService";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { getWithSWR } from "../../../services/swrService";
 import { PaginationComponent } from "../../commons/PaginationComponent";
 import { LoaderComponent } from "../../commons/LoaderComponent";
@@ -54,13 +54,9 @@ export const AssetModalComponent = (props: Props) => {
     const [readMore, setReadMore] = useState<boolean[]>([]);
     function setPage(_params: any) { }
 
-    useEffect(() => {
-
-    }, [readMore])
     const { isLoading } = useSWR(props.data ? getOneAssetHistoryUrl(props.data, currentPage.page) : null, getWithSWR, {
         onSuccess: (response) => {
             const data = response.data.data;
-
             const assetT: AssetModel = data.asset;
             const pageT = data.history;
             const historyT: AssetHistoryModel[] = pageT.content;
@@ -93,18 +89,18 @@ export const AssetModalComponent = (props: Props) => {
                         if (asset) {
                             let value = asset[header.value];
                             let isLongerThan60 = asset[header.value].length > 60;
-                            if(isLongerThan60 && readMore[index]){
-                                value = asset[header.value].substring(0,60);
+                            if (isLongerThan60 && readMore[index]) {
+                                value = asset[header.value].substring(0, 60);
                             }
                             return (
                                 <Row className="my-3 justify-content-between" key={header.name} name={"asset_modal_row"}>
                                     <Col sm={2} className="" name={"asset_modal_row_header"}>
                                         {header.name}
                                     </Col>
-                                    <Col sm={10} name={"asset_modal_row_data"} style={{  overflow: "auto" }}>
+                                    <Col sm={10} name={"asset_modal_row_data"} style={{ overflow: "auto" }}>
                                         {value}
                                         <span id={"show_more_" + header.value} onClick={() => { readMore[index] = !readMore[index]; setReadMore(() => [...readMore]) }} className="show-more" style={{ color: "red" }}>
-                                            {isLongerThan60 ? readMore[index] ? " Show more": " Show less" : ""}
+                                            {isLongerThan60 ? readMore[index] ? " Show more" : " Show less" : ""}
                                         </span>
                                     </Col>
                                 </Row>
@@ -125,9 +121,9 @@ export const AssetModalComponent = (props: Props) => {
                                                 <th key={h.name}>
                                                     {h.name.length > 0 ?
                                                         <div className='header-border'>
-                                                            {h.name}
+                                                            {h.name || '\u200B'}
                                                         </div>
-                                                        : ""
+                                                        : '\u200B'
                                                     }
                                                 </th>
                                             ))}
@@ -139,7 +135,7 @@ export const AssetModalComponent = (props: Props) => {
                                                 {historyTableHeaders.map((header, index) => (
                                                     <td key={"history_table_data" + idx + index} id={"history_table_data" + idx + index}>
                                                         <div className='cell'>
-                                                            {h[header.value]}
+                                                            {h[header.value] || '\u200B'}
                                                         </div>
                                                     </td>
                                                 ))}
@@ -152,7 +148,10 @@ export const AssetModalComponent = (props: Props) => {
                     </Row>
                     {isLoading ?
                         "" :
-                        <PaginationComponent currentPage={currentPage.page} totalPage={totalPage} perPage={10} setParamsFunction={setCurrentPage} setDummy={setPage} setPage={setPage} fixPageSize={true}></PaginationComponent>
+                        history && history.length > 0 ?
+                            <PaginationComponent currentPage={currentPage.page} totalPage={totalPage} perPage={10} setParamsFunction={setCurrentPage} setDummy={setPage} setPage={setPage} fixPageSize={true}></PaginationComponent>
+                            :
+                            ""
                     }
                 </Container>
             </Modal.Body>

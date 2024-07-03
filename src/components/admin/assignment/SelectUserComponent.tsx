@@ -16,8 +16,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 const header = [
 	{ name: '', value: "", sort: false, direction: false, colStyle: { width: "20%" } },
 	{ name: 'Staff Code', value: "staffCode", sort: true, direction: true, colStyle: { width: "15%" } },
-	{ name: 'Full Name', value: "fullName", sort: false, direction: true, colStyle: { width: "50%" } },
-	{ name: 'Type', value: "type", sort: true, direction: true, colStyle: { width: "25%" } },
+	{ name: 'Username', value: "username", sort: true, direction: true, colStyle: { width: "15%" } },
+	{ name: 'Full Name', value: "fullName", sort: true, direction: true, colStyle: { width: "50%" } },
+	{ name: 'Type', value: "type", sort: true, direction: true, colStyle: { width: "5%" } },
 
 ]
 
@@ -66,6 +67,7 @@ export const SelectUserComponent = (props: Props) => {
 			let usersforTable: UserForSelectTableModel[] = users.map(a => {
 				return {
 					staffCode: a.staffCode,
+					username: a.username,
 					fullName : a.firstName+" "+a.lastName,
 					type: RolesLowerCase[a.roleId],
 				}

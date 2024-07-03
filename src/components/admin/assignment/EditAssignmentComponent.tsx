@@ -8,10 +8,13 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { SelectUserComponent } from "./SelectUserComponent";
 import { SelectAssetComponent } from "./SelectAssetComponent";
 import { ColorPalette } from "../../../utils/ColorPalette";
-
-import { AssetForSelectTableModel } from "../../../models/AssetForSelectTableModel";
-import { UserForSelectTableModel } from "../../../models/UserForSelectTableModel";
-import {  AssignmentEditModel } from "../../../models/AssignmentModel";
+import {  AssignmentEditModel, AssignmentModalModel } from "../../../models/AssignmentModel";
+import { editAssignments, getOneAssignemnt, getOneAssignmentUrl } from "../../../services/AssignmentService";
+import useSWR from "swr";
+import { LoaderComponent } from "../../commons/LoaderComponent";
+import { message } from "antd";
+import { UserForTableModel } from "../../../models/UserForTableModel";
+import { AssetForTableModel } from "../../../models/AssetModel";
 //import { editAssignments } from "../../../services/AssignmentService";
 //import { message } from "antd";
 
@@ -22,12 +25,11 @@ type Props = {
 
 export const EditAssignmentComponent = (props: Props) => {
     const location = useLocation();
-    const [assignment] = useState<AssignmentEditModel>(location.state.user);
+    const [assignmentId] = useState<number>(location.state.user);
     let navigate = useNavigate();
     let [loading, setLoading] = useState(false)
-    let [selectedAsset, setSelectedAsset] = useState<AssetForSelectTableModel>();
-    let [selectedUser, setSelectedUser] = useState<UserForSelectTableModel>();
-
+    let [selectedAsset, setSelectedAsset] = useState<AssetForTableModel>();
+    let [selectedUser, setSelectedUser] = useState<UserForTableModel>();
     const [showDropdownUser, setShowDropdownUser] = useState(false);
     const [showDropdownAsset, setShowDropdownAsset] = useState(false);
 
@@ -49,7 +51,7 @@ export const EditAssignmentComponent = (props: Props) => {
     };
 
     const validationSchema = Yup.object({
-       
+       note: Yup.string().max(300, "Maximum length is 300")
     });
 
     const formik = useFormik({
@@ -60,28 +62,25 @@ export const EditAssignmentComponent = (props: Props) => {
             note: ""
         },
         validationSchema: validationSchema,
-        onSubmit: /*async (values) => */ () =>{
+        onSubmit: async (values) =>{
             setLoading(true);
-            // const data: AssignmentEditModel = {
-            //     assetCode: selectedAsset?.assetCode ?? assignment.assetCode,
-            //     staffCode: selectedUser?.staffCode ?? assignment.staffCode,
-            //     note: values.note,
-            //     assignedTo: "",
-            //     assetName: "",
-            //     assignedDate: ""
-            // };
+            const data: AssignmentEditModel = {
+                username: selectedUser?.username ?? (assignmentResponse?.assignedTo ?? "") ,
+                assetCode: selectedAsset?.assetCode ?? (assignmentResponse?.assetCode ?? ""),
+                note: values.note ?? assignmentResponse?.note
+            };
 
-            // await editAssignments(data, assignment.id)
-            //     .then((response) => {
-            //         message.success(response.data.message);
-            //         //const newAssignment: AssignmentForTableModel = response.data.data;
-            //         setLoading(false);
-            //         navigate("/admin/manage-assignments");
-            //     })
-            //     .catch((error) => {
-            //         message.error(error.response.data.message);
-            //         setLoading(false);
-            //     });
+            await editAssignments(data, assignmentId)
+                .then((response) => {
+                    message.success(response.data.message);
+                    //const newAssignment: AssignmentForTableModel = response.data.data;
+                    setLoading(false);
+                    navigate("/admin/manage-assignments");
+                })
+                .catch((error) => {
+                    message.error(error.response.data.message);
+                    setLoading(false);
+                });
         },
     });
 
@@ -92,15 +91,25 @@ export const EditAssignmentComponent = (props: Props) => {
 
     const { getFieldProps } = formik;
 
+    const { data: assignmentResponse, } = useSWR<AssignmentModalModel>(
+        getOneAssignmentUrl(assignmentId),
+        getOneAssignemnt,
+    );
+
+
+
     useEffect(() => {
     }, [selectedUser, selectedAsset])
 
-    return (<>
+    return (
         <Container>
             <Form className="p-5" style={{ maxWidth: "60%", minWidth: "300px", textAlign: "left" }} onSubmit={formik.handleSubmit}>
                 <h4 style={{ color: ColorPalette.PRIMARY_COLOR }} className="mb-4">
                     Edit Assignment
                 </h4>
+                {!assignmentResponse ? (
+          <LoaderComponent />
+        ) : (<>
                 <Form.Group as={Row} className="mb-3" >
                     <Form.Label column sm={3} >
                         User
@@ -113,7 +122,7 @@ export const EditAssignmentComponent = (props: Props) => {
                                     <Form.Control
                                         type='text'
                                         {...getFieldProps('user')}
-                                        value={selectedUser == null ? assignment.assignedTo : selectedUser?.fullName}
+                                        value={selectedUser == null ? assignmentResponse.assignedTo : selectedUser?.fullName}
                                         className="form-control border-0"
                                     />
                                     <InputGroup.Text className='bg-transparent border-0'>
@@ -153,7 +162,7 @@ export const EditAssignmentComponent = (props: Props) => {
                                     <Form.Control
                                         type='text'
                                         {...getFieldProps('asset')}
-                                        value={selectedAsset == null ? assignment.assetName : selectedAsset?.assetName}
+                                        value={selectedAsset == null ? assignmentResponse.assetName : selectedAsset?.assetName}
                                         className="form-control border-0"
                                     />
                                     <InputGroup.Text className='bg-transparent border-0'>
@@ -186,7 +195,7 @@ export const EditAssignmentComponent = (props: Props) => {
                         <span className='mx-1' style={{ color: ColorPalette.PRIMARY_COLOR }}>*</span>
                     </Form.Label>
                     <Col sm={9}>
-                        <Form.Control type="date"   value={assignment.assignedDate} disabled={true}  />
+                        <Form.Control type="date"   value={assignmentResponse.assignedDate} disabled={true}  />
                     </Col>
                     
                 </Form.Group>
@@ -195,7 +204,10 @@ export const EditAssignmentComponent = (props: Props) => {
                         Note
                     </Form.Label>
                     <Col sm={9}>
-                        <Form.Control as="textarea" {...getFieldProps('note')} value={assignment.note}/>
+                        <Form.Control as="textarea" {...getFieldProps('note')} defaultValue={assignmentResponse.note}/>
+                        {formik.touched.note && formik.errors.note? (
+                            <div className="error-message">{formik.errors.note}</div>
+                        ) : null}
                     </Col>
                 </Form.Group>
 
@@ -205,7 +217,9 @@ export const EditAssignmentComponent = (props: Props) => {
                         <Button variant="outline-dark" className="ms-4" style={{ minWidth: "100px" }} onClick={() => { navigate(-1) }}>Cancel</Button>
                     </Col>
                 </Row>
+                </>
+        )}
             </Form>
         </Container >
-    </>)
+    )
 }

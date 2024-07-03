@@ -15,6 +15,7 @@ import { message } from 'antd';
 import { ConfirmModalComponent } from '../../commons/ConfirmModalComponent';
 import { AssignmentModelComponent } from '../assignment/AssignmentModalComponent';
 import { AssignmentForTableModel } from '../../../models/AssignmentForTable';
+import { toDateString } from '../../../utils/utils';
 
 type Props = {
     setHeaderTitle: any
@@ -154,7 +155,7 @@ export const AdminHomeComponent: React.FC<Props> = (props: Props) => {
                             assetCode: data.assetCode,
                             assetName: data.assetName,
                             category: data.category,
-                            assignedDate: data.assignedDate,
+                            assignedDate: toDateString(data.assignedDate),
                             status: AssignmentState[data.status as unknown as keyof typeof AssignmentState],
                         });
                         data.status.toString() === "WAITING_FOR_ACCEPTANCE" ? disableBtns.push([false, false, true]) : disableBtns.push([true, true, false]);

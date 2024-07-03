@@ -11,16 +11,13 @@ import { message } from 'antd';
 import { AssetForSelectTableModel } from "../../../models/AssetForSelectTableModel"
 import { faSpinner } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import useSWR from "swr"
-import { categoriesEndpoint } from "../../../services/CategoryService"
 import { CategoryModel } from "../../../models/CategoryModel"
 
 const header = [
 	{ name: '', value: "", sort: false, direction: false, colStyle: { width: "20%" } },
 	{ name: 'Asset Code', value: "assetCode", sort: true, direction: true, colStyle: { width: "15%" } },
-	{ name: 'Asset Name', value: "assetName", sort: false, direction: true, colStyle: { width: "50%" } },
+	{ name: 'Asset Name', value: "name", sort: true, direction: true, colStyle: { width: "50%" } },
 	{ name: 'Category', value: "category", sort: true, direction: true, colStyle: { width: "25%" } },
-
 ]
 
 type Props = {
@@ -32,16 +29,17 @@ export const SelectAssetComponent = (props: Props) => {
 
 	const [auxData, setAuxData] = useState<AssetModel[]>([]);
 
+	const [, setCategory] = useState<CategoryModel[]>([]);
+
 	const [loading, setLoading] = useState(true);
 
 	const [totalPage, setTotalPage] = useState(0);
 
 	const [dummy, setDummy] = useState(0);
 
-	const [, setPage] = useState(0);
+	const [page, setPage] = useState(0);
+
 	const [selected, setSelected] = useState<String>("")
-	//const [categories, setCategories] = useState<number[]>([])
-	
 
 	const [param, setParam] = useState({
 		search: "",
@@ -52,27 +50,42 @@ export const SelectAssetComponent = (props: Props) => {
 		sort: "assetCode,asc",
 	});
 
-	useSWR(
-		categoriesEndpoint,
-		getCategories,
-		{
-			onSuccess: (response) => {
-				const arrayId = response.data.data.map((category: CategoryModel) => category.id)
-				setParam((p: any) => ({ ...p, categories: arrayId }))
-				setDummy(Math.random())
-			}
-		}
-	
-	  );
+	// useSWR(
+	// 	categoriesEndpoint,
+	// 	getCategories,
+	// 	{
+	// 		onSuccess: (response) => {
+	// 			const arrayId = response.data.data.map((category: CategoryModel) => category.id)
+	// 			setParam((p: any) => ({ ...p, categories: arrayId }))
+	// 			setDummy(Math.random())
+	// 		}
+	// 	}
+	//   );
+
+	async function getCategory() {
+		if (param.categories.length>0) return;
+		let a = await getCategories().then((response) => {
+			const data: CategoryModel[] = response.data.data;
+			setCategory(data);
+			const arrayId = response.data.data.map((category: CategoryModel) => category.id)
+			setParam(p => ({ ...p, categories: arrayId}));
+			setDummy(Math.random())
+			return data.map(obj => obj.id.toString());
+		}).catch(e => {
+			message.error(e.message);
+		});
+		return a;
+	}
 
 	async function InitializeQuery() {
+		if (param.categories.length==0) return;
 		setLoading(true)
 		let params = "?"
 			+ "search=" + encodeURIComponent(param.search) + "&"
 			+ "states=" + param.states.join() + "&"
 			+ "categories=" + param.categories.join() + "&"
 			+ "page=" + param.page + "&"
-			+ "size=" + "20" + "&"
+			+ "size=" + param.size + "&"
 			+ "sort=" + param.sort;
 
 		setLoading(true)
@@ -98,12 +111,6 @@ export const SelectAssetComponent = (props: Props) => {
 		window.history.replaceState({}, '')
 	}
 
-	useEffect(() => {
-		param.page = 0
-		InitializeQuery()
-	}, [dummy])
-
-
 	const preButton = (asset: AssetModel, setAsset: any) => {
 		return (
 			<Form.Check
@@ -121,8 +128,23 @@ export const SelectAssetComponent = (props: Props) => {
 		props.closeDropdown()
 	}
 
+	useEffect(() => {
+		console.log("dummy change")
+		param.page = 0
+		InitializeQuery()
+	}, [dummy])
+
+	useEffect(() => {
+		getCategory()
+	},[])
+
+	useEffect(() => {
+		console.log("page change")
+		InitializeQuery()
+	}, [page])
+
 	return (
-		<Container>
+		<Container >
 			<Row>
 				<Col>
 					<h4 style={{ color: ColorPalette.PRIMARY_COLOR }} className="mb-4">
@@ -146,7 +168,7 @@ export const SelectAssetComponent = (props: Props) => {
 								<Row>
 									<TableComponent headers={header} datas={tableAsset} auxData={auxData} auxHeader={[]} buttons={[]} setSortString={setParam} showModalCell={[]} setDummy={setDummy} setModalData={() => { }} setModalShow={undefined} pre_button={preButton} setSelect={setSelected} disableButton={[]}  ></TableComponent>
 								</Row>
-								<PaginationComponent currentPage={param.page} setPage={setParam} totalPage={totalPage} setDummy={setPage} perPage={0} setParamsFunction={setParam} fixPageSize={false} ></PaginationComponent>
+								<PaginationComponent currentPage={param.page} totalPage={totalPage} setDummy={setPage} perPage={param.size} setParamsFunction={setParam} setPage={setPage} fixPageSize={false} ></PaginationComponent>
 							</>
 						}
 					</>

@@ -60,8 +60,8 @@ export const getAssignments = async (url: string) => {
       id: assignment.id,
       assetCode: assignment.assetCode,
       assetName: assignment.assetName,
-      assignedBy: assignment.assignedBy,
       assignedTo: assignment.assignedTo,
+      assignedBy: assignment.assignedBy,
       assignedDate: assignment.assignedDate,
       status: uppercaseStatusToText(assignment.status),
     };
@@ -77,9 +77,7 @@ export const getOneAssignmentUrl = (id: number) => {
 export const getOneAssignemnt = async (url: string) => {
   const response = await axios.get(url, CORS_CONFIG);
   const assignment: AssignmentModalModel = response.data.data;
-  assignment.status = uppercaseStatusToText(assignment.status);
   return assignment;
-
 }
 
 // export const getAssignments = async (params: string) => await axios.get(`${AZURE_SERVICE_API}/assignments` + params, CORS_CONFIG);
@@ -88,3 +86,4 @@ export const getOneAssignemnt = async (url: string) => {
 export const getOwnAssignmentDetails = (pageable: OwnPageableModel) => axios.get(`${AZURE_SERVICE_API}/assignments/own?page=${pageable.page}&size=${pageable.size}&sort=${pageable.sort}`, CORS_CONFIG);
 export const getAssignmentsDetails = (pageable: PageableModel) => axios.get(`${AZURE_SERVICE_API}/assignments?search=${pageable.search}&page=${pageable.page}&size=${pageable.size}&sort=${pageable.sort}`, CORS_CONFIG);
 export const responseAssignment = (id: number, status: string) => axios.patch(`${AZURE_SERVICE_API}/assignments/response/${id}?status=${status}`, null, CORS_CONFIG);
+export const deleteAssignmentById = (id: number) => axios.delete(`${AZURE_SERVICE_API}/assignments/${id}`, CORS_CONFIG);
