@@ -246,7 +246,7 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
         assignedBy: newAssignment.assignBy,
         assignedTo: newAssignment.assignTo,
         assignedDate: newAssignment.assignedDate,
-        status: newAssignment.status,
+        status: uppercaseStatusToText(newAssignment.status),
       };
 
       const assignments = assignmentList.find(
