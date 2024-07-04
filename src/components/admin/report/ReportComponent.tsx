@@ -1,14 +1,15 @@
 import { message } from 'antd';
 import React, { useEffect, useState } from 'react'
-import { Button, Row } from 'react-bootstrap';
+import { Button, Col, Row } from 'react-bootstrap';
 import { ColorPalette } from '../../../utils/ColorPalette';
 import { LoaderComponent } from '../../commons/LoaderComponent';
 import { PaginationComponent } from '../../commons/PaginationComponent';
 import { TableComponent } from '../../commons/TableComponent';
 import { ReportModel, ReportResponseModel } from '../../../models/ReportModel';
 import * as XLSX from 'xlsx';
-import { exportReport, getReportView } from '../../../services/ReportService';
+import { exportReport, getReportView, getReportViewSWR } from '../../../services/ReportService';
 import { PageableModel } from '../../../models/PageableModel';
+import useSWR from 'swr';
 
 type Props = {
     setHeaderTitle: (title: string) => void;
@@ -32,7 +33,6 @@ export const ReportComponent: React.FC<Props> = (props: Props) => {
     const [auxHeader] = useState<string[]>(modalHeader);
     const [page, setPage] = useState(0);
     const [totalPage, setTotalPage] = useState(0);
-    const [loading, setLoading] = useState(false);
     const [messageApi, contextHolder] = message.useMessage();
     const [dummy, setDummy] = useState(1);
     const [param, setParam] = useState<PageableModel>({
@@ -43,34 +43,53 @@ export const ReportComponent: React.FC<Props> = (props: Props) => {
 
     useEffect(() => {
         props.setHeaderTitle("Reports");
-        getReportViewData();
+        // getReportViewData();
     }, []);
 
     useEffect(() => {
-        getReportViewData();
+        // getReportViewData();
     }, [page, dummy]);
 
-    const getReportViewData = async () => {
-        setLoading(true);
-        await getReportView(param).then((res) => {
-            if (res.status === 200) {
-                console.log(res.data.data.content);
-                setAuxData(res.data.data.content);
-                setData(res.data.data.content.map((data: ReportModel) => ({
-                    category: data.category,
-                    total: data.total,
-                    assigned: data.assigned,
-                    available: data.available,
-                    notAvailable: data.notAvailable,
-                    waitingForRecycling: data.waitingForRecycling,
-                    recycled: data.recycled
-                })));
-                setTotalElements(res.data.data.totalElements);
-                setTotalPage(res.data.data.totalPage);
-                setLoading(false);
-            }
-        }).catch((err) => message.error(err.response.data.message));
-    }
+    const {
+        data: reportResponse,
+        isLoading: isReportLoading
+    } = useSWR("report/view/"
+        + param.page.toString()
+        + param.size.toString()
+        + param.sort.toString(),
+        () => { return getReportViewSWR(param) },
+        {
+            onSuccess: ((res) => {
+                setTotalElements(res.totalElements);
+                setTotalPage(res.totalPage);
+            }),
+            onError: ((err) => message.error(err.response.data.message))
+        }
+    )
+
+    console.log(reportResponse);
+
+    // const getReportViewData = async () => {
+    //     setLoading(true);
+    //     await getReportView(param).then((res) => {
+    //         if (res.status === 200) {
+    //             console.log(res.data.data.content);
+    //             setAuxData(res.data.data.content);
+    //             setData(res.data.data.content.map((data: ReportModel) => ({
+    //                 category: data.category,
+    //                 total: data.total,
+    //                 assigned: data.assigned,
+    //                 available: data.available,
+    //                 notAvailable: data.notAvailable,
+    //                 waitingForRecycling: data.waitingForRecycling,
+    //                 recycled: data.recycled
+    //             })));
+    //             setTotalElements(res.data.data.totalElements);
+    //             setTotalPage(res.data.data.totalPage);
+    //             setLoading(false);
+    //         }
+    //     }).catch((err) => message.error(err.response.data.message));
+    // }
 
     // Step 2: Convert the data to a worksheet
     const convertToWorksheet = (data: any[]): XLSX.WorkSheet => {
@@ -98,32 +117,6 @@ export const ReportComponent: React.FC<Props> = (props: Props) => {
         })
     }
 
-    // // Step 1: Convert the data to CSV format
-    // const convertToCSV = (data: any[]): string => {
-    //   const array = [Object.keys(data[0])].concat(data);
-
-    //   return array.map(row => {
-    //     return Object.values(row).map(value => `"${value}"`).join(',');
-    //   }).join('\n');
-    // };
-
-    // // Step 2: Create and download the CSV file
-    // const downloadCSV = (data: any[], filename: string = 'report.xlxs') => {
-    //   const csv = convertToCSV(data);
-    //   const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    //   const link = document.createElement('a');
-
-    //   if (link.download !== undefined) {
-    //     const url = URL.createObjectURL(blob);
-    //     link.setAttribute('href', url);
-    //     link.setAttribute('download', filename);
-    //     link.style.visibility = 'hidden';
-    //     document.body.appendChild(link);
-    //     link.click();
-    //     document.body.removeChild(link);
-    //   }
-    // };
-
     return (
         <div>
             <div>
@@ -131,32 +124,33 @@ export const ReportComponent: React.FC<Props> = (props: Props) => {
                 <Row className=' mt-5 mb-3 align-items-center justify-content-between'>
                     <h4 style={{ color: ColorPalette.PRIMARY_COLOR }} className='fw-bold fs-4 ms-1'>My Assignment</h4>
                 </Row>
-                <div className='d-flex align-items-center justify-content-end'>
-                    <Button
-                        onClick={exportReportViewData}
-                        style={{ backgroundColor: ColorPalette.PRIMARY_COLOR }}
-                        disabled={totalElements < 1}
-                        className='px-4 border-0'
-                    >
-                        Export
-                    </Button>
-                </div>
-                {loading ?
-                    <LoaderComponent></LoaderComponent>
+                <Row className='align-items-center justify-content-between my-3'>
+                    <Col sm={2} className='mx-1'>
+                        <p className='fs-5 my-auto' style={{ color: "gray" }}>
+                            Total : {reportResponse?.totalElements}
+                        </p>
+                    </Col>
+                    <Col sm={2} className='d-flex justify-content-center'>
+                        <Button
+                            onClick={exportReportViewData}
+                            style={{ backgroundColor: ColorPalette.PRIMARY_COLOR }}
+                            disabled={reportResponse?.totalElements! < 1}
+                            className='px-4 border-0 me-2'>
+                            Export
+                        </Button>
+                    </Col>
+                </Row>
+                {isReportLoading ?
+                    <LoaderComponent />
                     :
                     <>
-                        {data?.length === 0 ?
+                        {reportResponse?.content.length === 0 ?
                             <Row>
-                                <h5 className="text-center"> No Category Found</h5>
+                                <h5 className="text-center"> No Report Found</h5>
                             </Row> :
                             <>
-                                <Row className='ps-2'>
-                                    <p className='fs-5' style={{ color: "gray" }}>
-                                        Total : {totalElements}
-                                    </p>
-                                </Row>
                                 <Row>
-                                    <TableComponent headers={header} setSortString={setParam} datas={data} auxData={auxData} auxHeader={auxHeader} buttons={[]} showModalCell={[]} setDummy={setDummy} setModalData={[]} setModalShow={[]} pre_button={undefined} disableButton={[]} />
+                                    <TableComponent headers={header} setSortString={setParam} datas={reportResponse?.content as ReportModel[]} auxData={auxData} auxHeader={auxHeader} buttons={[]} showModalCell={[]} setDummy={() => {}} setModalData={() => {}} setModalShow={() => {}} pre_button={undefined} disableButton={[]}/>
                                 </Row>
                                 <PaginationComponent currentPage={param.page} totalPage={totalPage} setParamsFunction={setParam} setDummy={setPage} perPage={param.size} setPage={setPage} fixPageSize={false} />
                             </>
@@ -166,5 +160,4 @@ export const ReportComponent: React.FC<Props> = (props: Props) => {
             </div>
         </div>
     )
-    // return <div></div>
 }

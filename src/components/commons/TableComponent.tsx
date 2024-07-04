@@ -100,7 +100,7 @@ export const TableComponent = ({ headers, datas, auxData, buttons, setSortString
 												size='lg' 
 												className={disableButton[index][bIndex] ? "disable-icon" : "normal-icon"} 
 												icon={button.icon} 
-												onClick={(e) => { disableButton[index][bIndex] ? "" : button.onClickfunction(e, auxData[index], data) }} 
+												onClick={(e) => { disableButton[index][bIndex] ? () => {} : button.onClickfunction(e, auxData[index], data) }}
 												fontWeight={700}
 												style={button.style} />
 											</Col>
