@@ -3,7 +3,7 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch, faSpinner } from "@fortawesome/free-solid-svg-icons";
-import { ReactNode, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { SelectUserComponent } from "./SelectUserComponent";
 import { SelectAssetComponent } from "./SelectAssetComponent";
@@ -15,10 +15,9 @@ import { AssignmentCreateModel } from "../../../models/AssignmentModel";
 import { createAssignments } from "../../../services/AssignmentService";
 import { message } from "antd";
 import { AssignmentForTableModel } from "../../../models/AssignmentForTable";
-import { BreadcrumbComponent } from "../../commons/BreadcrumbComponent";
 
 type Props = {
-    setHeaderTitle: (title: ReactNode) => void
+    setHeaderTitle: any
 }
 
 export const CreateAssignmentComponent = (props: Props) => {
@@ -125,16 +124,7 @@ export const CreateAssignmentComponent = (props: Props) => {
     });
 
     useEffect(() => {
-        props.setHeaderTitle(<BreadcrumbComponent breadcrumb={[
-            {
-              title: 'Manage Assignments',
-              href: `${window.location.origin}/admin/manage-assignments#`
-            },
-            {
-              title: "Create New Assignment",
-              href: `${window.location.origin}/admin/manage-assignments/new#`
-            }
-          ]} />);
+        props.setHeaderTitle("Manage Assignments > Create New Assignment");
     }, [])
 
     useEffect(() => {

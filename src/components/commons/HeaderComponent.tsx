@@ -1,4 +1,4 @@
-import React, { ReactNode, useState } from 'react';
+import React, { useState } from 'react';
 import { Navbar, Container } from 'react-bootstrap';
 import { ColorPalette } from '../../utils/ColorPalette';
 import { useNavigate } from 'react-router-dom';
@@ -12,7 +12,7 @@ import { ConfirmModalComponent } from './ConfirmModalComponent';
 
 interface HeaderComponentProps {
     username: string,
-    title: ReactNode,
+    title: string,
     logo: string,
     handleLogout: (state: boolean, headerTitle: string) => void
 }
@@ -75,12 +75,12 @@ export const HeaderComponent: React.FC<HeaderComponentProps> = ({ username, titl
 
     return (
         <>
-            <Navbar className="navbar" style={{ position: 'sticky', top: 0, zIndex: 10, backgroundColor: ColorPalette.PRIMARY_COLOR, height: '90px' }}>
+            <Navbar className="navbar" style={{ backgroundColor: ColorPalette.PRIMARY_COLOR, height: '90px' }}>
                 {contextHolder}
                 <Container fluid className='d-flex justify-content-between'>
                     <Navbar.Brand href="#" id='navigate-bar' className='d-flex align-items-center ps-5'>
                         {logo ? <img src={logo} className='logo my-auto' alt='logo' /> : <div></div>}
-                        <h3 className="mt-4 mx-4 fs-4 text-white fw-semibold" id='navbar-title'>{title}</h3>
+                        <h3 className="my-2 mx-4 fs-3 text-white fw-semibold" id='navbar-title'>{title}</h3>
                     </Navbar.Brand>
                     {sessionStorage.getItem('isLoggedIn') ? (
                         <div id="navbarNavDarkDropdown">
