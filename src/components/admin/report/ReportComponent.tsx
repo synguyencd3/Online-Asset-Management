@@ -54,7 +54,8 @@ export const ReportComponent: React.FC<Props> = (props: Props) => {
         setLoading(true);
         await getReportView(param).then((res) => {
             if (res.status === 200) {
-                setAuxData(res.data.data.content)
+                console.log(res.data.data.content);
+                setAuxData(res.data.data.content);
                 setData(res.data.data.content.map((data: ReportModel) => ({
                     category: data.category,
                     total: data.total,
@@ -91,13 +92,8 @@ export const ReportComponent: React.FC<Props> = (props: Props) => {
         }).then(async () => {
             await exportReport().then((res) => {
                 if (res.status === 200) {
-                    setData(res.data.content);
-                    setTotalElements(res.data.totalElements);
-                    setTotalPage(res.data.totalPages);
-                    setLoading(false);
+                    downloadXLSX(res.data.data);
                 }
-                downloadXLSX(data);
-
             }).catch((err) => message.error(err.response.data.message));
         })
     }
