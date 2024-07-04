@@ -52,7 +52,6 @@ export const EditAssignmentComponent = (props: Props) => {
 
     const validationSchema = Yup.object({
        note: Yup.string().max(300, "Maximum length is 300"),
-       assignedDate : Yup.date().min(new Date(), "Assigned date must be from the current date or later").required("Assigned date is required"),
     });
 
     const formik = useFormik({

@@ -30,7 +30,6 @@ export const CreateAssignmentComponent = (props: Props) => {
     const date = new Date();
     const [showDropdownAsset, setShowDropdownAsset] = useState(false);
     const [isDisable, setDisable] = useState(true)
-    //const [dummy, setDummy] = useState(0)
 
 
     const toggleDropdownUser = () => {
@@ -71,8 +70,6 @@ export const CreateAssignmentComponent = (props: Props) => {
     });
 
     function validateDirty() {
-        console.log(selectedUser)
-        console.log(selectedAsset)
         if (selectedUser === undefined || selectedAsset === undefined) 
         setDirty(true)
             else
@@ -228,7 +225,6 @@ export const CreateAssignmentComponent = (props: Props) => {
                         <Form.Control 
                         type="date"  
                         {...getFieldProps('assignedDate')} 
-                        //min={formatDate(new Date())}
                         style={formik.errors.assignedDate ? { borderColor: "red" } : {}} />
                         {formik.touched.assignedDate && formik.errors.assignedDate ? (
                             <div className="error-message">{formik.errors.assignedDate}</div>

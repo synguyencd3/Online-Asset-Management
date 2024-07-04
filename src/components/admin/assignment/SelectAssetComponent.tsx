@@ -50,17 +50,6 @@ export const SelectAssetComponent = (props: Props) => {
 		sort: "assetCode,asc",
 	});
 
-	// useSWR(
-	// 	categoriesEndpoint,
-	// 	getCategories,
-	// 	{
-	// 		onSuccess: (response) => {
-	// 			const arrayId = response.data.data.map((category: CategoryModel) => category.id)
-	// 			setParam((p: any) => ({ ...p, categories: arrayId }))
-	// 			setDummy(Math.random())
-	// 		}
-	// 	}
-	//   );
 
 	async function getCategory() {
 		if (param.categories.length>0) return;
