@@ -2,9 +2,9 @@ import axios from "axios";
 import { AZURE_SERVICE_API, CORS_CONFIG } from "../utils/Config";
 import { AssignmentCreateModel, AssignmentEditModel } from "../models/AssignmentModel";
 import {
-  OwnPageableModel,
-  PageResponseModel,
   PageableModel,
+  PageResponseModel,
+  SearchPageableModel,
 } from "../models/PageableModel";
 import { AssignmentForTableModel } from "../models/AssignmentForTable";
 import { AssignmentModalModel } from "../models/AssignmentModel";
@@ -83,7 +83,7 @@ export const getOneAssignemnt = async (url: string) => {
 // export const getAssignments = async (params: string) => await axios.get(`${AZURE_SERVICE_API}/assignments` + params, CORS_CONFIG);
 // export const createAssignments = async (data: AssignmentCreateModel) => await axios.post(`${AZURE_SERVICE_API}/assignments`,data, CORS_CONFIG);
 
-export const getOwnAssignmentDetails = (pageable: OwnPageableModel) => axios.get(`${AZURE_SERVICE_API}/assignments/own?page=${pageable.page}&size=${pageable.size}&sort=${pageable.sort}`, CORS_CONFIG);
-export const getAssignmentsDetails = (pageable: PageableModel) => axios.get(`${AZURE_SERVICE_API}/assignments?search=${pageable.search}&page=${pageable.page}&size=${pageable.size}&sort=${pageable.sort}`, CORS_CONFIG);
+export const getOwnAssignmentDetails = (pageable: PageableModel) => axios.get(`${AZURE_SERVICE_API}/assignments/own?page=${pageable.page}&size=${pageable.size}&sort=${pageable.sort}`, CORS_CONFIG);
+export const getAssignmentsDetails = (pageable: SearchPageableModel) => axios.get(`${AZURE_SERVICE_API}/assignments?search=${pageable.search}&page=${pageable.page}&size=${pageable.size}&sort=${pageable.sort}`, CORS_CONFIG);
 export const responseAssignment = (id: number, status: string) => axios.patch(`${AZURE_SERVICE_API}/assignments/response/${id}?status=${status}`, null, CORS_CONFIG);
 export const deleteAssignmentById = (id: number) => axios.delete(`${AZURE_SERVICE_API}/assignments/${id}`, CORS_CONFIG);
