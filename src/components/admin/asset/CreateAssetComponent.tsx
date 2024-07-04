@@ -3,7 +3,7 @@ import { ColorPalette } from "../../../utils/ColorPalette";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { AssetState } from "../../../utils/Enum";
-import { useEffect, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faClose, faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
@@ -20,6 +20,7 @@ import {
 import { message } from "antd";
 import { AssetCreateModel, AssetForTableModel } from "../../../models/AssetModel";
 import { createAsset } from "../../../services/AssetService";
+import { BreadcrumbComponent } from "../../commons/BreadcrumbComponent";
 
 const assetValidationSchema = Yup.object({
   assetName: Yup.string()
@@ -37,7 +38,7 @@ const assetValidationSchema = Yup.object({
 });
 
 type Props = {
-  setHeaderTitle: any;
+  setHeaderTitle: (title: ReactNode) => void
 };
 
 export const CreateAssetComponent = (props: Props) => {
@@ -53,7 +54,16 @@ export const CreateAssetComponent = (props: Props) => {
   );
 
   useEffect(() => {
-    props.setHeaderTitle("Manage Asset > Create Asset");
+    props.setHeaderTitle(<BreadcrumbComponent breadcrumb={[
+      {
+        title: 'Manage Asset',
+        href: `${window.location.origin}/admin/manage-assets#`
+      },
+      {
+        title: "Create Asset",
+        href: `${window.location.origin}/admin/manage-assets/new#`
+      }
+    ]} />);
   }, []);
 
   const formik = useFormik({
@@ -190,7 +200,7 @@ export const CreateAssetComponent = (props: Props) => {
                   }}
                   className="border-dark"
                 >
-                  <div style={{ minWidth: "fit-content"}}>
+                  <div style={{ minWidth: "fit-content" }}>
                     {categoriesResponse?.data.data.map(
                       (category: CategoryModel) => (
                         <Dropdown.Item

@@ -2,7 +2,7 @@ import { Button, Col, Container, Row } from "react-bootstrap";
 import { TableComponent } from "../../commons/TableComponent";
 import { DropdownFilterComponent } from "../../commons/DropdownFilterComponent";
 import { SearchComponent } from "../../commons/SearchComponent";
-import { useEffect, useRef, useState } from "react";
+import { ReactNode, useEffect, useRef, useState } from "react";
 import { UserModel } from "../../../models/UserModel";
 import { UserForTableModel } from "../../../models/UserForTableModel";
 import { ModalUserModel } from "../../../models/ModalUserModel";
@@ -17,13 +17,14 @@ import { ConfirmModalComponent } from "../../commons/ConfirmModalComponent";
 import { message } from "antd";
 import { disableUser, getUser } from "../../../services/UserService";
 import { DetailModalComponent } from "../../commons/DetailModalComponent";
+import { BreadcrumbComponent } from "../../commons/BreadcrumbComponent";
 
 const header = [{ name: 'Staff Code', value: "staffCode", sort: true, direction: true, colStyle: {} }, { name: 'Full Name', value: "firstName", sort: true, direction: true, colStyle: {} }, { name: 'Username', value: "username", sort: false, direction: true, colStyle: {} }, { name: 'Joined Date', value: "joinedDate", sort: true, direction: true, colStyle: {} }, { name: 'Type', value: "roleId", sort: true, direction: true, colStyle: {} },]
 const showModalCell = ["staffCode", "username", "fullName"]
 const modalHeader = ["Staff Code", "Full Name", "Username", "Date of Birth", "Gender", "Joined Date", "Type", "Location"]
 
 type Props = {
-	setHeaderTitle: any
+	setHeaderTitle: (title: ReactNode) => void
 }
 
 export const ManageUserComponent = (props: Props) => {
@@ -75,7 +76,10 @@ export const ManageUserComponent = (props: Props) => {
 	}
 
 	useEffect(() => {
-		props.setHeaderTitle("Manage User");
+		props.setHeaderTitle(<BreadcrumbComponent breadcrumb={[{
+            title: 'Manage User',
+            href: `${window.location.origin}/admin/manage-users#`
+        }]} />);
 	}, [])
 
 	useEffect(() => {
