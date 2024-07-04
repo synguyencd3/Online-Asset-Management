@@ -1,17 +1,11 @@
-import React, { ReactNode, useEffect } from 'react'
-import { BreadcrumbComponent } from '../../commons/BreadcrumbComponent'
+import React, { useEffect } from 'react'
 
 type Props = {
-  setHeaderTitle: (title: ReactNode) => void
+  setHeaderTitle: any
 }
 export const RequestReturningConponent: React.FC<Props> = (props: Props) => {
   useEffect(() => {
-    props.setHeaderTitle(<BreadcrumbComponent breadcrumb={[
-      {
-        title: 'Request for Returing',
-        href: `${window.location.origin}/admin/request-returning#`
-      }
-    ]} />);
+    props.setHeaderTitle("Request for Returing");
   }, [])
   return (
     <div>RequestReturningConponent: React.FC</div>

@@ -1,6 +1,6 @@
 import { message } from 'antd';
 import { useLocation, useNavigate } from 'react-router-dom';
-import React, { ReactNode, useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { FunctionalIconModel } from '../../../models/FunctionalIconModel';
 import { faPencil } from '@fortawesome/free-solid-svg-icons';
 import { Button, Col, Container, Row } from 'react-bootstrap';
@@ -15,14 +15,13 @@ import { deleteAsset, getAsset, getCategories } from '../../../services/AssetSer
 import { AssetForTableModel, AssetModel } from '../../../models/AssetModel';
 import { AssetModalComponent } from './AssetModalComponent';
 import { ConfirmModalComponent } from '../../commons/ConfirmModalComponent';
-import { BreadcrumbComponent } from '../../commons/BreadcrumbComponent';
 
 const header = [{ name: 'Asset Code', value: "assetCode", sort: true, direction: true, colStyle: { width: "12%" } }, { name: 'Asset Name', value: "name", sort: true, direction: true, colStyle: { width: "40%" } }, { name: 'Category', value: "category.name", sort: true, direction: true, colStyle: { maxWidth: '200px' } }, { name: 'State', value: "status", sort: true, direction: true, colStyle: { width: "15%" } }]
 const showModalCell = ["assetCode", "assetName"]
 const modalHeader = ["Asset Code", "Asset Name", "Category", "Installed Date", "State", "Location", "Specification"]
 
 type Props = {
-    setHeaderTitle: (title: ReactNode) => void
+	setHeaderTitle: any
 }
 
 export const ManageAssetComponent: React.FC<Props> = (props: Props) => {
@@ -40,12 +39,7 @@ export const ManageAssetComponent: React.FC<Props> = (props: Props) => {
 
 	const [_deleteAssetCode, setDeleteAssetCode] = useState('');
 	useEffect(() => {
-		props.setHeaderTitle(<BreadcrumbComponent breadcrumb={[
-			{
-			  title: 'Manage Asset',
-			  href: `${window.location.origin}/admin/manage-assets#`
-			}
-		  ]} />);
+		props.setHeaderTitle("Manage Asset");
 	}, [])
 
 	const [param, setParam] = useState({

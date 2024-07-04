@@ -3,7 +3,7 @@ import { ColorPalette } from "../../../utils/ColorPalette";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { AssetState } from "../../../utils/Enum";
-import { ReactNode, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -19,7 +19,6 @@ import {
 } from "../../../services/AssetService";
 import useSWR from "swr";
 import { getWithSWR } from "../../../services/swrService";
-import { BreadcrumbComponent } from "../../commons/BreadcrumbComponent";
 
 const assetValidationSchema = Yup.object({
   assetName: Yup.string()
@@ -45,7 +44,7 @@ function formatAssetState(state: string) {
 }
 
 type Props = {
-  setHeaderTitle: (title: ReactNode) => void
+  setHeaderTitle: any
 }
 
 export const EditAssetComponent = (props: Props) => {
@@ -55,16 +54,7 @@ export const EditAssetComponent = (props: Props) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    props.setHeaderTitle(<BreadcrumbComponent breadcrumb={[
-      {
-        title: 'Manage Asset',
-        href: `${window.location.origin}/admin/manage-assets#`
-      },
-      {
-        title: "Edit Asset",
-        href: `${window.location.origin}/admin/manage-assets/edit#`
-      }
-    ]} />);
+    props.setHeaderTitle("Manage Asset > Edit Asset");
   }, [])
 
   const formik = useFormik({

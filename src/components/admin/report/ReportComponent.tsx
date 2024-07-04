@@ -1,19 +1,18 @@
 import { message } from 'antd';
-import React, { ReactNode, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Button, Col, Row } from 'react-bootstrap';
 import { ColorPalette } from '../../../utils/ColorPalette';
 import { LoaderComponent } from '../../commons/LoaderComponent';
 import { PaginationComponent } from '../../commons/PaginationComponent';
 import { TableComponent } from '../../commons/TableComponent';
-import { ReportModel } from '../../../models/ReportModel';
+import { ReportModel, ReportResponseModel } from '../../../models/ReportModel';
 import * as XLSX from 'xlsx';
 import { exportReport, getReportViewSWR } from '../../../services/ReportService';
 import { PageableModel } from '../../../models/PageableModel';
 import useSWR from 'swr';
-import { BreadcrumbComponent } from '../../commons/BreadcrumbComponent';
 
 type Props = {
-    setHeaderTitle: (title: ReactNode) => void;
+    setHeaderTitle: (title: string) => void;
 }
 
 const header = [
@@ -37,12 +36,7 @@ export const ReportComponent: React.FC<Props> = (props: Props) => {
     });
 
     useEffect(() => {
-        props.setHeaderTitle(<BreadcrumbComponent breadcrumb={[
-            {
-              title: 'Report',
-              href: `${window.location.origin}/admin/reports#`
-            }
-          ]} />);
+        props.setHeaderTitle("Reports");
     }, []);
 
     const {

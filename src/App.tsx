@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import './App.css';
 import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import { HeaderComponent } from './components/commons/HeaderComponent';
@@ -6,13 +6,9 @@ import { LogInComponent } from './components/auth/LogInComponent';
 import { MainApp } from './components/MainApp';
 import { NotHavePermission } from './components/auth/NotHavePermission';
 import { logoSVG } from './utils/ImageFiles';
-import { BreadcrumbComponent } from './components/commons/BreadcrumbComponent';
 
 function App() {
-    const [headerTitle, setHeaderTitle] = useState<ReactNode>(<BreadcrumbComponent breadcrumb={[{
-        title: 'Online Management Asset',
-        href: `${window.location.origin}#`
-    }]} />);
+    const [headerTitle, setHeaderTitle] = useState<string>('Online Asset Management');
     const [isLoggedIn, setIsLoggedIn] = useState<boolean>(Boolean(sessionStorage.getItem('isLoggedIn')) === true);
     const [username, setUsername] = useState('');
     const [roleId, setRoleId] = useState(Number(sessionStorage.getItem('roleId')));
