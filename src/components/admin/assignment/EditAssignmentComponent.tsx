@@ -3,7 +3,7 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch, faSpinner } from "@fortawesome/free-solid-svg-icons";
-import { useEffect, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { SelectUserComponent } from "./SelectUserComponent";
 import { SelectAssetComponent } from "./SelectAssetComponent";
@@ -15,12 +15,11 @@ import { LoaderComponent } from "../../commons/LoaderComponent";
 import { message } from "antd";
 import { UserForTableModel } from "../../../models/UserForTableModel";
 import { AssetForTableModel } from "../../../models/AssetModel";
-//import { editAssignments } from "../../../services/AssignmentService";
-//import { message } from "antd";
+import { BreadcrumbComponent } from "../../commons/BreadcrumbComponent";
 
 
 type Props = {
-    setHeaderTitle: any
+    setHeaderTitle: (title: ReactNode) => void
 }
 
 export const EditAssignmentComponent = (props: Props) => {
@@ -86,7 +85,16 @@ export const EditAssignmentComponent = (props: Props) => {
     });
 
     useEffect(() => {
-        props.setHeaderTitle("Manage Assignments > Edit Assignment");
+        props.setHeaderTitle(<BreadcrumbComponent breadcrumb={[
+            {
+              title: 'Manage Assignments',
+              href: `${window.location.origin}/admin/manage-assignments#`
+            },
+            {
+              title: "Edit Assignment",
+              href: `${window.location.origin}/admin/manage-assignments/edit#`
+            }
+          ]} />);
     }, [])
 
 

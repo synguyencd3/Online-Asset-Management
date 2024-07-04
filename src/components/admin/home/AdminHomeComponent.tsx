@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { ReactNode, useEffect, useState } from 'react';
 import { PasswordModalComponent } from '../../auth/PasswordModalComponent';
 import { TableComponent } from '../../commons/TableComponent';
 import { FunctionalIconModel } from '../../../models/FunctionalIconModel';
@@ -16,9 +16,10 @@ import { ConfirmModalComponent } from '../../commons/ConfirmModalComponent';
 import { AssignmentModelComponent } from '../assignment/AssignmentModalComponent';
 import { AssignmentForTableModel } from '../../../models/AssignmentForTable';
 import { toDateString } from '../../../utils/utils';
+import { BreadcrumbComponent } from '../../commons/BreadcrumbComponent';
 
 type Props = {
-    setHeaderTitle: any
+    setHeaderTitle: (title: ReactNode) => void
 }
 
 const header = [
@@ -57,14 +58,6 @@ export const AdminHomeComponent: React.FC<Props> = (props: Props) => {
         sort: "assetcode,asc",
     });
 
-    // const [sortParam, setSortParam] = useState({
-    //     search: "",
-    //     states: ["ASSIGNED", "AVAILABLE", "NOT_AVAILABLE"],
-    //     page: 0,
-    //     size: 20,
-    //     sort: "assetcode,asc",
-    // });
-
     const acceptAssignment = (...data: AssignmentModel[]) => {
         setShowConfirmModal(true);
         setResponseData({ id: data[1].id, status: AssignmentRequestState[AssignmentRequestState.ACCEPTED] });
@@ -95,7 +88,10 @@ export const AdminHomeComponent: React.FC<Props> = (props: Props) => {
     const buttons: FunctionalIconModel[] = [acceptIcon, declineIcon, returnIcon];
 
     useEffect(() => {
-        props.setHeaderTitle('Home');
+        props.setHeaderTitle(<BreadcrumbComponent breadcrumb={[{
+            title: 'Home',
+            href: `${window.location.origin}/admin/home#`
+        }]} />);
         const isLoggedInFirst = sessionStorage.getItem('isFirstLogin') ? sessionStorage.getItem('isFirstLogin') : 'true';
         if (isLoggedInFirst === 'true') {
             setShowModal(false);
