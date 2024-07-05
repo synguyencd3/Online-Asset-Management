@@ -58,9 +58,9 @@ export const TableComponent = ({ headers, datas, auxData, buttons, setSortString
 											{h.name}
 											{h.sort ?
 												<FontAwesomeIcon values={h.name} icon={h.direction ? faSortDown : faSortUp} onClick={() => { onClickSort(h, index); }} style={{ marginLeft: "10px" }} />
-												: ""}
+												:""}
 										</div>
-										: ""
+										: '\u200B'
 									}
 								</th>
 							))}
@@ -76,7 +76,7 @@ export const TableComponent = ({ headers, datas, auxData, buttons, setSortString
 											return (
 												<td key={idx} className='modalClick' style={headers[idx].colStyle}>
 													<div className={cellCLickStyle}>
-														{value?.toString()}
+														{value?.toString()  || '\u200B'}
 													</div>
 												</td>
 											)
@@ -84,7 +84,7 @@ export const TableComponent = ({ headers, datas, auxData, buttons, setSortString
 											return (
 												<td key={idx} className='' style={headers[idx].colStyle}>
 													<div className='cellnoClick text-truncate'>
-														{value?.toString()}
+														{value?.toString()  || '\u200B'}
 													</div>
 												</td>
 											)
@@ -100,7 +100,7 @@ export const TableComponent = ({ headers, datas, auxData, buttons, setSortString
 												size='lg' 
 												className={disableButton[index][bIndex] ? "disable-icon" : "normal-icon"} 
 												icon={button.icon} 
-												onClick={(e) => { disableButton[index][bIndex] ? "" : button.onClickfunction(e, auxData[index], data) }} 
+												onClick={(e) => { disableButton[index][bIndex] ? () => {} : button.onClickfunction(e, auxData[index], data) }}
 												fontWeight={700}
 												style={button.style} />
 											</Col>

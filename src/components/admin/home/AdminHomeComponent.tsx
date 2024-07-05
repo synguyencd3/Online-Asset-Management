@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { ReactNode, useEffect, useState } from 'react';
 import { PasswordModalComponent } from '../../auth/PasswordModalComponent';
 import { TableComponent } from '../../commons/TableComponent';
 import { FunctionalIconModel } from '../../../models/FunctionalIconModel';
@@ -7,7 +7,7 @@ import { faCheck, faRotateBack, faXmark } from '@fortawesome/free-solid-svg-icon
 import { ColorPalette } from '../../../utils/ColorPalette';
 import { getOwnAssignmentDetails, responseAssignment } from '../../../services/AssignmentService';
 import { AssignmentRequestState, AssignmentState } from '../../../utils/Enum';
-import { OwnPageableModel } from '../../../models/PageableModel';
+import { PageableModel } from '../../../models/PageableModel';
 import { PaginationComponent } from '../../commons/PaginationComponent';
 import { Row } from 'react-bootstrap';
 import { LoaderComponent } from '../../commons/LoaderComponent';
@@ -15,9 +15,11 @@ import { message } from 'antd';
 import { ConfirmModalComponent } from '../../commons/ConfirmModalComponent';
 import { AssignmentModelComponent } from '../assignment/AssignmentModalComponent';
 import { AssignmentForTableModel } from '../../../models/AssignmentForTable';
+import { toDateString } from '../../../utils/utils';
+import { BreadcrumbComponent } from '../../commons/BreadcrumbComponent';
 
 type Props = {
-    setHeaderTitle: any
+    setHeaderTitle: (title: ReactNode) => void
 }
 
 const header = [
@@ -56,14 +58,6 @@ export const AdminHomeComponent: React.FC<Props> = (props: Props) => {
         sort: "assetcode,asc",
     });
 
-    // const [sortParam, setSortParam] = useState({
-    //     search: "",
-    //     states: ["ASSIGNED", "AVAILABLE", "NOT_AVAILABLE"],
-    //     page: 0,
-    //     size: 20,
-    //     sort: "assetcode,asc",
-    // });
-
     const acceptAssignment = (...data: AssignmentModel[]) => {
         setShowConfirmModal(true);
         setResponseData({ id: data[1].id, status: AssignmentRequestState[AssignmentRequestState.ACCEPTED] });
@@ -94,7 +88,10 @@ export const AdminHomeComponent: React.FC<Props> = (props: Props) => {
     const buttons: FunctionalIconModel[] = [acceptIcon, declineIcon, returnIcon];
 
     useEffect(() => {
-        props.setHeaderTitle('Home');
+        props.setHeaderTitle(<BreadcrumbComponent breadcrumb={[{
+            title: 'Home',
+            href: `${window.location.origin}/admin/home#`
+        }]} />);
         const isLoggedInFirst = sessionStorage.getItem('isFirstLogin') ? sessionStorage.getItem('isFirstLogin') : 'true';
         if (isLoggedInFirst === 'true') {
             setShowModal(false);
@@ -131,7 +128,7 @@ export const AdminHomeComponent: React.FC<Props> = (props: Props) => {
     const getAssignmentData = async () => {
         setLoading(true)
 
-        const pageable: OwnPageableModel = {
+        const pageable: PageableModel = {
             page: param.page,
             size: param.size,
             sort: param.sort
@@ -154,7 +151,7 @@ export const AdminHomeComponent: React.FC<Props> = (props: Props) => {
                             assetCode: data.assetCode,
                             assetName: data.assetName,
                             category: data.category,
-                            assignedDate: data.assignedDate,
+                            assignedDate: toDateString(data.assignedDate),
                             status: AssignmentState[data.status as unknown as keyof typeof AssignmentState],
                         });
                         data.status.toString() === "WAITING_FOR_ACCEPTANCE" ? disableBtns.push([false, false, true]) : disableBtns.push([true, true, false]);

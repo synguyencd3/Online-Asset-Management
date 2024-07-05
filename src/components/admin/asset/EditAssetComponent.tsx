@@ -3,7 +3,7 @@ import { ColorPalette } from "../../../utils/ColorPalette";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { AssetState } from "../../../utils/Enum";
-import { useEffect, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -19,6 +19,7 @@ import {
 } from "../../../services/AssetService";
 import useSWR from "swr";
 import { getWithSWR } from "../../../services/swrService";
+import { BreadcrumbComponent } from "../../commons/BreadcrumbComponent";
 
 const assetValidationSchema = Yup.object({
   assetName: Yup.string()
@@ -44,7 +45,7 @@ function formatAssetState(state: string) {
 }
 
 type Props = {
-  setHeaderTitle: any
+  setHeaderTitle: (title: ReactNode) => void
 }
 
 export const EditAssetComponent = (props: Props) => {
@@ -54,7 +55,16 @@ export const EditAssetComponent = (props: Props) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    props.setHeaderTitle("Manage Asset > Edit Asset");
+    props.setHeaderTitle(<BreadcrumbComponent breadcrumb={[
+      {
+        title: 'Manage Asset',
+        href: `${window.location.origin}/admin/manage-assets#`
+      },
+      {
+        title: "Edit Asset",
+        href: `${window.location.origin}/admin/manage-assets/edit#`
+      }
+    ]} />);
   }, [])
 
   const formik = useFormik({
@@ -120,6 +130,7 @@ export const EditAssetComponent = (props: Props) => {
           <Form.Group as={Row} className="mb-3" controlId="assetName">
             <Form.Label column sm={3}>
               Name
+              <span className='mx-1' style={{ color: ColorPalette.PRIMARY_COLOR }}>*</span>
             </Form.Label>
             <Col sm={9}>
               <Form.Control
@@ -134,6 +145,7 @@ export const EditAssetComponent = (props: Props) => {
           <Form.Group as={Row} className="mb-3" controlId="categoryName">
             <Form.Label column sm={3}>
               Category
+              <span className='mx-1' style={{ color: ColorPalette.PRIMARY_COLOR }}>*</span>
             </Form.Label>
             <Col sm={9}>
               <Form.Select disabled defaultValue={formik.values.categoryName}>
@@ -146,6 +158,7 @@ export const EditAssetComponent = (props: Props) => {
           <Form.Group as={Row} className="mb-3" controlId="specification">
             <Form.Label column sm={3}>
               Specification
+              <span className='mx-1' style={{ color: ColorPalette.PRIMARY_COLOR }}>*</span>
             </Form.Label>
             <Col sm={9}>
               <Form.Control
@@ -163,6 +176,7 @@ export const EditAssetComponent = (props: Props) => {
           <Form.Group as={Row} className="mb-3" controlId="installedDate">
             <Form.Label column sm={3}>
               Installed Date
+              <span className='mx-1' style={{ color: ColorPalette.PRIMARY_COLOR }}>*</span>
             </Form.Label>
             <Col sm={9}>
               <Form.Control
@@ -179,6 +193,7 @@ export const EditAssetComponent = (props: Props) => {
           <Form.Group as={Row} className="mb-3" controlId="assetState">
             <Form.Label column sm={3}>
               State
+              <span className='mx-1' style={{ color: ColorPalette.PRIMARY_COLOR }}>*</span>
             </Form.Label>
             <Col sm={9} id="assetState" className="red-border-on-focus">
               <Form.Check

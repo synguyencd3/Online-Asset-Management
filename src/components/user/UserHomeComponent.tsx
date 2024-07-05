@@ -1,11 +1,11 @@
 import { faCheck, faXmark, faRotateBack } from '@fortawesome/free-solid-svg-icons';
 import { message } from 'antd';
-import React, { useEffect, useState } from 'react';
+import React, { ReactNode, useEffect, useState } from 'react';
 import { Row } from 'react-bootstrap';
 import { AssignmentForTableModel } from '../../models/AssignmentForTable';
 import { AssignmentHomeViewModel, AssignmentModel } from '../../models/AssignmentModel';
 import { FunctionalIconModel } from '../../models/FunctionalIconModel';
-import { OwnPageableModel } from '../../models/PageableModel';
+import { PageableModel } from '../../models/PageableModel';
 import { responseAssignment, getOwnAssignmentDetails } from '../../services/AssignmentService';
 import { ColorPalette } from '../../utils/ColorPalette';
 import { AssignmentRequestState, AssignmentState } from '../../utils/Enum';
@@ -15,9 +15,11 @@ import { ConfirmModalComponent } from '../commons/ConfirmModalComponent';
 import { LoaderComponent } from '../commons/LoaderComponent';
 import { PaginationComponent } from '../commons/PaginationComponent';
 import { TableComponent } from '../commons/TableComponent';
+import { toDateString } from '../../utils/utils';
+import { BreadcrumbComponent } from '../commons/BreadcrumbComponent';
 
 type Props = {
-    setHeaderTitle: any
+    setHeaderTitle: (title: ReactNode) => void
 }
 
 const header = [
@@ -87,7 +89,12 @@ export const UserHomeComponent: React.FC<Props> = (props: Props) => {
     const buttons: FunctionalIconModel[] = [acceptIcon, declineIcon, returnIcon];
 
     useEffect(() => {
-        props.setHeaderTitle('Home');
+        props.setHeaderTitle(<BreadcrumbComponent breadcrumb={[
+            {
+              title: 'Home',
+              href: `${window.location.origin}/user/home#`
+            }
+          ]} />);
         const isLoggedInFirst = sessionStorage.getItem('isFirstLogin') ? sessionStorage.getItem('isFirstLogin') : 'true';
         if (isLoggedInFirst === 'true') {
             setShowModal(false);
@@ -124,7 +131,7 @@ export const UserHomeComponent: React.FC<Props> = (props: Props) => {
     const getAssignmentData = async () => {
         setLoading(true)
 
-        const pageable: OwnPageableModel = {
+        const pageable: PageableModel = {
             page: param.page,
             size: param.size,
             sort: param.sort
@@ -147,7 +154,7 @@ export const UserHomeComponent: React.FC<Props> = (props: Props) => {
                             assetCode: data.assetCode,
                             assetName: data.assetName,
                             category: data.category,
-                            assignedDate: data.assignedDate,
+                            assignedDate: toDateString(data.assignedDate),
                             status: AssignmentState[data.status as unknown as keyof typeof AssignmentState],
                         });
                         data.status.toString() === "WAITING_FOR_ACCEPTANCE" ? disableBtns.push([false, false, true]) : disableBtns.push([true, true, false]);

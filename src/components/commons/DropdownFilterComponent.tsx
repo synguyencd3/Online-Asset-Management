@@ -7,7 +7,7 @@ import { JSX } from 'react/jsx-runtime';
 type Props = {
 	title: string | null
 	data: { label: string, value: string, defaultChecked: boolean }[]
-	params: string[]
+	params: string[] | undefined
 	setParamsFunction: any;
 	paramName: string
 	setDummy: any
@@ -20,10 +20,10 @@ type Props = {
 export const DropdownFilterComponent = (props: Props) => {
 
 	const allValues: string[] = props.data.map(filter => { return filter.value });
-const defaultLength = props.data.length
+	const defaultLength = props.data.length
 	const handleCheckboxChange = (event: ChangeEvent<HTMLInputElement>) => {
 		const { value, checked } = event.target;
-		let updatedOptions: string[] = [...props.params];
+		let updatedOptions: string[] = props.params ? [...props.params] : [];
 		if (value === "All") {
 			if (checked) {
 				updatedOptions = allValues;
@@ -74,7 +74,7 @@ const defaultLength = props.data.length
 				<FontAwesomeIcon icon={faFilter} className="custom-icon" />
 			</Dropdown.Toggle>
 
-			<Dropdown.Menu style={{ width: "100%" }}>
+			<Dropdown.Menu style={{ width: "100%" , maxHeight:"270px", overflowY:"auto"}}>
 				<Form className='px-3'>
 					<Form.Check
 						type="checkbox"

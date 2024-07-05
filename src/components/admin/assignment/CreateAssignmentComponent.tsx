@@ -3,7 +3,7 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch, faSpinner } from "@fortawesome/free-solid-svg-icons";
-import { useEffect, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { SelectUserComponent } from "./SelectUserComponent";
 import { SelectAssetComponent } from "./SelectAssetComponent";
@@ -15,19 +15,24 @@ import { AssignmentCreateModel } from "../../../models/AssignmentModel";
 import { createAssignments } from "../../../services/AssignmentService";
 import { message } from "antd";
 import { AssignmentForTableModel } from "../../../models/AssignmentForTable";
+import { BreadcrumbComponent } from "../../commons/BreadcrumbComponent";
 
 type Props = {
-    setHeaderTitle: any
+    setHeaderTitle: (title: ReactNode) => void
 }
 
 export const CreateAssignmentComponent = (props: Props) => {
-    let navigate = useNavigate();
-    let [loading, setLoading] = useState(false)
-    let [selectedAsset, setSelectedAsset] = useState<AssetForSelectTableModel>();
-    let [selectedUser, setSelectedUser] = useState<UserForSelectTableModel>();
-
+    const navigate = useNavigate();
+    const [loading, setLoading] = useState(false)
+    const [selectedAsset, setSelectedAsset] = useState<AssetForSelectTableModel>();
+    const [selectedUser, setSelectedUser] = useState<UserForSelectTableModel>();
     const [showDropdownUser, setShowDropdownUser] = useState(false);
+    const [isDirty, setDirty] = useState(true);
+    const date = new Date();
     const [showDropdownAsset, setShowDropdownAsset] = useState(false);
+    const [isDisable, setDisable] = useState(true)
+    //const [dummy, setDummy] = useState(0)
+
 
     const toggleDropdownUser = () => {
         setShowDropdownUser(!showDropdownUser);
@@ -46,22 +51,48 @@ export const CreateAssignmentComponent = (props: Props) => {
         setShowDropdownAsset(false);
     };
 
+    function yesterday(): Date {
+        var d = new Date();
+        d.setDate(date.getDate() - 1);
+        return d
+    }
+
+    function formatDate(date: Date) {
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        return `${year}-${month}-${day}`
+    }
+
     const validationSchema = Yup.object({
-        user: Yup.string().required('User is required'),
-        asset: Yup.string().required('Asset is required'),
-        assignedDate: Yup.string().required('Assigned date is required'),
+        user: Yup.string().required('User is required').max(300, "Maximum length is 300"),
+        asset: Yup.string().required('Asset is required').max(300, "Maximum length is 300"),
+        assignedDate: Yup.date().min(yesterday(), "Assigned date must be from the current date or later").required("Assigned date is required"),
+        note: Yup.string().notRequired().max(300, "Maximum length is 300"),
     });
+
+    function validateDirty() {
+        if (selectedUser === undefined || selectedAsset === undefined)
+            setDirty(true)
+        else {
+            setDirty(false)
+            setDisable(false)
+        }
+    }
 
     const formik = useFormik({
         initialValues: {
-            user: "*",
-            asset: "*",
-            assignedDate: "",
+            user: selectedUser?.fullName ?? "",
+            asset: selectedAsset?.assetName ?? "",
+            assignedDate: formatDate(new Date()),
             note: ""
         },
         enableReinitialize: true,
         validationSchema: validationSchema,
         onSubmit: async (values) => {
+            if (values.note.length > 300) {
+                formik.dirty = true
+            }
             setLoading(true);
             const data: AssignmentCreateModel = {
                 assetCode: selectedAsset?.assetCode ?? "",
@@ -88,16 +119,26 @@ export const CreateAssignmentComponent = (props: Props) => {
     });
 
     useEffect(() => {
-        props.setHeaderTitle("Manage Assignments > Create New Assignment");
+        props.setHeaderTitle(<BreadcrumbComponent breadcrumb={[
+            {
+                title: 'Manage Assignments',
+                href: `${window.location.origin}/admin/manage-assignments#`
+            },
+            {
+                title: "Create New Assignment",
+                href: `${window.location.origin}/admin/manage-assignments/new#`
+            }
+        ]} />);
     }, [])
+
+    useEffect(() => {
+        validateDirty();
+    }, [selectedAsset, selectedUser])
 
 
     const { getFieldProps } = formik;
 
-    useEffect(() => {
-    }, [selectedUser, selectedAsset])
-
-    return (<>
+    return (
         <Container>
             <Form className="p-5" style={{ maxWidth: "60%", minWidth: "300px", textAlign: "left" }} onSubmit={formik.handleSubmit}>
                 <h4 style={{ color: ColorPalette.PRIMARY_COLOR }} className="mb-4">
@@ -133,8 +174,8 @@ export const CreateAssignmentComponent = (props: Props) => {
                                         },
                                     },
                                 ],
-                            }} style={{ width: "200%"}}>
-                                <SelectUserComponent setSelectedOnParent={setSelectedUser} closeDropdown={closeDropdownUser}/>
+                            }} style={{ width: "200%" }}>
+                                <SelectUserComponent setSelectedOnParent={setSelectedUser} closeDropdown={closeDropdownUser} />
                             </Dropdown.Menu>
                         </Dropdown>
                         {formik.touched.user && formik.errors.user ? (
@@ -188,29 +229,36 @@ export const CreateAssignmentComponent = (props: Props) => {
                         <span className='mx-1' style={{ color: ColorPalette.PRIMARY_COLOR }}>*</span>
                     </Form.Label>
                     <Col sm={9}>
-                        <Form.Control type="date"  {...getFieldProps('assignedDate')} style={formik.errors.assignedDate ? { borderColor: "red" } : {}} />
+                        <Form.Control
+                            type="date"
+                            {...getFieldProps('assignedDate')}
+                            //min={formatDate(new Date())}
+                            style={formik.errors.assignedDate ? { borderColor: "red" } : {}} />
                         {formik.touched.assignedDate && formik.errors.assignedDate ? (
                             <div className="error-message">{formik.errors.assignedDate}</div>
                         ) : null}
                     </Col>
-                    
+
                 </Form.Group>
                 <Form.Group as={Row} className="mb-3" >
                     <Form.Label column sm={3}>
                         Note
                     </Form.Label>
                     <Col sm={9}>
-                        <Form.Control as="textarea" {...getFieldProps('note')} />
+                        <Form.Control type="text" as="textarea" {...getFieldProps("note")} />
+                        {formik.touched.note && formik.errors.note ? (
+                            <div className="error-message">{formik.errors.note}</div>
+                        ) : null}
                     </Col>
                 </Form.Group>
 
                 <Row>
                     <Col className="d-flex justify-content-end my-4">
-                        <Button variant="danger" className="mx-4" style={{ minWidth: "100px" }} type="submit" disabled={!formik.dirty || !formik.isValid || loading}> {loading ? <FontAwesomeIcon icon={faSpinner} spin /> : "Save"}</Button>
+                        <Button variant="danger" className="mx-4" style={{ minWidth: "100px" }} type="submit" disabled={isDisable || !formik.isValid || loading}> {loading ? <FontAwesomeIcon icon={faSpinner} spin /> : "Save"}</Button>
                         <Button variant="outline-dark" className="ms-4" style={{ minWidth: "100px" }} onClick={() => { navigate(-1) }}>Cancel</Button>
                     </Col>
                 </Row>
             </Form>
         </Container >
-    </>)
+    )
 }

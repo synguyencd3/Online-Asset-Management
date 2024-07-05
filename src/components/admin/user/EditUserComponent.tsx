@@ -1,7 +1,7 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button, Col, Container, Form, Row } from "react-bootstrap";
 import { ColorPalette } from "../../../utils/ColorPalette";
-import { useEffect, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from 'yup';
 import { ModalUserModel } from "../../../models/ModalUserModel";
@@ -11,6 +11,8 @@ import { message } from "antd";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { getOneUser, updateUser } from "../../../services/UserService";
+import { BreadcrumbComponent } from "../../commons/BreadcrumbComponent";
+
 
 
 const eighteenYearsAgo = new Date(new Date().setFullYear(new Date().getFullYear() - 18));
@@ -33,7 +35,7 @@ function formatDate(date: string) {
 }
 
 type Props = {
-    setHeaderTitle: any
+    setHeaderTitle: (title: ReactNode) => void
 }
 
 export const EditUserComponent = (props: Props) => {
@@ -49,7 +51,16 @@ export const EditUserComponent = (props: Props) => {
     const prefix = staffcodearray ? staffcodearray[0] : "SD";
 
     useEffect(() => {
-        props.setHeaderTitle("Manage User > Edit User");
+        props.setHeaderTitle(<BreadcrumbComponent breadcrumb={[
+            {
+              title: 'Manage User',
+              href: `${window.location.origin}/admin/manage-users#`
+            },
+            {
+              title: "Edit User",
+              href: `${window.location.origin}/admin/manage-users/edit#`
+            }
+          ]} />);
     }, [])
 
     const formik = useFormik({

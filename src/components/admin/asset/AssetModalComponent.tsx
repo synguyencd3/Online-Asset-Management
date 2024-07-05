@@ -54,7 +54,7 @@ export const AssetModalComponent = (props: Props) => {
     const [readMore, setReadMore] = useState<boolean[]>([]);
     function setPage(_params: any) { }
 
-    const { isLoading } = useSWR(props.data ? getOneAssetHistoryUrl(props.data, currentPage.page) : null, getWithSWR, {
+    const {isLoading } = useSWR(props.data ? getOneAssetHistoryUrl(props.data, currentPage.page) : null, getWithSWR, {
         onSuccess: (response) => {
             const data = response.data.data;
             const assetT: AssetModel = data.asset;
@@ -97,7 +97,7 @@ export const AssetModalComponent = (props: Props) => {
                                     <Col sm={2} className="" name={"asset_modal_row_header"}>
                                         {header.name}
                                     </Col>
-                                    <Col sm={10} name={"asset_modal_row_data"} style={{  overflow: "auto" }}>
+                                    <Col sm={10} name={"asset_modal_row_data"} style={{ overflow: "auto" }}>
                                         {value}
                                         <span id={"show_more_" + header.value} onClick={() => { readMore[index] = !readMore[index]; setReadMore(() => [...readMore]) }} className="show-more" style={{ color: "red" }}>
                                             {isLongerThan60 ? readMore[index] ? " Show more" : " Show less" : ""}
@@ -121,7 +121,7 @@ export const AssetModalComponent = (props: Props) => {
                                                 <th key={h.name}>
                                                     {h.name.length > 0 ?
                                                         <div className='header-border'>
-                                                            {h.name  || '\u200B'}
+                                                            {h.name || '\u200B'}
                                                         </div>
                                                         : '\u200B'
                                                     }
@@ -148,7 +148,10 @@ export const AssetModalComponent = (props: Props) => {
                     </Row>
                     {isLoading ?
                         "" :
-                        <PaginationComponent currentPage={currentPage.page} totalPage={totalPage} perPage={10} setParamsFunction={setCurrentPage} setDummy={setPage} setPage={setPage} fixPageSize={true}></PaginationComponent>
+                        history && history.length > 0 ?
+                            <PaginationComponent currentPage={currentPage.page} totalPage={totalPage} perPage={10} setParamsFunction={setCurrentPage} setDummy={setPage} setPage={setPage} fixPageSize={true}></PaginationComponent>
+                            :
+                            ""
                     }
                 </Container>
             </Modal.Body>
