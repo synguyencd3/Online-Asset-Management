@@ -7,7 +7,7 @@ import { PaginationComponent } from "../../commons/PaginationComponent"
 import { useEffect, useState } from "react"
 import { message } from 'antd';
 import { UserModel } from "../../../models/UserModel"
-import { UserForSelectTableModel } from "../../../models/UserForSelectTableModel"
+import { UserForSelectTableModel } from "../../../models/UserModel"
 import { Roles, RolesLowerCase } from "../../../utils/Enum"
 import { getUser } from "../../../services/UserService"
 import { faSpinner } from "@fortawesome/free-solid-svg-icons"

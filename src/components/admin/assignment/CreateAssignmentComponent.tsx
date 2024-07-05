@@ -9,8 +9,8 @@ import { SelectUserComponent } from "./SelectUserComponent";
 import { SelectAssetComponent } from "./SelectAssetComponent";
 import { ColorPalette } from "../../../utils/ColorPalette";
 
-import { AssetForSelectTableModel } from "../../../models/AssetForSelectTableModel";
-import { UserForSelectTableModel } from "../../../models/UserForSelectTableModel";
+import { AssetForSelectTableModel } from "../../../models/AssetModel";
+import { UserForSelectTableModel } from "../../../models/UserModel";
 import { AssignmentCreateModel } from "../../../models/AssignmentModel";
 import { createAssignments } from "../../../services/AssignmentService";
 import { message } from "antd";
@@ -27,7 +27,7 @@ export const CreateAssignmentComponent = (props: Props) => {
     const [selectedAsset, setSelectedAsset] = useState<AssetForSelectTableModel>();
     const [selectedUser, setSelectedUser] = useState<UserForSelectTableModel>();
     const [showDropdownUser, setShowDropdownUser] = useState(false);
-    const [, setDirty] = useState(true);
+    const [_isDirty, setDirty] = useState(true);
     const date = new Date();
     const [showDropdownAsset, setShowDropdownAsset] = useState(false);
     const [isDisable, setIsDisable] = useState(true)

@@ -2,10 +2,10 @@ import { Button, Col, Container, Row } from "react-bootstrap";
 import { TableComponent } from "../../commons/TableComponent";
 import { DropdownFilterComponent } from "../../commons/DropdownFilterComponent";
 import { SearchComponent } from "../../commons/SearchComponent";
-import { ReactNode, useEffect, useRef, useState } from "react";
-import { UserModel } from "../../../models/UserModel";
-import { UserForTableModel } from "../../../models/UserForTableModel";
-import { ModalUserModel } from "../../../models/ModalUserModel";
+import { ReactNode, useEffect, useState } from "react";
+import { UserModel, UserParamModel } from "../../../models/UserModel";
+import { UserForTableModel } from "../../../models/UserModel";
+import { ModalUserModel } from "../../../models/UserModel";
 import { Roles, RolesLowerCase } from "../../../utils/Enum";
 import { FunctionalIconModel } from "../../../models/FunctionalIconModel";
 import { faPencil } from "@fortawesome/free-solid-svg-icons";
@@ -15,9 +15,10 @@ import { PaginationComponent } from "../../commons/PaginationComponent";
 import { LoaderComponent } from "../../commons/LoaderComponent";
 import { ConfirmModalComponent } from "../../commons/ConfirmModalComponent";
 import { message } from "antd";
-import { disableUser, getUser } from "../../../services/UserService";
+import { disableUser, getUserUrl, userFetcher } from "../../../services/UserService";
 import { DetailModalComponent } from "../../commons/DetailModalComponent";
 import { BreadcrumbComponent } from "../../commons/BreadcrumbComponent";
+import useSWR from "swr";
 
 const header = [{ name: 'Staff Code', value: "staffCode", sort: true, direction: true, colStyle: {} }, { name: 'Full Name', value: "firstName", sort: true, direction: true, colStyle: {} }, { name: 'Username', value: "username", sort: false, direction: true, colStyle: {} }, { name: 'Joined Date', value: "joinedDate", sort: true, direction: true, colStyle: {} }, { name: 'Type', value: "roleId", sort: true, direction: true, colStyle: {} },]
 const showModalCell = ["staffCode", "username", "fullName"]
@@ -30,36 +31,20 @@ type Props = {
 export const ManageUserComponent = (props: Props) => {
 
 	const navigate = useNavigate();
+	const location = useLocation();
+	const [messageApi, contextHolder] = message.useMessage();
 
-	const [modalUsers, setModalUsers] = useState<ModalUserModel[]>([]);
-
-	const [tableUser, setTableUser] = useState<UserForTableModel[]>([]);
-
-	const [loading, setLoading] = useState(true);
-
-	const isInitialRender = useRef(0);
-
-	// two for each useEffect when useStrictApp, the first useEffect declare that check isInitialRender will be the one that run ??? // need check
-	const totalFirstLoad = 0;
-
-
-	// limit the API call per param properties by using dummy, use setDummy(Math.random()) to init the query with param
-	const [param, setParam] = useState({
+	const [param, setParam] = useState<UserParamModel>({
 		search: "",
 		sort: "firstName,asc",
 		types: [Roles.ADMIN.toString(), Roles.STAFF.toString()],
 		page: 0,
 		size: 20
 	});
-	const [dummy, setDummy] = useState(1);
-	const [page, setPage] = useState(0);
 
-	const [totalPage, setTotalPage] = useState(0);
+	const [_dummy, setDummy] = useState(1);
 
-	const [totalElement, setTotalElement] = useState(0);
-	const location = useLocation();
-
-	const [newUser] = useState<UserModel>(location.state?.newUser);
+	let newUser: UserModel | undefined = location.state?.newUser;
 
 	const [modalShow, setModalShow] = useState(false);
 	const [modalData, setModalData] = useState<Object>({});
@@ -67,8 +52,7 @@ export const ManageUserComponent = (props: Props) => {
 	const [showDisableModal, setShowDisableModal] = useState(false); // State for the Logout Modal
 	const [disableStaffCode, setDisableStaffCode] = useState(''); // State for the Logout Modal
 
-	const [messageApi, contextHolder] = message.useMessage();
-	const [disableButton, setDisableButton] = useState<boolean[][]>([])
+	// const [disableButton, setDisableButton] = useState<boolean[][]>([])
 
 	function toDateString(date: string) {
 		let d = new Date(date);
@@ -77,111 +61,90 @@ export const ManageUserComponent = (props: Props) => {
 
 	useEffect(() => {
 		props.setHeaderTitle(<BreadcrumbComponent breadcrumb={[{
-            title: 'Manage User',
-            href: `${window.location.origin}/admin/manage-users#`
-        }]} />);
+			title: 'Manage User',
+			href: `${window.location.origin}/admin/manage-users#`
+		}]} />);
 	}, [])
 
-	useEffect(() => {
-		if (isInitialRender.current < totalFirstLoad) {
-			isInitialRender.current++;
-			return;
+
+	const handleSetParam = (func: (p: UserParamModel) => UserParamModel) => {
+		const newParam = func(param);
+		if (newParam.page === param.page) {
+			newParam.page = 0;
 		}
-		param.page = 0
-		InitializeQuery()
-	}, [dummy])
-
-	useEffect(() => {
-		if (isInitialRender.current < totalFirstLoad) {
-			isInitialRender.current++;
+		setParam(newParam);
+		if (newUser) {
+			navigate(location.pathname, { state: { newUser: undefined } });
 		}
-		else {
-			InitializeQuery()
+	};
+
+	const { data: user, isLoading: isLoadingUser, mutate: mutateUser } = useSWR(getUserUrl(param), userFetcher, {
+		onError: () => {
+			message.error("Cannot Get User")
+		},
+		shouldRetryOnError: false,
+		revalidateOnFocus: false,
+	});
+	console.log(user);
+
+	let tableUser: UserForTableModel[] = [];
+	let modalUsers: ModalUserModel[] = [];
+	let disableButton: boolean[][] = [];
+
+	if (user) {
+		let users = user.content;
+		if (newUser) {
+			let data: UserForTableModel = {
+				staffCode: newUser.staffCode,
+				fullName: newUser.firstName + " " + newUser.lastName,
+				username: newUser.username,
+				joinedDate: toDateString(newUser.joinedDate),
+				type: RolesLowerCase[newUser.roleId],
+			};
+			tableUser.push(data);
+			disableButton.push([false, false]);
+
+			let modal: ModalUserModel = {
+				staffCode: newUser.staffCode,
+				fullName: newUser.firstName + " " + newUser.lastName,
+				username: newUser.username,
+				dateOfBirth: toDateString(newUser.dateOfBirth),
+				gender: newUser.gender.charAt(0) + newUser.gender.slice(1).toLowerCase(),
+				joinedDate: toDateString(newUser.joinedDate),
+				roleId: RolesLowerCase[newUser.roleId],
+				location: newUser.location,
+			}
+			modalUsers.push(modal);
 		}
-	}, [page])
 
-
-	async function InitializeQuery() {
-		let params = "?"
-			+ "search=" + encodeURIComponent(param.search) + "&"
-			+ "types=" + param.types.join() + "&"
-			+ "page=" + param.page + "&"
-			+ "size=" + param.size + "&"
-			+ "sort=" + param.sort;
-		setLoading(true)
-		await getUser(params).then((response) => {
-			let data = response.data.data;
-
-			let users: UserModel[] = data.content;
-
-			let tableDatas: UserForTableModel[] = [];
-
-			let modalDatas: ModalUserModel[] = [];
-			let disableBtns: boolean[][] = [];
-
-			if (newUser) {
+		users.map(user => {
+			if (newUser && newUser.staffCode === user.staffCode) {
+				// TODO document why this block is empty
+			}
+			else {
 				let data: UserForTableModel = {
-					staffCode: newUser.staffCode,
-					fullName: newUser.firstName + " " + newUser.lastName,
-					username: newUser.username,
-					joinedDate: toDateString(newUser.joinedDate),
-					type: RolesLowerCase[newUser.roleId],
+					staffCode: user.staffCode,
+					fullName: user.firstName + " " + user.lastName,
+					username: user.username,
+					joinedDate: toDateString(user.joinedDate),
+					type: RolesLowerCase[user.roleId],
 				};
-				tableDatas.push(data);
-				disableBtns.push([false, false]);	
+				tableUser.push(data);
 
 				let modal: ModalUserModel = {
-					staffCode: newUser.staffCode,
-					fullName: newUser.firstName + " " + newUser.lastName,
-					username: newUser.username,
-					dateOfBirth: toDateString(newUser.dateOfBirth),
-					gender: newUser.gender.charAt(0) + newUser.gender.slice(1).toLowerCase(),
-					joinedDate: toDateString(newUser.joinedDate),
-					roleId: RolesLowerCase[newUser.roleId],
-					location: newUser.location,
+					staffCode: user.staffCode,
+					fullName: user.firstName + " " + user.lastName,
+					username: user.username,
+					dateOfBirth: toDateString(user.dateOfBirth),
+					gender: user.gender.charAt(0) + user.gender.slice(1).toLowerCase(),
+					joinedDate: toDateString(user.joinedDate),
+					roleId: RolesLowerCase[user.roleId],
+					location: user.location,
 				}
-				modalDatas.push(modal);
+				modalUsers.push(modal);
+				disableButton.push([false, false]);
 			}
-
-			users.map(user => {
-				if (newUser && newUser.staffCode === user.staffCode) {
-					// TODO document why this block is empty
-				}
-				else {
-					let data: UserForTableModel = {
-						staffCode: user.staffCode,
-						fullName: user.firstName + " " + user.lastName,
-						username: user.username,
-						joinedDate: toDateString(user.joinedDate),
-						type: RolesLowerCase[user.roleId],
-					};
-					tableDatas.push(data);
-
-					let modal: ModalUserModel = {
-						staffCode: user.staffCode,
-						fullName: user.firstName + " " + user.lastName,
-						username: user.username,
-						dateOfBirth: toDateString(user.dateOfBirth),
-						gender: user.gender.charAt(0) + user.gender.slice(1).toLowerCase(),
-						joinedDate: toDateString(user.joinedDate),
-						roleId: RolesLowerCase[user.roleId],
-						location: user.location,
-					}
-					modalDatas.push(modal);
-					disableBtns.push([false, false]);
-				}
-			})
-
-			setModalUsers([...modalDatas]);
-			setTableUser([...tableDatas]);
-			setParam((p: any) => ({ ...p, page: data.currentPage }));
-			setTotalPage(data.totalPage);
-			setTotalElement(data.totalElements)
-			setDisableButton(disableBtns);
-		}).catch(e => {
-			message.error(e.message);
-		});
-		setLoading(false);
+		})
 		window.history.replaceState({}, '')
 	}
 
@@ -227,7 +190,11 @@ export const ManageUserComponent = (props: Props) => {
 					.then((res) => {
 						if (res.status == 200) {
 							message.success(res.data.message);
-							setDummy(Math.random());
+							if (tableUser.length === 1 && user?.currentPage !== 1) {
+								handleSetParam((p) => ({ ...p, page: 0 }));
+							} else {
+								mutateUser();
+							}
 						}
 					})
 					.catch((err) => {
@@ -261,16 +228,16 @@ export const ManageUserComponent = (props: Props) => {
 			</h4>
 			<Row className="py-4 ms-0 me-3 user-param-row">
 				<Col sm={3} className="d-flex justify-content-start align-items-center px-2">
-					<DropdownFilterComponent title={"Type"} data={filterdata} params={param.types} setParamsFunction={setParam} setDummy={setDummy} style={{}} defaultAll={true} paramName={"types"}></DropdownFilterComponent>
+					<DropdownFilterComponent title={"Type"} data={filterdata} params={param.types} setParamsFunction={handleSetParam} setDummy={setDummy} style={{}} defaultAll={true} paramName={"types"}></DropdownFilterComponent>
 				</Col>
 				<Col className="d-flex justify-content-end align-items-center" style={{ minWidth: "200px" }}>
-					<SearchComponent placeholder={""} setParamsFunction={setParam} setDummy={setDummy} style={{}}></SearchComponent>
+					<SearchComponent placeholder={""} setParamsFunction={handleSetParam} setDummy={setDummy} style={{}}></SearchComponent>
 				</Col>
 				<Col sm={3} className="d-flex justify-content-end align-items-center" style={{ maxWidth: "230px" }}>
 					<Button variant="danger" onClick={() => { return navigate('./new') }} style={{ width: "230px" }}>Create New User</Button>
 				</Col>
 			</Row>
-			{loading ?
+			{isLoadingUser || !user ?
 				<LoaderComponent></LoaderComponent>
 				:
 				<>
@@ -281,14 +248,14 @@ export const ManageUserComponent = (props: Props) => {
 						<>
 							<Row className='ps-2'>
 								<p className='fs-5' style={{ color: "gray" }}>
-									Total : {totalElement}
+									Total : {user.totalElements}
 								</p>
 							</Row>
 							<Row>
 								{/* this initfucntion */}
-								<TableComponent headers={header} datas={tableUser} auxData={modalUsers} auxHeader={modalHeader} buttons={buttons} setSortString={setParam} showModalCell={showModalCell} setDummy={setDummy} setModalData={setModalData} setModalShow={setModalShow} pre_button={undefined} disableButton={disableButton} />
+								<TableComponent headers={header} datas={tableUser} auxData={modalUsers} auxHeader={modalHeader} buttons={buttons} setSortString={handleSetParam} showModalCell={showModalCell} setDummy={setDummy} setModalData={setModalData} setModalShow={setModalShow} pre_button={undefined} disableButton={disableButton} />
 							</Row>
-							<PaginationComponent currentPage={param.page} setParamsFunction={setParam} totalPage={totalPage} setDummy={setDummy} perPage={param.size} setPage={setPage} fixPageSize={false} ></PaginationComponent>
+							<PaginationComponent currentPage={param.page} setParamsFunction={handleSetParam} totalPage={user.totalPage} setDummy={setDummy} perPage={param.size} setPage={() => { }} fixPageSize={false} ></PaginationComponent>
 						</>
 					}
 				</>

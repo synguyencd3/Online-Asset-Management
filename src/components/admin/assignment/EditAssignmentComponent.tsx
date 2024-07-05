@@ -13,7 +13,7 @@ import { editAssignments, getOneAssignemnt, getOneAssignmentUrl } from "../../..
 import useSWR from "swr";
 import { LoaderComponent } from "../../commons/LoaderComponent";
 import { message } from "antd";
-import { UserForTableModel } from "../../../models/UserForTableModel";
+import { UserForTableModel } from "../../../models/UserModel";
 import { AssetForTableModel } from "../../../models/AssetModel";
 import { BreadcrumbComponent } from "../../commons/BreadcrumbComponent";
 

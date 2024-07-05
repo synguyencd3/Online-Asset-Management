@@ -4,7 +4,7 @@ import { ColorPalette } from "../../../utils/ColorPalette";
 import { ReactNode, useEffect, useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from 'yup';
-import { ModalUserModel } from "../../../models/ModalUserModel";
+import { ModalUserModel } from "../../../models/UserModel";
 import { RolesLowerCase } from "../../../utils/Enum";
 import { UserModel } from "../../../models/UserModel";
 import { message } from "antd";

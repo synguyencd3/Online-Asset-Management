@@ -8,7 +8,7 @@ import { useEffect, useState } from "react"
 import { getAsset, getCategories } from "../../../services/AssetService"
 import { AssetModel } from "../../../models/AssetModel"
 import { message } from 'antd';
-import { AssetForSelectTableModel } from "../../../models/AssetForSelectTableModel"
+import { AssetForSelectTableModel } from "../../../models/AssetModel"
 import { faSpinner } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { CategoryModel } from "../../../models/CategoryModel"
