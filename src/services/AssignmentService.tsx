@@ -8,7 +8,6 @@ import {
 } from "../models/PageableModel";
 import { AssignmentForTableModel } from "../models/AssignmentForTable";
 import { AssignmentModalModel } from "../models/AssignmentModel";
-import { uppercaseStatusToText } from "../utils/utils";
 
 // export const getAssignments = async (params: string) => await axios.get(`${AZURE_SERVICE_API}/assignments` + params, CORS_CONFIG);
 export const createAssignments = async (data: AssignmentCreateModel) => await axios.post(`${AZURE_SERVICE_API}/assignments`,data, CORS_CONFIG);
@@ -63,7 +62,7 @@ export const getAssignments = async (url: string) => {
       assignedTo: assignment.assignedTo,
       assignedBy: assignment.assignedBy,
       assignedDate: assignment.assignedDate,
-      status: uppercaseStatusToText(assignment.status),
+      status: assignment.status,
     };
     pageAssignment.content.push(item);
   });

@@ -133,7 +133,6 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
     isLoading: isAssignmentLoading,
     error: assignmentError,
     mutate: mutateAssignment,
-    isValidating: isAssignmentValidating,
   } = useSWR<PageResponseModel<AssignmentForTableModel>>(
     getAssignmentsUrl(param),
     getAssignments,
@@ -142,7 +141,9 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
     }
   );
 
-  const handleSetParam = (func:(p : AssignmentGetParams) => AssignmentGetParams) => {
+  const handleSetParam = (
+    func: (p: AssignmentGetParams) => AssignmentGetParams
+  ) => {
     const newParam = func(param);
     if (newParam.page === param.page) {
       newParam.page = 0;
@@ -155,7 +156,7 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
 
   const handleDeleteConfirm = async () => {
     setShowDisableModal(false);
-    message.loading("Deleting assignment",1.2);
+    message.loading("Deleting assignment", 1.2);
     await deleteAssignmentById(_deletedAssignmentId)
       .then((response) => {
         message.success(response.data.message);
@@ -173,9 +174,9 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
     setShowDisableModal(false);
   };
 
-    function editAssignment(...data: AssignmentForTableModel[]) {
-        navigate("/admin/manage-assignments/edit", { state: { user: data[1].id } });
-    }
+  function editAssignment(...data: AssignmentForTableModel[]) {
+    navigate("/admin/manage-assignments/edit", { state: { user: data[1].id } });
+  }
 
   function deleteAssignment(...data: AssignmentForTableModel[]) {
     setShowDisableModal(true);
@@ -201,7 +202,7 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
 
   const refreshIcon: FunctionalIconModel = {
     icon: faRotateBack,
-    style: { color: 'blue', rotate: '70deg' },
+    style: { color: "blue", rotate: "70deg" },
     onClickfunction: refreshAssignment,
   };
 
@@ -217,14 +218,15 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
         status: uppercaseStatusToText(record.status),
       };
     });
-  }
+  };
 
   const setDisableButtonState = (data: AssignmentForTableModel[]) => {
+    const isEqualState = (state: string, stateEnum: AssignmentState) =>
+      uppercaseStatusToText(state).toLowerCase() === stateEnum.toLowerCase();
     return data.map((item: AssignmentForTableModel) => [
-      item.status.toLowerCase() !==
-      AssignmentState.WAITING_FOR_ACCEPTANCE.toLowerCase(),
-      item.status.toLowerCase() === AssignmentState.ACCEPTED.toLowerCase(),
-      item.status.toLowerCase() !== AssignmentState.ACCEPTED.toLowerCase(),
+      !isEqualState(item.status, AssignmentState.WAITING_FOR_ACCEPTANCE),
+      isEqualState(item.status, AssignmentState.ACCEPTED),
+      !isEqualState(item.status, AssignmentState.ACCEPTED),
     ]);
   };
 
@@ -246,18 +248,16 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
         assignedBy: newAssignment.assignBy,
         assignedTo: newAssignment.assignTo,
         assignedDate: newAssignment.assignedDate,
-        status: uppercaseStatusToText(newAssignment.status),
+        status: newAssignment.status,
       };
 
-      const assignments = assignmentList.find(
-        (item: AssignmentForTableModel) => item.id === newAssignmentRecord.id
-      )
-        ? assignmentList.filter(
-            (item: AssignmentForTableModel) =>
-              item.id !== newAssignmentRecord.id
-          )
-        : assignmentList.slice(0, assignmentList.length - 1);
+      const assignments = assignmentList.filter(
+        (item: AssignmentForTableModel) => item.id !== newAssignmentRecord.id
+      );
       assignmentList = [newAssignmentRecord, ...assignments];
+      if (assignmentList.length > param.size) {
+        assignmentList.pop();
+      }
     }
   }
 
@@ -286,7 +286,7 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
                 type="date"
                 placeholder="Assigned Date"
                 onChange={(e) =>
-                  handleSetParam((p : AssignmentGetParams) =>({
+                  handleSetParam((p: AssignmentGetParams) => ({
                     ...p,
                     assignedDate: e.target.value,
                   }))
@@ -320,7 +320,7 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
         </Col>
       </Row>
 
-      {isAssignmentLoading || !assignmentResponse || isAssignmentValidating ? (
+      {isAssignmentLoading || !assignmentResponse ? (
         <LoaderComponent></LoaderComponent>
       ) : (
         <>
@@ -344,7 +344,7 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
                   buttons={buttons}
                   setSortString={handleSetParam}
                   showModalCell={showModalCell}
-                  setDummy={() => { }}
+                  setDummy={() => {}}
                   setModalData={setModalData}
                   setModalShow={setModalShow}
                   pre_button={undefined}
@@ -355,10 +355,10 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
                 currentPage={param.page}
                 setParamsFunction={handleSetParam}
                 totalPage={assignmentResponse.totalPage}
-                setDummy={() => { }}
+                setDummy={() => {}}
                 perPage={param.size}
                 fixPageSize={false}
-                setPage={() => { }}
+                setPage={() => {}}
               ></PaginationComponent>
             </>
           )}
