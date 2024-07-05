@@ -5,9 +5,8 @@ import { FunctionalIconModel } from '../../../models/FunctionalIconModel';
 import { AssignmentHomeViewModel, AssignmentModel } from '../../../models/AssignmentModel';
 import { faCheck, faRotateBack, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { ColorPalette } from '../../../utils/ColorPalette';
-import { getOwnAssignmentDetails, responseAssignment } from '../../../services/AssignmentService';
+import { getOwnAssignementSWR, responseAssignment } from '../../../services/AssignmentService';
 import { AssignmentRequestState, AssignmentState } from '../../../utils/Enum';
-import { PageableModel } from '../../../models/PageableModel';
 import { PaginationComponent } from '../../commons/PaginationComponent';
 import { Row } from 'react-bootstrap';
 import { LoaderComponent } from '../../commons/LoaderComponent';
@@ -15,8 +14,9 @@ import { message } from 'antd';
 import { ConfirmModalComponent } from '../../commons/ConfirmModalComponent';
 import { AssignmentModelComponent } from '../assignment/AssignmentModalComponent';
 import { AssignmentForTableModel } from '../../../models/AssignmentForTable';
-import { toDateString } from '../../../utils/utils';
+import { toDateString, uppercaseStatusToText } from '../../../utils/utils';
 import { BreadcrumbComponent } from '../../commons/BreadcrumbComponent';
+import useSWR from 'swr';
 
 type Props = {
     setHeaderTitle: (title: ReactNode) => void
@@ -38,24 +38,16 @@ export const AdminHomeComponent: React.FC<Props> = (props: Props) => {
     const [modalDetailShow, setModalDetailShow] = useState(false);
     const [firstLogin, setFirstLogin] = useState<boolean>(false);
     const [modalData, setModalData] = useState<AssignmentForTableModel>();
-    const [data, setData] = useState<AssignmentHomeViewModel[]>([]);
-    const [totalElements, setTotalElements] = useState<number>(0);
-    const [auxData, setAuxData] = useState<AssignmentModel[]>([]);
     const [auxHeader] = useState<string[]>(modalHeader);
-    const [disableButton, setDisableButton] = useState<boolean[][]>([])
-    const [page, setPage] = useState(0);
-    const [totalPage, setTotalPage] = useState(0);
-    const [loading, setLoading] = useState(false);
     const [messageApi, contextHolder] = message.useMessage();
     const [showConfirmModal, setShowConfirmModal] = useState(false); // State for the Logout Modal
     const [responseData, setResponseData] = useState<{ id: number, status: string }>({ id: 0, status: '' });
-    const [dummy, setDummy] = useState(1);
     const [param, setParam] = useState({
         search: "",
         states: ["ASSIGNED", "AVAILABLE", "NOT_AVAILABLE"],
         page: 0,
         size: 20,
-        sort: "assetcode,asc",
+        sort: "assetCode,asc",
     });
 
     const acceptAssignment = (...data: AssignmentModel[]) => {
@@ -99,12 +91,43 @@ export const AdminHomeComponent: React.FC<Props> = (props: Props) => {
         } else {
             setShowModal(true);
         }
-        getAssignmentData();
     }, []);
 
-    useEffect(() => {
-        getAssignmentData();
-    }, [page, dummy]);
+    const setDisableButtonState = (data: AssignmentHomeViewModel[]) => {
+        const isEqualState = (state: string, stateEnum: AssignmentState) =>
+            uppercaseStatusToText(state).toLowerCase() === stateEnum.toLowerCase();
+        return data.map((item: AssignmentHomeViewModel) => [
+            !isEqualState(item.status, AssignmentState.WAITING_FOR_ACCEPTANCE),
+            isEqualState(item.status, AssignmentState.ACCEPTED),
+            !isEqualState(item.status, AssignmentState.ACCEPTED),
+        ]);
+    };
+
+    const formatRecordList = (records: AssignmentHomeViewModel[]) => {
+        return records.map((record: AssignmentHomeViewModel) => {
+            return {
+                assetCode: record.assetCode,
+                assetName: record.assetName,
+                category: record.category,
+                assignedDate: toDateString(record.assignedDate),
+                status: uppercaseStatusToText(record.status),
+            };
+        });
+    };
+
+    const {
+        data: assignmentResponse,
+        isLoading: isAssignmentLoading,
+        mutate: mutateAssignment
+    } = useSWR("assignments/own/"
+        + param.page.toString()
+        + param.size.toString()
+        + param.sort.toString(),
+        () => { return getOwnAssignementSWR(param) },
+        {
+            onError: ((err) => message.error(err.response.data.message))
+        }
+    )
 
     const responseOwnAssignment = async (id: number, status: string) => {
         messageApi.open({
@@ -116,58 +139,13 @@ export const AdminHomeComponent: React.FC<Props> = (props: Props) => {
                     .then((res: any) => {
                         if (res.status === 200) {
                             message.success(res.data.message);
-                            getAssignmentData();
+                            mutateAssignment();
                         }
                     })
                     .catch((err) => {
                         message.error(err.response.data.message);
                     })
             })
-    }
-
-    const getAssignmentData = async () => {
-        setLoading(true)
-
-        const pageable: PageableModel = {
-            page: param.page,
-            size: param.size,
-            sort: param.sort
-        }
-        await getOwnAssignmentDetails(pageable)
-            .then((res: any) => {
-                if (res.status === 200) {
-                    setAuxData(res.data.data.content)
-                    setData(res.data.data.content.map((data: AssignmentHomeViewModel) => ({
-                        assetCode: data.assetCode,
-                        assetName: data.assetName,
-                        category: data.category,
-                        assignedDate: data.assignedDate,
-                        state: AssignmentState[data.status as unknown as keyof typeof AssignmentState],
-                    })));
-                    const tableData: AssignmentHomeViewModel[] = [];
-                    const disableBtns: boolean[][] = [];
-                    res.data.data.content.map((data: AssignmentHomeViewModel) => {
-                        tableData.push({
-                            assetCode: data.assetCode,
-                            assetName: data.assetName,
-                            category: data.category,
-                            assignedDate: toDateString(data.assignedDate),
-                            status: AssignmentState[data.status as unknown as keyof typeof AssignmentState],
-                        });
-                        data.status.toString() === "WAITING_FOR_ACCEPTANCE" ? disableBtns.push([false, false, true]) : disableBtns.push([true, true, false]);
-
-                    })
-                    setData(tableData);
-                    setDisableButton(disableBtns);
-                    setTotalPage(res.data.data.totalPage);
-                    setTotalElements(res.data.data.totalElements);
-                    setParam((p: any) => ({ ...p, page: res.data.data.currentPage }));
-                    setLoading(false)
-                }
-            })
-            .catch((err) => {
-                message.error(err.response.message);
-            });
     }
 
     const handleModalConfirm = () => {
@@ -188,24 +166,24 @@ export const AdminHomeComponent: React.FC<Props> = (props: Props) => {
             {contextHolder}
             <h4 style={{ color: ColorPalette.PRIMARY_COLOR }} className='fw-bold fs-4 ms-1 mt-5 mb-3'>My Assignment</h4>
 
-            {loading ?
-                <LoaderComponent></LoaderComponent>
+            {isAssignmentLoading ?
+                <LoaderComponent />
                 :
                 <>
-                    {data.length === 0 ?
+                    {assignmentResponse?.content.length === 0 ?
                         <Row>
                             <h5 className="text-center"> No Assignment Found</h5>
                         </Row> :
                         <>
                             <Row className='ps-2'>
                                 <p className='fs-5' style={{ color: "gray" }}>
-                                    Total : {totalElements}
+                                    Total : {assignmentResponse?.content.length ?? 0}
                                 </p>
                             </Row>
                             <Row>
-                                <TableComponent headers={header} datas={data} setSortString={setParam} auxData={auxData} auxHeader={auxHeader} buttons={buttons} showModalCell={showModalCell} setDummy={setDummy} setModalData={setModalData} setModalShow={setModalDetailShow} pre_button={undefined} disableButton={disableButton} />
+                                <TableComponent headers={header} datas={formatRecordList(assignmentResponse?.content!)} setSortString={setParam} auxData={assignmentResponse?.content!} auxHeader={auxHeader} buttons={buttons} showModalCell={showModalCell} setDummy={() => { }} setModalData={setModalData} setModalShow={setModalDetailShow} pre_button={undefined} disableButton={setDisableButtonState(assignmentResponse?.content!)} />
                             </Row>
-                            <PaginationComponent currentPage={param.page} totalPage={totalPage} setParamsFunction={setParam} setDummy={setPage} perPage={param.size} setPage={setPage} fixPageSize={false} />
+                            <PaginationComponent currentPage={param.page} totalPage={assignmentResponse?.totalPage!} setParamsFunction={setParam} setDummy={() => { }} perPage={param.size} setPage={() => {Math.random()}} fixPageSize={false} />
                         </>
                     }
                 </>
