@@ -9,8 +9,8 @@ import { SelectUserComponent } from "./SelectUserComponent";
 import { SelectAssetComponent } from "./SelectAssetComponent";
 import { ColorPalette } from "../../../utils/ColorPalette";
 
-import { AssetForSelectTableModel } from "../../../models/AssetForSelectTableModel";
-import { UserForSelectTableModel } from "../../../models/UserForSelectTableModel";
+import { AssetForSelectTableModel } from "../../../models/AssetModel";
+import { UserForSelectTableModel } from "../../../models/UserModel";
 import { AssignmentCreateModel } from "../../../models/AssignmentModel";
 import { createAssignments } from "../../../services/AssignmentService";
 import { message } from "antd";
@@ -30,7 +30,7 @@ export const CreateAssignmentComponent = (props: Props) => {
     const [_isDirty, setDirty] = useState(true);
     const date = new Date();
     const [showDropdownAsset, setShowDropdownAsset] = useState(false);
-    const [isDisable, setDisable] = useState(true)
+    const [isDisable, setIsDisable] = useState(true)
     //const [dummy, setDummy] = useState(0)
 
 
@@ -52,7 +52,7 @@ export const CreateAssignmentComponent = (props: Props) => {
     };
 
     function yesterday(): Date {
-        var d = new Date();
+        let d = new Date();
         d.setDate(date.getDate() - 1);
         return d
     }
@@ -76,7 +76,7 @@ export const CreateAssignmentComponent = (props: Props) => {
             setDirty(true)
         else {
             setDirty(false)
-            setDisable(false)
+            setIsDisable(false)
         }
     }
 
@@ -145,7 +145,7 @@ export const CreateAssignmentComponent = (props: Props) => {
                     Create New Assignment
                 </h4>
                 <Form.Group as={Row} className="mb-3" >
-                    <Form.Label column sm={3} >
+                    <Form.Label id="user_label" column sm={3} >
                         User
                         <span className='mx-1' style={{ color: ColorPalette.PRIMARY_COLOR }}>*</span>
                     </Form.Label>
@@ -154,13 +154,14 @@ export const CreateAssignmentComponent = (props: Props) => {
                             <Dropdown.Toggle className="form-control p-0 m-0" variant={'light'}>
                                 <InputGroup >
                                     <Form.Control
+                                        id = "user_field"
                                         type='text'
                                         {...getFieldProps('user')}
                                         value={selectedUser == null ? "" : selectedUser?.fullName}
                                         className="form-control border-0"
                                     />
                                     <InputGroup.Text className='bg-transparent border-0'>
-                                        <FontAwesomeIcon icon={faSearch} ></FontAwesomeIcon>
+                                        <FontAwesomeIcon  name="search" icon={faSearch} ></FontAwesomeIcon>
                                     </InputGroup.Text>
                                 </InputGroup>
                             </Dropdown.Toggle>
@@ -185,7 +186,7 @@ export const CreateAssignmentComponent = (props: Props) => {
                 </Form.Group>
 
                 <Form.Group as={Row} className="mb-3" >
-                    <Form.Label column sm={3}>
+                    <Form.Label id="asset_label" column sm={3}>
                         Asset
                         <span className='mx-1' style={{ color: ColorPalette.PRIMARY_COLOR }}>*</span>
                     </Form.Label>
@@ -194,13 +195,14 @@ export const CreateAssignmentComponent = (props: Props) => {
                             <Dropdown.Toggle className="form-control p-0 m-0" variant={'light'}>
                                 <InputGroup>
                                     <Form.Control
+                                        id = "asset_field"
                                         type='text'
                                         {...getFieldProps('asset')}
                                         value={selectedAsset == null ? " " : selectedAsset?.assetName}
                                         className="form-control border-0"
                                     />
                                     <InputGroup.Text className='bg-transparent border-0'>
-                                        <FontAwesomeIcon icon={faSearch} ></FontAwesomeIcon>
+                                        <FontAwesomeIcon  name="search" icon={faSearch} ></FontAwesomeIcon>
                                     </InputGroup.Text>
                                 </InputGroup>
                             </Dropdown.Toggle>
@@ -224,16 +226,16 @@ export const CreateAssignmentComponent = (props: Props) => {
                     </Col>
                 </Form.Group>
                 <Form.Group as={Row} className="mb-3" >
-                    <Form.Label column sm={3}>
+                    <Form.Label id="assignedDate_label" column sm={3}>
                         Assigned Date
                         <span className='mx-1' style={{ color: ColorPalette.PRIMARY_COLOR }}>*</span>
                     </Form.Label>
                     <Col sm={9}>
-                        <Form.Control
-                            type="date"
-                            {...getFieldProps('assignedDate')}
-                            //min={formatDate(new Date())}
-                            style={formik.errors.assignedDate ? { borderColor: "red" } : {}} />
+                        <Form.Control 
+                        id = "assignedDate_field"
+                        type="date"  
+                        {...getFieldProps('assignedDate')} 
+                        style={formik.errors.assignedDate ? { borderColor: "red" } : {}} />
                         {formik.touched.assignedDate && formik.errors.assignedDate ? (
                             <div className="error-message">{formik.errors.assignedDate}</div>
                         ) : null}
@@ -241,12 +243,12 @@ export const CreateAssignmentComponent = (props: Props) => {
 
                 </Form.Group>
                 <Form.Group as={Row} className="mb-3" >
-                    <Form.Label column sm={3}>
+                    <Form.Label id ="note_label" column sm={3}>
                         Note
                     </Form.Label>
                     <Col sm={9}>
-                        <Form.Control type="text" as="textarea" {...getFieldProps("note")} />
-                        {formik.touched.note && formik.errors.note ? (
+                        <Form.Control id="note_field" type="text" as="textarea" {...getFieldProps("note")}/>
+                        {formik.touched.note && formik.errors.note? (
                             <div className="error-message">{formik.errors.note}</div>
                         ) : null}
                     </Col>
@@ -254,8 +256,8 @@ export const CreateAssignmentComponent = (props: Props) => {
 
                 <Row>
                     <Col className="d-flex justify-content-end my-4">
-                        <Button variant="danger" className="mx-4" style={{ minWidth: "100px" }} type="submit" disabled={isDisable || !formik.isValid || loading}> {loading ? <FontAwesomeIcon icon={faSpinner} spin /> : "Save"}</Button>
-                        <Button variant="outline-dark" className="ms-4" style={{ minWidth: "100px" }} onClick={() => { navigate(-1) }}>Cancel</Button>
+                        <Button id="save" variant="danger" className="mx-4" style={{ minWidth: "100px" }} type="submit" disabled={isDisable || !formik.isValid || loading}> {loading ? <FontAwesomeIcon icon={faSpinner} spin /> : "Save"}</Button>
+                        <Button id="cancel" variant="outline-dark" className="ms-4" style={{ minWidth: "100px" }} onClick={() => { navigate(-1) }}>Cancel</Button>
                     </Col>
                 </Row>
             </Form>

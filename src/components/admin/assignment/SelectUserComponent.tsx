@@ -7,7 +7,7 @@ import { PaginationComponent } from "../../commons/PaginationComponent"
 import { useEffect, useState } from "react"
 import { message } from 'antd';
 import { UserModel } from "../../../models/UserModel"
-import { UserForSelectTableModel } from "../../../models/UserForSelectTableModel"
+import { UserForSelectTableModel } from "../../../models/UserModel"
 import { Roles, RolesLowerCase } from "../../../utils/Enum"
 import { getUser } from "../../../services/UserService"
 import { faSpinner } from "@fortawesome/free-solid-svg-icons"
@@ -17,7 +17,7 @@ const header = [
 	{ name: '', value: "", sort: false, direction: false, colStyle: { width: "20%" } },
 	{ name: 'Staff Code', value: "staffCode", sort: true, direction: true, colStyle: { width: "20%" } },
 	{ name: 'Username', value: "username", sort: true, direction: true, colStyle: { width: "40%" } },
-	{ name: 'Full Name', value: "", sort: false, direction: false, colStyle: { width: "50%" } },
+	{ name: 'Full Name', value: "firstName", sort: true, direction: true, colStyle: { width: "50%" } },
 	{ name: 'Type', value: "roleId", sort: true, direction: true, colStyle: { width: "10%" } },
 
 ]
@@ -46,6 +46,7 @@ export const SelectUserComponent = (props: Props) => {
 		sort: "firstName,asc",
 		types: [Roles.ADMIN.toString(), Roles.STAFF.toString()],
 		page: 0,
+		self: true,
 		size: 20
 	});
 	
@@ -57,7 +58,8 @@ export const SelectUserComponent = (props: Props) => {
 			+ "types=" + param.types.join() + "&"
 			+ "page=" + param.page + "&"
 			+ "size=" + param.size + "&"
-			+ "sort=" + param.sort;
+			+ "self=" + param.self+ "&"
+			+ "sort=" + param.sort
 
 		setLoading(true)
 
