@@ -106,7 +106,7 @@ export const AssignmentModelComponent = (props: Props) => {
                     key={header.name}
                     id={"assignment_model_row_" + header.value}
                   >
-                    <Col sm={3} className="">
+                    <Col sm={3} name="header_title" className="">
                       {header.name}
                     </Col>
                     <Col

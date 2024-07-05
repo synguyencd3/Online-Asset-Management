@@ -104,7 +104,7 @@ export const SelectAssetComponent = (props: Props) => {
 		return (
 			<Form.Check
 				type={"radio"}
-				name="select_user"
+				name="select_asset"
 				onChange={() => {
 					setAsset(asset)
 				}}
