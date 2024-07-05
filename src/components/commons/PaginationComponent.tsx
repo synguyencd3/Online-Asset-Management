@@ -87,9 +87,10 @@ export const PaginationComponent = ({ currentPage, totalPage, setParamsFunction,
                             <div className="me-5" style={{ maxWidth: "100%", minWidth: "50px", width: "fit-content", textAlign: "left" }}>
                                 <Form.Group as={Row} className="" controlId="location">
                                     <Form.Select name="location" defaultValue={perPage} style={{ width: "100%" }} onChange={(e) => { handlePerPageChange(e.target.value) }}>
-                                        <option value="5" >5 / page</option>
                                         <option value="10" >10 / page</option>
                                         <option value="20" >20 / page</option>
+                                        <option value="50" >50 / page</option>
+                                        <option value="100" >100 / page</option>
                                     </Form.Select>
                                 </Form.Group>
                             </div>

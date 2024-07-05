@@ -42,7 +42,17 @@
 .modal-90w {
   max-width: 23em;
 }
+.breadcrumb-item,
+.breadcrumb-item+.breadcrumb-item::before,
+.breadcrumb-item > a {
+  color: var(--SLIVER-100-COLOR) !important;
+}
 
+.breadcrumb-item:hover,
+.breadcrumb-item > a:hover,
+.breadcrumb-item > .active:hover {
+  filter: drop-shadow(0 0 10px #ffffffaa) !important;
+}
 
 
 @keyframes logo-spin {

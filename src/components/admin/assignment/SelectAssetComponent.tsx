@@ -50,17 +50,6 @@ export const SelectAssetComponent = (props: Props) => {
 		sort: "assetCode,asc",
 	});
 
-	// useSWR(
-	// 	categoriesEndpoint,
-	// 	getCategories,
-	// 	{
-	// 		onSuccess: (response) => {
-	// 			const arrayId = response.data.data.map((category: CategoryModel) => category.id)
-	// 			setParam((p: any) => ({ ...p, categories: arrayId }))
-	// 			setDummy(Math.random())
-	// 		}
-	// 	}
-	//   );
 
 	async function getCategory() {
 		if (param.categories.length>0) return;
@@ -115,7 +104,7 @@ export const SelectAssetComponent = (props: Props) => {
 		return (
 			<Form.Check
 				type={"radio"}
-				name="select_user"
+				name="select_asset"
 				onChange={() => {
 					setAsset(asset)
 				}}
@@ -129,7 +118,6 @@ export const SelectAssetComponent = (props: Props) => {
 	}
 
 	useEffect(() => {
-		console.log("dummy change")
 		param.page = 0
 		InitializeQuery()
 	}, [dummy])
@@ -139,7 +127,6 @@ export const SelectAssetComponent = (props: Props) => {
 	},[])
 
 	useEffect(() => {
-		console.log("page change")
 		InitializeQuery()
 	}, [page])
 
@@ -152,7 +139,7 @@ export const SelectAssetComponent = (props: Props) => {
 					</h4>
 				</Col>
 				<Col>
-					<SearchComponent placeholder={""} params={param.search} setParamsFunction={setParam} setDummy={setDummy} style={{ width: "100%" }}></SearchComponent>
+					<SearchComponent placeholder={""} setParamsFunction={setParam} setDummy={setDummy} style={{ width: "100%" }}></SearchComponent>
 				</Col>
 			</Row>
 			<Row>

@@ -12,6 +12,8 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
+  --bs-breadcrumb-divider: '>';
+
   /* Color Palette */
   --PRIMARY-COLOR: #E30613;
   --SECONDARY-COLOR: #CF2338;

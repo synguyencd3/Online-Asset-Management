@@ -54,7 +54,7 @@ export const AssetModalComponent = (props: Props) => {
     const [readMore, setReadMore] = useState<boolean[]>([]);
     function setPage(_params: any) { }
 
-    const { isLoading } = useSWR(props.data ? getOneAssetHistoryUrl(props.data, currentPage.page) : null, getWithSWR, {
+    const {isLoading } = useSWR(props.data ? getOneAssetHistoryUrl(props.data, currentPage.page) : null, getWithSWR, {
         onSuccess: (response) => {
             const data = response.data.data;
             const assetT: AssetModel = data.asset;

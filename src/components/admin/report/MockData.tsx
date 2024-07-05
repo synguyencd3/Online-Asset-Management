@@ -1,5 +1,4 @@
-import { ReportModel } from "../../../models/ReportModel";
-import { ReportResponseModel } from "../../../models/ReportReponseModel";
+import { ReportModel, ReportResponseModel } from "../../../models/ReportModel";
 
 export const reports: ReportModel[] = [
     {

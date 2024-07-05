@@ -3,15 +3,16 @@ import { ColorPalette } from "../../../utils/ColorPalette";
 import * as Yup from 'yup';
 import { useFormik } from "formik";
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { message } from "antd";
 import { UserModel } from "../../../models/UserModel";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { createUser } from "../../../services/UserService";
+import { BreadcrumbComponent } from "../../commons/BreadcrumbComponent";
 
 type Props = {
-    setHeaderTitle: any
+    setHeaderTitle: (title: ReactNode) => void
 }
 
 const eighteenYearsAgo = new Date(new Date().setFullYear(new Date().getFullYear() - 18));
@@ -49,7 +50,16 @@ export const CreateUserComponent = (props: Props) => {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false)
     useEffect(() => {
-        props.setHeaderTitle("Manage User > Create User");
+        props.setHeaderTitle(<BreadcrumbComponent breadcrumb={[
+            {
+              title: 'Manage User',
+              href: `${window.location.origin}/admin/manage-users#`
+            },
+            {
+              title: "Create New User",
+              href: `${window.location.origin}/admin/manage-users/new#`
+            }
+          ]} />);
     }, [])
 
     const formik = useFormik({
