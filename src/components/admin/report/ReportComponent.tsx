@@ -94,7 +94,7 @@ export const ReportComponent: React.FC<Props> = (props: Props) => {
                 <Row className='align-items-center justify-content-between my-3'>
                     <Col sm={2} className='mx-1'>
                         <p className='fs-5 my-auto' style={{ color: "gray" }}>
-                            Total : {reportResponse?.totalElements}
+                            Total : {reportResponse?.totalElements ?? 0}
                         </p>
                     </Col>
                     <Col sm={2} className='d-flex justify-content-center'>

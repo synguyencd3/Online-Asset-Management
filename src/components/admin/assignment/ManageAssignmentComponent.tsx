@@ -384,7 +384,7 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
         show={showDisableModal}
         onConfirm={handleDeleteConfirm}
         onCancel={handleDeleteCancel}
-        confirmTitle={"Are you sure?"}
+        confirmTitle={"Delete Confirmation"}
         confirmQuestion={"Do you want to delete this assignment?"}
         confirmBtnLabel={"Delete"}
         cancelBtnLabel={"Cancel"}

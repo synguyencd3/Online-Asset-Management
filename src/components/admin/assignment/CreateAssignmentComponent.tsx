@@ -30,7 +30,7 @@ export const CreateAssignmentComponent = (props: Props) => {
     const [, setDirty] = useState(true);
     const date = new Date();
     const [showDropdownAsset, setShowDropdownAsset] = useState(false);
-    const [isDisable, setDisable] = useState(true)
+    const [isDisable, setIsDisable] = useState(true)
     //const [dummy, setDummy] = useState(0)
 
 
@@ -52,7 +52,7 @@ export const CreateAssignmentComponent = (props: Props) => {
     };
 
     function yesterday(): Date {
-        var d = new Date();
+        let d = new Date();
         d.setDate(date.getDate() - 1);
         return d
     }
@@ -76,7 +76,7 @@ export const CreateAssignmentComponent = (props: Props) => {
             setDirty(true)
         else {
             setDirty(false)
-            setDisable(false)
+            setIsDisable(false)
         }
     }
 
