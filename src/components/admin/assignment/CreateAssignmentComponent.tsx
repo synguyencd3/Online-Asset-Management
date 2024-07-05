@@ -27,7 +27,7 @@ export const CreateAssignmentComponent = (props: Props) => {
     const [selectedAsset, setSelectedAsset] = useState<AssetForSelectTableModel>();
     const [selectedUser, setSelectedUser] = useState<UserForSelectTableModel>();
     const [showDropdownUser, setShowDropdownUser] = useState(false);
-    const [isDirty, setDirty] = useState(true);
+    const [_isDirty, setDirty] = useState(true);
     const date = new Date();
     const [showDropdownAsset, setShowDropdownAsset] = useState(false);
     const [isDisable, setDisable] = useState(true)
