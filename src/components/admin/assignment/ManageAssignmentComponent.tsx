@@ -20,10 +20,10 @@ import {
 import useSWR from "swr";
 import { PageResponseModel } from "../../../models/PageableModel";
 import { message } from "antd";
-import { SearchOnEnterComponent } from "../../commons/SearchOnEnterComponent";
 import { AssignmentModelComponent } from "./AssignmentModalComponent";
 import { toDateString, uppercaseStatusToText } from "../../../utils/utils";
 import { BreadcrumbComponent } from "../../commons/BreadcrumbComponent";
+import { SearchComponent } from "../../commons/SearchComponent";
 
 const header = [
   {
@@ -302,11 +302,12 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
         </Col>
         <Col sm={1}></Col>
         <Col sm={3} className="d-flex justify-content-end align-items-center">
-          <SearchOnEnterComponent
+          <SearchComponent
             placeholder={""}
             setParamsFunction={handleSetParam}
             style={{ width: "100%" }}
-          ></SearchOnEnterComponent>
+            setDummy={()=>{}}
+          ></SearchComponent>
         </Col>
         <Col
           sm={3}

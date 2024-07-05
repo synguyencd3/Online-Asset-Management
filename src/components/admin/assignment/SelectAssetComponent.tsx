@@ -139,7 +139,7 @@ export const SelectAssetComponent = (props: Props) => {
 					</h4>
 				</Col>
 				<Col>
-					<SearchComponent placeholder={""} params={param.search} setParamsFunction={setParam} setDummy={setDummy} style={{ width: "100%" }}></SearchComponent>
+					<SearchComponent placeholder={""} setParamsFunction={setParam} setDummy={setDummy} style={{ width: "100%" }}></SearchComponent>
 				</Col>
 			</Row>
 			<Row>

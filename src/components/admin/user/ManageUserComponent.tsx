@@ -264,7 +264,7 @@ export const ManageUserComponent = (props: Props) => {
 					<DropdownFilterComponent title={"Type"} data={filterdata} params={param.types} setParamsFunction={setParam} setDummy={setDummy} style={{}} defaultAll={true} paramName={"types"}></DropdownFilterComponent>
 				</Col>
 				<Col className="d-flex justify-content-end align-items-center" style={{ minWidth: "200px" }}>
-					<SearchComponent placeholder={""} params={param.search} setParamsFunction={setParam} setDummy={setDummy} style={{}}></SearchComponent>
+					<SearchComponent placeholder={""} setParamsFunction={setParam} setDummy={setDummy} style={{}}></SearchComponent>
 				</Col>
 				<Col sm={3} className="d-flex justify-content-end align-items-center" style={{ maxWidth: "230px" }}>
 					<Button variant="danger" onClick={() => { return navigate('./new') }} style={{ width: "230px" }}>Create New User</Button>
