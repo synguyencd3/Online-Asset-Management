@@ -39,9 +39,14 @@ export enum AssignmentRequestState {
     DECLINED,
 }
 
+// export enum ReturningState {
+//     COMPLETED,
+//     WAITING_FOR_RETURNING,
+// }
+
 export enum ReturningState {
-    COMPLETED,
-    WAITING_FOR_RETURNING,
+    COMPLETED = "Completed",
+    WAITING_FOR_RETURNING = "Waiting for Returning",
 }
 
 export enum AssetState {

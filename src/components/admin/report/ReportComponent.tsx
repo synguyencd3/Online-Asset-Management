@@ -39,10 +39,10 @@ export const ReportComponent: React.FC<Props> = (props: Props) => {
     useEffect(() => {
         props.setHeaderTitle(<BreadcrumbComponent breadcrumb={[
             {
-              title: 'Report',
-              href: `${window.location.origin}/admin/reports#`
+                title: 'Report',
+                href: `${window.location.origin}/admin/reports#`
             }
-          ]} />);
+        ]} />);
     }, []);
 
     const {
@@ -86,45 +86,43 @@ export const ReportComponent: React.FC<Props> = (props: Props) => {
 
     return (
         <div>
-            <div>
-                {contextHolder}
-                <Row className=' mt-5 mb-3 align-items-center justify-content-between'>
-                    <h4 style={{ color: ColorPalette.PRIMARY_COLOR }} className='fw-bold fs-4 ms-1'>My Assignment</h4>
-                </Row>
-                <Row className='align-items-center justify-content-between my-3'>
-                    <Col sm={2} className='mx-1'>
-                        <p className='fs-5 my-auto' style={{ color: "gray" }}>
-                            Total : {reportResponse?.totalElements ?? 0}
-                        </p>
-                    </Col>
-                    <Col sm={2} className='d-flex justify-content-center'>
-                        <Button
-                            onClick={exportReportViewData}
-                            style={{ backgroundColor: ColorPalette.PRIMARY_COLOR }}
-                            disabled={reportResponse?.totalElements! < 1}
-                            className='px-4 border-0 me-2'>
-                            Export
-                        </Button>
-                    </Col>
-                </Row>
-                {isReportLoading ?
-                    <LoaderComponent />
-                    :
-                    <>
-                        {reportResponse?.content.length === 0 ?
+            {contextHolder}
+            <Row className=' mt-5 mb-3 align-items-center justify-content-between'>
+                <h4 style={{ color: ColorPalette.PRIMARY_COLOR }} className='fw-bold fs-4 ms-1'>Report</h4>
+            </Row>
+            <Row className='align-items-center justify-content-between my-3'>
+                <Col sm={2} className='mx-1'>
+                    <p className='fs-5 my-auto' style={{ color: "gray" }}>
+                        Total : {reportResponse?.totalElements ?? 0}
+                    </p>
+                </Col>
+                <Col sm={2} className='d-flex justify-content-center'>
+                    <Button
+                        onClick={exportReportViewData}
+                        style={{ backgroundColor: ColorPalette.PRIMARY_COLOR }}
+                        disabled={reportResponse?.totalElements! < 1}
+                        className='px-4 border-0 me-2'>
+                        Export
+                    </Button>
+                </Col>
+            </Row>
+            {isReportLoading ?
+                <LoaderComponent />
+                :
+                <>
+                    {reportResponse?.content.length === 0 ?
+                        <Row>
+                            <h5 className="text-center"> No Report Found</h5>
+                        </Row> :
+                        <>
                             <Row>
-                                <h5 className="text-center"> No Report Found</h5>
-                            </Row> :
-                            <>
-                                <Row>
-                                    <TableComponent headers={header} setSortString={setParam} datas={reportResponse?.content as ReportModel[]} auxData={reportResponse?.content as ReportModel[]} auxHeader={auxHeader} buttons={[]} showModalCell={[]} setDummy={() => {}} setModalData={() => {}} setModalShow={() => {}} pre_button={undefined} disableButton={[]}/>
-                                </Row>
-                                <PaginationComponent currentPage={param.page} totalPage={reportResponse?.totalPage!} setParamsFunction={setParam} setDummy={() => {}} perPage={param.size} setPage={()=> {}} fixPageSize={false} />
-                            </>
-                        }
-                    </>
-                }
-            </div>
+                                <TableComponent headers={header} setSortString={setParam} datas={reportResponse?.content as ReportModel[]} auxData={reportResponse?.content as ReportModel[]} auxHeader={auxHeader} buttons={[]} showModalCell={[]} setDummy={() => { }} setModalData={() => { }} setModalShow={() => { }} pre_button={undefined} disableButton={[]} />
+                            </Row>
+                            <PaginationComponent currentPage={param.page} totalPage={reportResponse?.totalPage!} setParamsFunction={setParam} setDummy={() => { }} perPage={param.size} setPage={() => { }} fixPageSize={false} />
+                        </>
+                    }
+                </>
+            }
         </div>
     )
 }

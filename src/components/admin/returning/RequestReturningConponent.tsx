@@ -1,10 +1,112 @@
-import React, { ReactNode, useEffect } from 'react'
+import React, { ReactNode, useEffect, useState } from 'react'
 import { BreadcrumbComponent } from '../../commons/BreadcrumbComponent'
+import { Container, Row } from 'react-bootstrap'
+import { ColorPalette } from '../../../utils/ColorPalette'
+import { ConfirmModalComponent } from '../../commons/ConfirmModalComponent'
+import { LoaderComponent } from '../../commons/LoaderComponent'
+import { PaginationComponent } from '../../commons/PaginationComponent'
+import { TableComponent } from '../../commons/TableComponent'
+import { AssignmentModelComponent } from '../assignment/AssignmentModalComponent'
+import { message } from 'antd'
+import { ReturingReponseModel, ReturningModel } from '../../../models/ReturningModel'
+import { ReturningState } from '../../../utils/Enum'
+import { FunctionalIconModel } from '../../../models/FunctionalIconModel'
+import { faCheck, faXmark } from '@fortawesome/free-solid-svg-icons'
+import { toDateString, uppercaseStatusToText } from '../../../utils/utils'
+import useSWR from 'swr'
+import { getOwnAssignementSWR } from '../../../services/AssignmentService'
+import { getRequestForReturningSWR } from '../../../services/ReturningService'
+import { RequestPageableModel } from '../../../models/PageableModel'
 
 type Props = {
   setHeaderTitle: (title: ReactNode) => void
 }
+
+const header = [
+  { name: 'No.', value: "id", sort: true, direction: true, colStyle: {} },
+  { name: 'Asset Code', value: "assignment.asset.assetCode", sort: true, direction: true, colStyle: {} },
+  { name: 'Asset Name', value: "assignment.asset.name", sort: true, direction: true, colStyle: {} },
+  { name: 'Requested By', value: "auditMetadata.createdBy.username", sort: true, direction: true, colStyle: {} },
+  { name: 'Accepted By', value: "acceptedBy", sort: true, direction: true, colStyle: {} },
+  { name: 'Assigned Date', value: "assignment.assignedDate", sort: true, direction: true, colStyle: {} },
+  { name: 'Returned Date', value: "returnedDate", sort: true, direction: true, colStyle: {} },
+  { name: 'State', value: "status", sort: true, direction: true, colStyle: {} },
+]
+// const showModalCell = ["assetCode", "assetName", "category", "assignedDate", "state"];
+const modalHeader = ["No.", "Asset Code", "Asset Name", "Requested By", "Assigned Date", "Returned Date", "State"];
+
 export const RequestReturningConponent: React.FC<Props> = (props: Props) => {
+  const [auxHeader] = useState<string[]>(modalHeader);
+  const [messageApi, contextHolder] = message.useMessage();
+  const [showConfirmModal, setShowConfirmModal] = useState(false); // State for the Logout Modal
+  const [responseData, setResponseData] = useState<{ id: number, status: boolean }>({ id: 0, status: false });
+  const [param, setParam] = useState<RequestPageableModel>({
+    search: "",
+    states: ["COMPLETED", "WAITING_FOR_RETURNING"],
+    page: 0,
+    size: 20,
+    sort: "id,asc",
+  });
+
+  const acceptReturning = (...data: ReturningModel[]) => {
+    setShowConfirmModal(true);
+    setResponseData({ id: data[1].id, status: true });
+  }
+  const declineReturning = (...data: ReturningModel[]) => {
+    setShowConfirmModal(true);
+    setResponseData({ id: data[1].id, status: false });
+  }
+
+  const acceptIcon: FunctionalIconModel = {
+    icon: faCheck,
+    style: { color: ColorPalette.PRIMARY_COLOR },
+    onClickfunction: acceptReturning
+  };
+  const declineIcon: FunctionalIconModel = {
+    icon: faXmark,
+    style: { color: 'black' },
+    onClickfunction: declineReturning
+  };
+  const buttons: FunctionalIconModel[] = [acceptIcon, declineIcon];
+
+  const setDisableButtonState = (data: ReturningModel[]) => {
+    const isEqualState = (state: string, stateEnum: ReturningState) =>
+      uppercaseStatusToText(state).toLowerCase() === stateEnum.toLowerCase();
+    return data.map((item: ReturningModel) => [
+      isEqualState(item.state, ReturningState.COMPLETED),
+      isEqualState(item.state, ReturningState.COMPLETED),
+    ]);
+  };
+
+  const formatRecordList = (records: ReturningModel[]) => {
+    return records.map((record: ReturningModel) => {
+      return {
+        id: record.id,
+        assetCode: record.assetCode,
+        assetName: record.assetName,
+        requestedBy: record.requestedBy,
+        acceptedBy: record.acceptedBy,
+        assignedDate: toDateString(record.assignedDate),
+        returnedDate: toDateString(record.returnedDate),
+        state: uppercaseStatusToText(record.state)
+      };
+    });
+  };
+
+  const {
+    data: returningResponse,
+    isLoading: isReturningLoading,
+    // mutate: mutateReturning
+  } = useSWR("returning/"
+    + param.page.toString()
+    + param.size.toString()
+    + param.sort.toString(),
+    () => { return getRequestForReturningSWR(param) },
+    {
+      onError: ((err) => message.error(err.response.data.message))
+    }
+  )
+
   useEffect(() => {
     props.setHeaderTitle(<BreadcrumbComponent breadcrumb={[
       {
@@ -13,7 +115,46 @@ export const RequestReturningConponent: React.FC<Props> = (props: Props) => {
       }
     ]} />);
   }, [])
+
+  const handleModalConfirm = () => {
+    setShowConfirmModal(false);
+    // responseOwnAssignment(responseData.id); // Call the Confirm function
+  }
+
+  const handleModalCancel = () => {
+    setShowConfirmModal(false); // Hide the Confirm Modal
+  }
+
   return (
-    <div>RequestReturningConponent: React.FC</div>
+    <div>RequestReturningConponent: React.FC
+      <Container>
+        {contextHolder}
+        <h4 style={{ color: ColorPalette.PRIMARY_COLOR }} className='fw-bold fs-4 ms-1 mt-5 mb-3'>My Assignment</h4>
+
+        {isReturningLoading ?
+          <LoaderComponent />
+          :
+          <>
+            {returningResponse?.content.length === 0 ?
+              <Row>
+                <h5 className="text-center"> No Assignment Found</h5>
+              </Row> :
+              <>
+                <Row className='ps-2'>
+                  <p className='fs-5' style={{ color: "gray" }}>
+                    Total : {returningResponse?.content.length ?? 0}
+                  </p>
+                </Row>
+                <Row>
+                  <TableComponent headers={header} datas={formatRecordList(returningResponse?.content!)} setSortString={setParam} auxData={returningResponse?.content!} auxHeader={auxHeader} buttons={buttons} showModalCell={[]} setDummy={() => { }} setModalData={() => { }} setModalShow={() => { }} pre_button={undefined} disableButton={setDisableButtonState(returningResponse?.content!)} />
+                </Row>
+                <PaginationComponent currentPage={param.page} totalPage={returningResponse?.totalPage!} setParamsFunction={setParam} setDummy={() => { }} perPage={param.size} setPage={() => { Math.random() }} fixPageSize={false} />
+              </>
+            }
+          </>
+        }
+        <ConfirmModalComponent show={showConfirmModal} onConfirm={handleModalConfirm} onCancel={handleModalCancel} confirmTitle={'Response Confirmation'} confirmQuestion={responseData.status === true ? 'Do you want to accept this assignment?' : 'Do you want to decline this assignment?'} confirmBtnLabel={responseData.status === true ? 'Accept' : 'Decline'} cancelBtnLabel={'Cancel'} modalSize={'md'} />
+      </Container>
+    </div>
   )
 }
