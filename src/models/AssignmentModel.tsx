@@ -1,5 +1,12 @@
 import { AssignmentState } from "../utils/Enum";
 
+export type AssignmentResponse = {
+    content: AssignmentHomeViewModel[],
+    currentPage: number,
+    totalPage: number,
+    totalElements: number,
+}
+
 export type AssignmentModel = {
     id: number;
     assignmentCode: string;

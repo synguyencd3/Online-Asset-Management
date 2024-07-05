@@ -118,7 +118,7 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
   const [modalData, setModalData] = useState<AssignmentForTableModel>();
   const [showDisableModal, setShowDisableModal] = useState(false);
 
-  const [_deletedAssignmentId, setDeletedAssignmentId] = useState<number>(0);
+  const [deletedAssignmentId, setDeletedAssignmentId] = useState<number>(0);
 
   const [param, setParam] = useState<AssignmentGetParams>({
     search: "",
@@ -162,7 +162,7 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
   const handleDeleteConfirm = async () => {
     setShowDisableModal(false);
     message.loading("Deleting assignment", 1.2);
-    await deleteAssignmentById(_deletedAssignmentId)
+    await deleteAssignmentById(deletedAssignmentId)
       .then((response) => {
         message.success(response.data.message);
         if (newAssignment) {
