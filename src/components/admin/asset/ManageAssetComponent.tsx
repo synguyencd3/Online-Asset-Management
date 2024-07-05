@@ -1,6 +1,6 @@
 import { message } from 'antd';
 import { useLocation, useNavigate } from 'react-router-dom';
-import React, { useEffect, useState } from 'react'
+import React, { ReactNode, useEffect, useState } from 'react'
 import { FunctionalIconModel } from '../../../models/FunctionalIconModel';
 import { faPencil } from '@fortawesome/free-solid-svg-icons';
 import { Button, Col, Container, Row } from 'react-bootstrap';
@@ -16,6 +16,7 @@ import { AssetModalComponent } from './AssetModalComponent';
 import { ConfirmModalComponent } from '../../commons/ConfirmModalComponent';
 import useSWR from 'swr';
 import { SearchComponent } from '../../commons/SearchComponent';
+import { BreadcrumbComponent } from '../../commons/BreadcrumbComponent';
 
 const header = [{ name: 'Asset Code', value: "assetCode", sort: true, direction: true, colStyle: { width: "12%" } }, { name: 'Asset Name', value: "name", sort: true, direction: true, colStyle: { width: "40%" } }, { name: 'Category', value: "category.name", sort: true, direction: true, colStyle: { maxWidth: '200px' } }, { name: 'State', value: "status", sort: true, direction: true, colStyle: { width: "15%" } }]
 const showModalCell = ["assetCode", "assetName"]
