@@ -6,7 +6,6 @@ type Props = {
     title: string;
     show: boolean;
     onHide: () => void;
-    // query: string;
     data: Object
     label: Object[];
 }

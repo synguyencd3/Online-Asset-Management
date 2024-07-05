@@ -78,10 +78,10 @@ export const HeaderComponent: React.FC<HeaderComponentProps> = ({ username, titl
             <Navbar className="navbar" style={{ position: 'sticky', top: 0, zIndex: 10, backgroundColor: ColorPalette.PRIMARY_COLOR, height: '90px' }}>
                 {contextHolder}
                 <Container fluid className='d-flex justify-content-between'>
-                    <Navbar.Brand href="#" id='navigate-bar' className='d-flex align-items-center ps-5'>
+                    <div id='navigate-bar' className='d-flex align-items-center ps-5'>
                         {logo ? <img src={logo} className='logo my-auto' alt='logo' /> : <div></div>}
                         <h3 className="mt-4 mx-4 fs-4 text-white fw-semibold" id='navbar-title'>{title}</h3>
-                    </Navbar.Brand>
+                    </div>
                     {sessionStorage.getItem('isLoggedIn') ? (
                         <div id="navbarNavDarkDropdown">
                             <ul className="navbar-nav">
@@ -101,7 +101,7 @@ export const HeaderComponent: React.FC<HeaderComponentProps> = ({ username, titl
                 </Container>
             </Navbar>
             <PasswordModalComponent show={showPasswordModal} onClose={handleClose} isFirstLoggedIn={true} />
-            <ConfirmModalComponent show={showLogoutModal} onConfirm={handleLogoutConfirm} onCancel={handleLogoutCancel} confirmTitle={'Are you sure?'} confirmQuestion={'Do you want to log out?'} confirmBtnLabel={'Log out'} cancelBtnLabel={'Cancel'} modalSize={'sm'} />
+            <ConfirmModalComponent show={showLogoutModal} onConfirm={handleLogoutConfirm} onCancel={handleLogoutCancel} confirmTitle={'Log Out'} confirmQuestion={'Do you want to log out?'} confirmBtnLabel={'Yes'} cancelBtnLabel={'No'} modalSize={'sm'} />
         </>
     )
 }

@@ -58,3 +58,9 @@ export type AssetEditRequestModel = {
   installDate: string;
   assetState: string;
 }
+
+export type AssetForSelectTableModel = {
+  assetCode: string,
+  assetName: string,
+  category: string,
+}

@@ -154,8 +154,7 @@ export const CreateAssetComponent = (props: Props) => {
           </h4>
           <Form.Group as={Row} className="mb-3" controlId="assetName">
             <Form.Label column sm={3}>
-              Name
-              <span className='mx-1' style={{ color: ColorPalette.PRIMARY_COLOR }}>*</span>
+              Name <span className='mx-1' style={{ color: ColorPalette.PRIMARY_COLOR }}>*</span>
             </Form.Label>
             <Col sm={9}>
               <Form.Control
@@ -169,8 +168,7 @@ export const CreateAssetComponent = (props: Props) => {
           </Form.Group>
           <Form.Group as={Row} className="mb-3" controlId="categoryName">
             <Form.Label column sm={3}>
-              Category
-              <span className='mx-1' style={{ color: ColorPalette.PRIMARY_COLOR }}>*</span>
+              Category <span className='mx-1' style={{ color: ColorPalette.PRIMARY_COLOR }}>*</span>
             </Form.Label>
             <Col sm={9}>
               <Dropdown
@@ -268,13 +266,12 @@ export const CreateAssetComponent = (props: Props) => {
                         </Col>
                       </Form.Group>
                     ) : (
-                      <div
+                      <button
                         className="btn-link text-danger"
                         onClick={() => setAddCategory(true)}
-                        style={{ cursor: "pointer" }}
-                      >
+                        style={{ cursor: "pointer" }}>
                         <i>Add New Category</i>
-                      </div>
+                      </button>
                     )}
                   </div>
                 </Dropdown.Menu>
@@ -288,8 +285,7 @@ export const CreateAssetComponent = (props: Props) => {
           </Form.Group>
           <Form.Group as={Row} className="mb-3" controlId="specification">
             <Form.Label column sm={3}>
-              Specification
-              <span className='mx-1' style={{ color: ColorPalette.PRIMARY_COLOR }}>*</span>
+              Specification <span className='mx-1' style={{ color: ColorPalette.PRIMARY_COLOR }}>*</span>
             </Form.Label>
             <Col sm={9}>
               <Form.Control
@@ -306,8 +302,7 @@ export const CreateAssetComponent = (props: Props) => {
           </Form.Group>
           <Form.Group as={Row} className="mb-3" controlId="installedDate">
             <Form.Label column sm={3}>
-              Installed Date
-              <span className='mx-1' style={{ color: ColorPalette.PRIMARY_COLOR }}>*</span>
+              Installed Date <span className='mx-1' style={{ color: ColorPalette.PRIMARY_COLOR }}>*</span>
             </Form.Label>
             <Col sm={9}>
               <Form.Control
@@ -323,8 +318,7 @@ export const CreateAssetComponent = (props: Props) => {
           </Form.Group>
           <Form.Group as={Row} className="mb-3" controlId="assetState">
             <Form.Label column sm={3}>
-              State
-              <span className='mx-1' style={{ color: ColorPalette.PRIMARY_COLOR }}>*</span>
+              State <span className='mx-1' style={{ color: ColorPalette.PRIMARY_COLOR }}>*</span>
             </Form.Label>
             <Col sm={9} id="assetState" className="red-border-on-focus">
               <Form.Check

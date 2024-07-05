@@ -99,11 +99,9 @@ export const CreateUserComponent = (props: Props) => {
                 const newUser: UserModel = data.data;
                 if (status === 201) {
                     navigate('/admin/manage-users', { replace: true, state: { newUser: newUser } });
-                    return
                 }
             }).catch(_e => {
                 message.error("Fail to create user");
-                return
             });
             setLoading(false)
         }
@@ -119,8 +117,7 @@ export const CreateUserComponent = (props: Props) => {
                     </h4>
                     <Form.Group as={Row} className="mb-3" controlId="firstName">
                         <Form.Label column sm={3} >
-                            First Name
-                            <span className='mx-1' style={{ color: ColorPalette.PRIMARY_COLOR }}>*</span>
+                            First Name <span className='mx-1' style={{ color: ColorPalette.PRIMARY_COLOR }}>*</span>
                         </Form.Label>
                         <Col sm={9}>
                             <Form.Control type="text"  {...getFieldProps('firstName')} />
@@ -132,8 +129,7 @@ export const CreateUserComponent = (props: Props) => {
                     </Form.Group>
                     <Form.Group as={Row} className="mb-3" controlId="lastName">
                         <Form.Label column sm={3}>
-                            Last Name
-                            <span className='mx-1' style={{ color: ColorPalette.PRIMARY_COLOR }}>*</span>
+                            Last Name <span className='mx-1' style={{ color: ColorPalette.PRIMARY_COLOR }}>*</span>
                         </Form.Label>
                         <Col sm={9}>
                             <Form.Control type="text"  {...getFieldProps('lastName')} />
@@ -144,8 +140,7 @@ export const CreateUserComponent = (props: Props) => {
                     </Form.Group>
                     <Form.Group as={Row} className="mb-3" controlId="dateOfBirth">
                         <Form.Label column sm={3}>
-                            Date of Birth
-                            <span className='mx-1' style={{ color: ColorPalette.PRIMARY_COLOR }}>*</span>
+                            Date of Birth <span className='mx-1' style={{ color: ColorPalette.PRIMARY_COLOR }}>*</span>
                         </Form.Label>
                         <Col sm={9}>
                             <Form.Control type="date"  {...getFieldProps('dateOfBirth')} style={formik.errors.dateOfBirth ? { borderColor: "red" } : {}} />
@@ -156,8 +151,7 @@ export const CreateUserComponent = (props: Props) => {
                     </Form.Group>
                     <Form.Group as={Row} className="mb-3" controlId="gender">
                         <Form.Label column sm={3}>
-                            Gender
-                            <span className='mx-1' style={{ color: ColorPalette.PRIMARY_COLOR }}>*</span>
+                            Gender <span className='mx-1' style={{ color: ColorPalette.PRIMARY_COLOR }}>*</span>
                         </Form.Label>
                         <Col sm={9} id="gender" className="red-border-on-focus">
                             <Form.Check inline label="Female" name="gender" value="FEMALE" type="radio" id={"female"} className="me-5" onChange={handleChange} />
@@ -169,8 +163,7 @@ export const CreateUserComponent = (props: Props) => {
                     </Form.Group>
                     <Form.Group as={Row} className="mb-3" controlId="joinedDate">
                         <Form.Label column sm={3}>
-                            Joined Date
-                            <span className='mx-1' style={{ color: ColorPalette.PRIMARY_COLOR }}>*</span>
+                            Joined Date <span className='mx-1' style={{ color: ColorPalette.PRIMARY_COLOR }}>*</span>
                         </Form.Label>
                         <Col sm={9}>
                             <Form.Control type="date"  {...getFieldProps('joinedDate')} style={formik.errors.joinedDate ? { borderColor: "red" } : {}} />
@@ -181,8 +174,7 @@ export const CreateUserComponent = (props: Props) => {
                     </Form.Group>
                     <Form.Group as={Row} className="mb-3" controlId="roleId">
                         <Form.Label column sm={3}>
-                            Type
-                            <span className='mx-1' style={{ color: ColorPalette.PRIMARY_COLOR }}>*</span>
+                            Type <span className='mx-1' style={{ color: ColorPalette.PRIMARY_COLOR }}>*</span>
                         </Form.Label>
                         <Col sm={9}>
                             <Form.Select name="roleId" value={values.roleId} onChange={handleChange} >
@@ -193,8 +185,7 @@ export const CreateUserComponent = (props: Props) => {
                     </Form.Group>
                     <Form.Group as={Row} className="mb-3" controlId="type">
                         <Form.Label column sm={3}>
-                            Staff Type
-                            <span className='mx-1' style={{ color: ColorPalette.PRIMARY_COLOR }}>*</span>
+                            Staff Type <span className='mx-1' style={{ color: ColorPalette.PRIMARY_COLOR }}>*</span>
                         </Form.Label>
                         <Col sm={9}>
                             <Form.Select name="prefix" value={values.prefix} onChange={handleChange} >
@@ -206,8 +197,7 @@ export const CreateUserComponent = (props: Props) => {
                     {values.roleId === "1" ?
                         <Form.Group as={Row} className="mb-3" controlId="location">
                             <Form.Label column sm={3}>
-                                Location
-                                <span className='mx-1' style={{ color: ColorPalette.PRIMARY_COLOR }}>*</span>
+                                Location <span className='mx-1' style={{ color: ColorPalette.PRIMARY_COLOR }}>*</span>
                             </Form.Label>
                             <Col sm={9}>
                                 <Form.Select name="location" value={values.location} onChange={handleChange} >
