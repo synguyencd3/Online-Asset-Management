@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { SidebarComponent } from './commons/SideBarComponent';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { ManageAssetComponent } from './admin/asset/ManageAssetComponent';
@@ -16,14 +16,14 @@ import { EditAssetComponent } from './admin/asset/EditAssetComponent';
 import { CreateAssignmentComponent } from './admin/assignment/CreateAssignmentComponent';
 import { EditAssignmentComponent } from './admin/assignment/EditAssignmentComponent';
 
-export const MainApp: React.FC<{ setHeaderTitle: (title: string) => void, roleId: number }> = ({ setHeaderTitle, roleId }) => {
-    
+export const MainApp: React.FC<{ setHeaderTitle: (title: ReactNode) => void, roleId: number }> = ({ setHeaderTitle, roleId }) => {
+
     return (
         <div className="d-flex flex-column flex-md-row mx-4 mt-5" style={{ minWidth: '20vw' }}>
-            <aside className="sidebar-column col-12 col-md-3 col-lg-2 px-2">
+            <aside className="sidebar-column col-12 col-md-3 col-lg-2 px-2" style={{ position: 'fixed' }}>
                 <SidebarComponent setHeaderTitle={setHeaderTitle} roleId={roleId} />
             </aside>
-            <main className="main-column col-12 col-md-9 col-lg-10" style={{ flexFlow: 'column', height: '100%' }}>
+            <main className="main-column col-12 col-md-9 col-lg-10" style={{ flexFlow: 'column', height: '100%', marginLeft: '15%' }}>
                 <Routes>
                     {roleId === 1 ? (
                         <Route element={<PermissionCheck allowedRoles={[1]} userRole={roleId} />}>
@@ -32,8 +32,8 @@ export const MainApp: React.FC<{ setHeaderTitle: (title: string) => void, roleId
                             <Route path="manage-users/new" element={<CreateUserComponent setHeaderTitle={setHeaderTitle} />} />
                             <Route path="manage-users/edit" element={<EditUserComponent setHeaderTitle={setHeaderTitle} />} />
                             <Route path="manage-assets" element={<ManageAssetComponent setHeaderTitle={setHeaderTitle} />} />
-							<Route path="manage-assets/new" element={<CreateAssetComponent setHeaderTitle={setHeaderTitle} />} />
-							<Route path="manage-assets/edit" element={<EditAssetComponent setHeaderTitle={setHeaderTitle} />} />
+                            <Route path="manage-assets/new" element={<CreateAssetComponent setHeaderTitle={setHeaderTitle} />} />
+                            <Route path="manage-assets/edit" element={<EditAssetComponent setHeaderTitle={setHeaderTitle} />} />
                             <Route path="manage-assignments" element={<ManageAssignmentComponent setHeaderTitle={setHeaderTitle} />} />
                             <Route path="manage-assignments/new" element={<CreateAssignmentComponent setHeaderTitle={setHeaderTitle} />} />
                             <Route path="manage-assignments/edit" element={<EditAssignmentComponent setHeaderTitle={setHeaderTitle} />} />

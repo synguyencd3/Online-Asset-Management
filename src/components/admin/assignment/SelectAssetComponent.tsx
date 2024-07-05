@@ -118,7 +118,6 @@ export const SelectAssetComponent = (props: Props) => {
 	}
 
 	useEffect(() => {
-		console.log("dummy change")
 		param.page = 0
 		InitializeQuery()
 	}, [dummy])
@@ -128,7 +127,6 @@ export const SelectAssetComponent = (props: Props) => {
 	},[])
 
 	useEffect(() => {
-		console.log("page change")
 		InitializeQuery()
 	}, [page])
 

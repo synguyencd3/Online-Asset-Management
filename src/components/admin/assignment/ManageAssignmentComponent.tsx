@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { ReactNode, useEffect, useState } from "react";
 import { Button, Col, Container, Form, Row } from "react-bootstrap";
 import { DropdownFilterComponent } from "../../commons/DropdownFilterComponent";
 import { useLocation, useNavigate } from "react-router-dom";
 import { AssignmentState } from "../../../utils/Enum";
-//import { LOCAL_SERVICE_API } from '../../../utils/Config'
 import { LoaderComponent } from "../../commons/LoaderComponent";
 import { TableComponent } from "../../commons/TableComponent";
 import { PaginationComponent } from "../../commons/PaginationComponent";
@@ -24,6 +23,7 @@ import { message } from "antd";
 import { SearchOnEnterComponent } from "../../commons/SearchOnEnterComponent";
 import { AssignmentModelComponent } from "./AssignmentModalComponent";
 import { toDateString, uppercaseStatusToText } from "../../../utils/utils";
+import { BreadcrumbComponent } from "../../commons/BreadcrumbComponent";
 
 const header = [
   {
@@ -97,13 +97,18 @@ const filterData = [
   },
 ];
 type Props = {
-  setHeaderTitle: (title: string) => void;
+  setHeaderTitle: (title: ReactNode) => void;
 };
 
 export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
   useEffect(() => {
-    props.setHeaderTitle("Manage Assignments");
-  }, [props]);
+    props.setHeaderTitle(<BreadcrumbComponent breadcrumb={[
+      {
+        title: 'Manage Assignments',
+        href: `${window.location.origin}/admin/manage-assignments#`
+      }
+    ]} />);
+  }, []);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -275,7 +280,7 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
                 data={filterData}
                 params={param.status}
                 setParamsFunction={handleSetParam}
-                setDummy={() => {}}
+                setDummy={() => { }}
                 style={{ width: "100%" }}
                 defaultAll={true}
                 paramName={"status"}
@@ -306,7 +311,7 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
         <Col
           sm={3}
           className="d-flex justify-content-end align-items-center"
-          //   style={{ maxWidth: "230px" }}
+        //   style={{ maxWidth: "230px" }}
         >
           <Button
             variant="danger"
