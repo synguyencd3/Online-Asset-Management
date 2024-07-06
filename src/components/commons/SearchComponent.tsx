@@ -30,7 +30,7 @@ export const SearchComponent = (props: Props) => {
     };
 
     return (
-        <Form onSubmit={(e) => { SubmitSearch(e) }} style={{ width: "60%", ...props.style, }}>
+        <Form onSubmit={(e) => { SubmitSearch(e) }} style={{ width: "100%", ...props.style, }}>
             <InputGroup id="search-group" className="" style={{ maxWidth: "" }}>
                 <Form.Control placeholder={props.placeholder ?? ""} id="search-input" name="search" onChange={(e) => setSearch(e.target.value)} />
                 <OverlayTrigger placement="right" delay={{ show: 150, hide: 150 }} overlay={renderTooltip}>

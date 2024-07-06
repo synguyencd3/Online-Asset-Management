@@ -1,6 +1,6 @@
 import { message } from 'antd';
 import React, { ReactNode, useEffect, useState } from 'react'
-import { Button, Col, Row } from 'react-bootstrap';
+import { Button, Col, Container, Row } from 'react-bootstrap';
 import { ColorPalette } from '../../../utils/ColorPalette';
 import { LoaderComponent } from '../../commons/LoaderComponent';
 import { PaginationComponent } from '../../commons/PaginationComponent';
@@ -85,7 +85,7 @@ export const ReportComponent: React.FC<Props> = (props: Props) => {
     }
 
     return (
-        <div>
+        <Container>
             {contextHolder}
             <Row className=' mt-5 mb-3 align-items-center justify-content-between'>
                 <h4 style={{ color: ColorPalette.PRIMARY_COLOR }} className='fw-bold fs-4 ms-1'>Report</h4>
@@ -123,6 +123,6 @@ export const ReportComponent: React.FC<Props> = (props: Props) => {
                     }
                 </>
             }
-        </div>
+        </Container>
     )
 }

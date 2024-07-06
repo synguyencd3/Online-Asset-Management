@@ -12,8 +12,10 @@ export type SearchPageableModel = {
 }
 
 export type RequestPageableModel = {
+    [key: string]: string | Array<string> | number;
     search: string,
     states: string[];
+    returnedDate: string,
     page: number;
     size: number;
     sort: string;

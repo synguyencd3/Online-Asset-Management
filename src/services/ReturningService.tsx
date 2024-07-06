@@ -1,5 +1,5 @@
 import axios from "axios";
-import { PageableModel, RequestPageableModel } from "../models/PageableModel";
+import { RequestPageableModel } from "../models/PageableModel";
 import { AZURE_SERVICE_API, CORS_CONFIG } from "../utils/Config";
 import { ReturingReponseModel } from "../models/ReturningModel";
 
@@ -31,7 +31,7 @@ const toStringParams = (params: ReturningGetParams) => {
         .join("&");
 };
 
-export const getRequestForReturning = (pageable: RequestPageableModel) => axios.get(`${AZURE_SERVICE_API}/return-request?search=${pageable.search}&state=${pageable.states}&page=${pageable.page}&size=${pageable.size}`, CORS_CONFIG);
+export const getRequestForReturning = (pageable: RequestPageableModel) => axios.get(`${AZURE_SERVICE_API}/return-request?search=${pageable.search}&state=${pageable.states}&returnedDate=${pageable.returnedDate}&page=${pageable.page}&size=${pageable.size}&sort=${pageable.sort}`, CORS_CONFIG);
 
 export const getRequestForReturningSWR = async (params: RequestPageableModel) => {
     const response = await getRequestForReturning(params);

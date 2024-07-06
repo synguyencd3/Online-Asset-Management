@@ -49,6 +49,11 @@ export enum ReturningState {
     WAITING_FOR_RETURNING = "Waiting for Returning",
 }
 
+export enum ReturningParamState {
+    COMPLETED,
+    WAITING_FOR_RETURNING,
+}
+
 export enum AssetState {
     AVAILABLE = "Available",
     NOT_AVAILABLE = "Not available",
