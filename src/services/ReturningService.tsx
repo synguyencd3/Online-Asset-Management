@@ -13,24 +13,6 @@ export interface ReturningGetParams {
     sort: string;
 }
 
-const toStringParams = (params: ReturningGetParams) => {
-    params = {
-        ...params,
-        status: params.status.map((status) =>
-            status.toUpperCase().replace(/ /g, "_")
-        ),
-    };
-    return Object.keys(params)
-        .map((key) => {
-            let value = params[key];
-            if (Array.isArray(params[key])) {
-                value = (params[key] as string[]).join(",");
-            }
-            return `${key}=${value}`;
-        })
-        .join("&");
-};
-
 export const getRequestForReturning = (pageable: RequestPageableModel) => axios.get(`${AZURE_SERVICE_API}/return-request?search=${pageable.search}&state=${pageable.states}&returnedDate=${pageable.returnedDate}&page=${pageable.page}&size=${pageable.size}&sort=${pageable.sort}`, CORS_CONFIG);
 
 export const getRequestForReturningSWR = async (params: RequestPageableModel) => {
