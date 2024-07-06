@@ -76,7 +76,7 @@ export const ReportComponent: React.FC<Props> = (props: Props) => {
             type: 'loading',
             content: 'Exporting data...',
         }).then(async () => {
-            await exportReport().then((res) => {
+            await exportReport(param).then((res) => {
                 if (res.status === 200) {
                     downloadXLSX(res.data.data);
                 }
