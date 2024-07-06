@@ -18,4 +18,4 @@ export const getReportViewSWR = async (params: PageableModel) => {
     return pageReport;
 }
 
-export const exportReport = async (params: PageableModel) => await axios.get(`${AZURE_SERVICE_API}/reports/view?sort${params.sort}`, CORS_CONFIG);
+export const exportReport = async (params: PageableModel) => await axios.get(`${AZURE_SERVICE_API}/reports/view?sort=${params.sort}`, CORS_CONFIG);
