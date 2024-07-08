@@ -1,5 +1,4 @@
 import { Button, Col, Container, Form, Row } from "react-bootstrap"
-import { SearchComponent } from "../../commons/SearchComponent"
 import { TableComponent } from "../../commons/TableComponent"
 import { ColorPalette } from "../../../utils/ColorPalette"
 import { LoaderComponent } from "../../commons/LoaderComponent"
@@ -12,6 +11,7 @@ import { AssetForSelectTableModel } from "../../../models/AssetModel"
 import { faSpinner } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { CategoryModel } from "../../../models/CategoryModel"
+import { DropdownSearchComponent } from "../../commons/DropDownSearchComponent"
 
 const header = [
 	{ name: '', value: "", sort: false, direction: false, colStyle: { width: "20%" } },
@@ -139,7 +139,7 @@ export const SelectAssetComponent = (props: Props) => {
 					</h4>
 				</Col>
 				<Col>
-					<SearchComponent placeholder={""} setParamsFunction={setParam} setDummy={setDummy} style={{ width: "100%" }}></SearchComponent>
+					<DropdownSearchComponent placeholder={"Search by name"} setParamsFunction={setParam} setDummy={setDummy} style={{ width: "100%" }}></DropdownSearchComponent>
 				</Col>
 			</Row>
 			<Row>

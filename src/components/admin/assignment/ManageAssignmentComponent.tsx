@@ -1,5 +1,5 @@
 import React, { ReactNode, useEffect, useState } from "react";
-import { Button, Col, Container, Form, Row } from "react-bootstrap";
+import { Button, Col, Container, Row } from "react-bootstrap";
 import { DropdownFilterComponent } from "../../commons/DropdownFilterComponent";
 import { useLocation, useNavigate } from "react-router-dom";
 import { AssignmentState } from "../../../utils/Enum";
@@ -24,6 +24,8 @@ import { AssignmentModelComponent } from "./AssignmentModalComponent";
 import { toDateString, uppercaseStatusToText } from "../../../utils/utils";
 import { BreadcrumbComponent } from "../../commons/BreadcrumbComponent";
 import { SearchComponent } from "../../commons/SearchComponent";
+import { DatePickerComponent } from "../../commons/DatePickerComponent";
+import { ColorPalette } from "../../../utils/ColorPalette";
 
 const header = [
   {
@@ -104,7 +106,7 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
   useEffect(() => {
     props.setHeaderTitle(<BreadcrumbComponent breadcrumb={[
       {
-        title: 'Manage Assignments',
+        title: 'Manage Assignment',
         href: `${window.location.origin}/admin/manage-assignments#`
       }
     ]} />);
@@ -118,7 +120,7 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
   const [modalData, setModalData] = useState<AssignmentForTableModel>();
   const [showDisableModal, setShowDisableModal] = useState(false);
 
-  const [_deletedAssignmentId, setDeletedAssignmentId] = useState<number>(0);
+  const [deletedAssignmentId, setDeletedAssignmentId] = useState<number>(0);
 
   const [param, setParam] = useState<AssignmentGetParams>({
     search: "",
@@ -159,10 +161,18 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
     }
   };
 
+  const handleDatePicker = (_: any, dateString: string | string[]) => {
+    const formattedDateString = Array.isArray(dateString) ? dateString[0] : dateString;
+    return handleSetParam((p: AssignmentGetParams) => ({
+      ...p,
+      assignedDate: formattedDateString,
+    }))
+  }
+
   const handleDeleteConfirm = async () => {
     setShowDisableModal(false);
     message.loading("Deleting assignment", 1.2);
-    await deleteAssignmentById(_deletedAssignmentId)
+    await deleteAssignmentById(deletedAssignmentId)
       .then((response) => {
         message.success(response.data.message);
         if (newAssignment) {
@@ -267,11 +277,11 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
   }
 
   return (
-    <Container style={{ maxWidth: "100%" }} className="p-4">
-      <h4 className="ms-1" style={{ color: "red", fontWeight: "bold" }}>
+    <Container>
+      <h4 style={{ color: ColorPalette.PRIMARY_COLOR }} className='fw-bold fs-4 ms-1 mt-5 mb-3'>
         Assignment List
       </h4>
-      <Row className="py-4 ms-0 pe-2 user-param-row">
+      <Row className="py-4 ms-0 pe-2 user-param-row justify-content-between">
         <Col sm={5}>
           <Row>
             <Col className="d-flex justify-content-start align-items-center px-2">
@@ -287,42 +297,32 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
               ></DropdownFilterComponent>
             </Col>
             <Col className="d-flex justify-content-start align-items-center px-2">
-              <Form.Control
-                type="date"
-                placeholder="Assigned Date"
-                onChange={(e) =>
-                  handleSetParam((p: AssignmentGetParams) => ({
-                    ...p,
-                    assignedDate: e.target.value,
-                  }))
-                }
-              />
+              <DatePickerComponent handleDatePicker={handleDatePicker} placeHolderText={"Assigned Date"} />
             </Col>
           </Row>
         </Col>
-        <Col sm={1}></Col>
-        <Col sm={3} className="d-flex justify-content-end align-items-center">
-          <SearchComponent
-            placeholder={""}
-            setParamsFunction={handleSetParam}
-            style={{ width: "100%" }}
-            setDummy={()=>{}}
-          ></SearchComponent>
-        </Col>
-        <Col
-          sm={3}
-          className="d-flex justify-content-end align-items-center"
-        //   style={{ maxWidth: "230px" }}
-        >
-          <Button
-            variant="danger"
-            onClick={() => {
-              return navigate("./new");
-            }}
-            style={{ width: "230px" }}
-          >
-            Create new assignment
-          </Button>
+        <Col sm={5}>
+          <Row>
+            <Col sm={7}>
+              <SearchComponent
+                placeholder={""}
+                setParamsFunction={handleSetParam}
+                style={{ width: "100%" }}
+                setDummy={() => { }}
+              />
+            </Col>
+            <Col sm={4}>
+              <Button
+                variant="danger"
+                onClick={() => {
+                  return navigate("./new");
+                }}
+                style={{ width: "230px" }}
+              >
+                Create new assignment
+              </Button>
+            </Col>
+          </Row>
         </Col>
       </Row>
 
@@ -350,7 +350,7 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
                   buttons={buttons}
                   setSortString={handleSetParam}
                   showModalCell={showModalCell}
-                  setDummy={() => {}}
+                  setDummy={() => { }}
                   setModalData={setModalData}
                   setModalShow={setModalShow}
                   pre_button={undefined}
@@ -361,10 +361,10 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
                 currentPage={param.page}
                 setParamsFunction={handleSetParam}
                 totalPage={assignmentResponse.totalPage}
-                setDummy={() => {}}
+                setDummy={() => { }}
                 perPage={param.size}
                 fixPageSize={false}
-                setPage={() => {}}
+                setPage={() => { }}
               ></PaginationComponent>
             </>
           )}
