@@ -20,6 +20,7 @@ export type UserParamModel = {
     search: string,
     sort: string,
     types: string[],
+    self:boolean,
     page: number,
     size: number
 }

@@ -3,10 +3,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { ChangeEvent, RefAttributes } from 'react';
 import { ButtonGroup, Dropdown, Form, OverlayTrigger, Tooltip, TooltipProps } from 'react-bootstrap'
 import { JSX } from 'react/jsx-runtime';
+import { DropdownFilterModel } from '../../models/DropdownFilterModel';
 
 type Props = {
 	title: string | null
-	data: { label: string, value: string, defaultChecked: boolean }[]
+	data: DropdownFilterModel[]
 	params: string[] | undefined
 	setParamsFunction: any;
 	paramName: string

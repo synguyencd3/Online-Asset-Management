@@ -18,8 +18,15 @@ import useSWR from 'swr';
 import { SearchComponent } from '../../commons/SearchComponent';
 import { BreadcrumbComponent } from '../../commons/BreadcrumbComponent';
 import { ColorPalette } from '../../../utils/ColorPalette';
+import { TableHeaderModel } from '../../../models/TableHeaderModel';
+import { DropdownFilterModel } from '../../../models/DropdownFilterModel';
 
-const header = [{ name: 'Asset Code', value: "assetCode", sort: true, direction: true, colStyle: { width: "12%" } }, { name: 'Asset Name', value: "name", sort: true, direction: true, colStyle: { width: "40%" } }, { name: 'Category', value: "category.name", sort: true, direction: true, colStyle: { maxWidth: '200px' } }, { name: 'State', value: "status", sort: true, direction: true, colStyle: { width: "15%" } }]
+const header: TableHeaderModel[] = [
+	{ name: 'Asset Code', value: "assetCode", sort: true, direction: true, colStyle: { width: "12%" }, style: {}, isCurrentlySorted: true },
+	{ name: 'Asset Name', value: "name", sort: true, direction: true, colStyle: { width: "40%" }, style: {}, isCurrentlySorted: false },
+	{ name: 'Category', value: "category.name", sort: true, direction: true, colStyle: { maxWidth: '200px' }, style: {}, isCurrentlySorted: false },
+	{ name: 'State', value: "status", sort: true, direction: true, colStyle: { width: "15%" }, style: {}, isCurrentlySorted: false }
+]
 const showModalCell = ["assetCode", "assetName"]
 const modalHeader = ["Asset Code", "Asset Name", "Category", "Installed Date", "State", "Location", "Specification"]
 
@@ -42,7 +49,8 @@ export const ManageAssetComponent: React.FC<Props> = (props: Props) => {
 				title: 'Manage Asset',
 				href: `${window.location.origin}/admin/manage-assets#`
 			}
-		]} />);
+		]} />
+		);
 	}, [])
 
 	const [param, setParam] = useState<AssetParamModel>({
@@ -172,6 +180,7 @@ export const ManageAssetComponent: React.FC<Props> = (props: Props) => {
 		style: "",
 		onClickfunction: editAsset
 	};
+
 	const deleteIcon: FunctionalIconModel = {
 		icon: faCircleXmark,
 		style: { color: 'red' },
@@ -183,15 +192,15 @@ export const ManageAssetComponent: React.FC<Props> = (props: Props) => {
 	//--------------------------- 
 
 	// Dropdown Filter
-	let filterState = [];
-	let state1 = { label: "Assigned", value: "ASSIGNED", defaultChecked: true }
-	let state2 = { label: "Available", value: "AVAILABLE", defaultChecked: true }
-	let state3 = { label: "Not available", value: "NOT_AVAILABLE", defaultChecked: true }
-	let state4 = { label: "Waiting for recyling", value: "WAITING_FOR_RECYCLING", defaultChecked: false }
-	let state5 = { label: "Recycled", value: "RECYCLED", defaultChecked: false }
-	filterState.push(state1, state2, state3, state4, state5);
+	let filterState: DropdownFilterModel[] = [
+		{ label: "Assigned", value: "ASSIGNED", defaultChecked: true },
+		{ label: "Available", value: "AVAILABLE", defaultChecked: true },
+		{ label: "Not available", value: "NOT_AVAILABLE", defaultChecked: true },
+		{ label: "Waiting for recyling", value: "WAITING_FOR_RECYCLING", defaultChecked: false },
+		{ label: "Recycled", value: "RECYCLED", defaultChecked: false },
+	]
 
-	let filterCategory: { label: string; value: string; defaultChecked: boolean; }[] = [];
+	let filterCategory: DropdownFilterModel[] = [];
 	category?.data.data.forEach((c: CategoryModel) => { filterCategory.push({ label: c.name, value: c.id.toString(), defaultChecked: true }) });
 
 	//----------------------------
@@ -219,7 +228,7 @@ export const ManageAssetComponent: React.FC<Props> = (props: Props) => {
 				<Col sm={6}>
 					<Row>
 						<Col sm={8} className="d-flex justify-content-end align-items-center">
-							<SearchComponent placeholder={""} setParamsFunction={handleSetParam} style={{ width: "100%" }} setDummy={() => { }}></SearchComponent>
+							<SearchComponent placeholder={"Search by Name or Asset Code"} setParamsFunction={handleSetParam} style={{ width: "100%" }} setDummy={() => { } } class={''}></SearchComponent>
 						</Col>
 						<Col sm={4} className="d-flex justify-content-end align-items-center" style={{ maxWidth: "230px" }}>
 							<Button variant="danger" onClick={() => { return navigate('./new') }} style={{ width: "230px" }}>Create New Asset</Button>
@@ -244,7 +253,7 @@ export const ManageAssetComponent: React.FC<Props> = (props: Props) => {
 							<Row>
 								<TableComponent headers={header} datas={tableAsset} auxData={tableAsset} auxHeader={modalHeader} buttons={buttons} setSortString={handleSetParam} showModalCell={showModalCell} setDummy={setDummy} setModalData={setModalData} setModalShow={setModalShow} pre_button={undefined} disableButton={disableButtonArray}  ></TableComponent>
 							</Row>
-							<PaginationComponent currentPage={param.page} setParamsFunction={handleSetParam} totalPage={asset.totalPage} setDummy={setDummy} setPage={setDummy} perPage={param.size} fixPageSize={false} ></PaginationComponent>
+							<PaginationComponent currentPage={param.page} setParamsFunction={handleSetParam} totalPage={asset.totalPage} perPage={param.size} fixPageSize={false} ></PaginationComponent>
 						</>
 					}
 				</>

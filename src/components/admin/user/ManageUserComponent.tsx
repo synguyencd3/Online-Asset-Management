@@ -20,8 +20,16 @@ import { DetailModalComponent } from "../../commons/DetailModalComponent";
 import { BreadcrumbComponent } from "../../commons/BreadcrumbComponent";
 import useSWR from "swr";
 import { ColorPalette } from "../../../utils/ColorPalette";
+import { TableHeaderModel } from "../../../models/TableHeaderModel";
+import { DropdownFilterModel } from "../../../models/DropdownFilterModel";
 
-const header = [{ name: 'Staff Code', value: "staffCode", sort: true, direction: true, colStyle: {} }, { name: 'Full Name', value: "firstName", sort: true, direction: true, colStyle: {} }, { name: 'Username', value: "username", sort: false, direction: true, colStyle: {} }, { name: 'Joined Date', value: "joinedDate", sort: true, direction: true, colStyle: {} }, { name: 'Type', value: "roleId", sort: true, direction: true, colStyle: {} },]
+const header: TableHeaderModel[] = [
+	{ name: 'Staff Code', value: "staffCode", sort: true, direction: true, colStyle: {}, isCurrentlySorted: false, style: {} },
+	{ name: 'Full Name', value: "firstName", sort: true, direction: true, colStyle: {}, isCurrentlySorted: true, style: {} },
+	{ name: 'Username', value: "username", sort: false, direction: true, colStyle: {}, isCurrentlySorted: false, style: {} },
+	{ name: 'Joined Date', value: "joinedDate", sort: true, direction: true, colStyle: {}, isCurrentlySorted: false, style: {} },
+	{ name: 'Type', value: "roleId", sort: true, direction: true, colStyle: {}, isCurrentlySorted: false, style: {} },
+]
 const showModalCell = ["staffCode", "username", "fullName"]
 const modalHeader = ["Staff Code", "Full Name", "Username", "Date of Birth", "Gender", "Joined Date", "Type", "Location"]
 
@@ -39,6 +47,7 @@ export const ManageUserComponent = (props: Props) => {
 		search: "",
 		sort: "firstName,asc",
 		types: [Roles.ADMIN.toString(), Roles.STAFF.toString()],
+		self: false,
 		page: 0,
 		size: 20
 	});
@@ -189,6 +198,9 @@ export const ManageUserComponent = (props: Props) => {
 			.then(async () => {
 				await disableUser(staffCode)
 					.then((res) => {
+						if(newUser){
+							navigate(location.pathname, { state: { newUser: undefined } });
+						}
 						if (res.status == 200) {
 							message.success(res.data.message);
 							if (tableUser.length === 1 && user?.currentPage !== 1) {
@@ -215,16 +227,11 @@ export const ManageUserComponent = (props: Props) => {
 	}
 
 	// Dropdown Filter
-	let filterdata = [];
-	let data1 = { label: "Admin", value: Roles.ADMIN.toString(), defaultChecked: true }
-	let data2 = { label: "Staff", value: Roles.STAFF.toString(), defaultChecked: true }
-	filterdata.push(data1, data2);
+	let filterdata: DropdownFilterModel[] = [
+		{ label: "Admin", value: Roles.ADMIN.toString(), defaultChecked: true },
+		{ label: "Staff", value: Roles.STAFF.toString(), defaultChecked: true }
+	]
 	//----------------------------
-
-	let disableData: boolean[][] = [];
-	tableUser.forEach((_) => {
-		disableData.push([false, false]);
-	})
 
 	return (
 		<Container>
@@ -244,7 +251,7 @@ export const ManageUserComponent = (props: Props) => {
 				<Col sm={6}>
 					<Row>
 						<Col sm={7} className="d-flex justify-content-end align-items-center">
-							<SearchComponent placeholder={""} setParamsFunction={handleSetParam} setDummy={setDummy} style={{}}></SearchComponent>
+							<SearchComponent placeholder={"Search Staff Code or Full Name"} setParamsFunction={handleSetParam} setDummy={setDummy} style={{}} class={""}></SearchComponent>
 						</Col>
 						<Col sm={5} className="d-flex justify-content-end align-items-center">
 							<Button variant="danger" onClick={() => { return navigate('./new') }} style={{ width: "230px" }}>Create New User</Button>
@@ -270,7 +277,7 @@ export const ManageUserComponent = (props: Props) => {
 								{/* this initfucntion */}
 								<TableComponent headers={header} datas={tableUser} auxData={modalUsers} auxHeader={modalHeader} buttons={buttons} setSortString={handleSetParam} showModalCell={showModalCell} setDummy={setDummy} setModalData={setModalData} setModalShow={setModalShow} pre_button={undefined} disableButton={disableButton} />
 							</Row>
-							<PaginationComponent currentPage={param.page} setParamsFunction={handleSetParam} totalPage={user.totalPage} setDummy={setDummy} perPage={param.size} setPage={() => { }} fixPageSize={false} ></PaginationComponent>
+							<PaginationComponent currentPage={param.page} setParamsFunction={handleSetParam} totalPage={user.totalPage} perPage={param.size} fixPageSize={false} ></PaginationComponent>
 						</>
 					}
 				</>

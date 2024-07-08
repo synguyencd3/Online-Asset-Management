@@ -5,27 +5,28 @@ import { LoaderComponent } from "../../commons/LoaderComponent"
 import { PaginationComponent } from "../../commons/PaginationComponent"
 import { useEffect, useState } from "react"
 import { message } from 'antd';
-import { UserModel } from "../../../models/UserModel"
+import { UserModel, UserParamModel } from "../../../models/UserModel"
 import { UserForSelectTableModel } from "../../../models/UserModel"
 import { Roles, RolesLowerCase } from "../../../utils/Enum"
 import { getUser } from "../../../services/UserService"
 import { faSpinner } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { DropdownSearchComponent } from "../../commons/DropDownSearchComponent"
+import { TableHeaderModel } from "../../../models/TableHeaderModel"
 
-const header = [
-	{ name: '', value: "", sort: false, direction: false, colStyle: { width: "20%" } },
-	{ name: 'Staff Code', value: "staffCode", sort: true, direction: true, colStyle: { width: "20%" } },
-	{ name: 'Username', value: "username", sort: true, direction: true, colStyle: { width: "40%" } },
-	{ name: 'Full Name', value: "firstName", sort: true, direction: true, colStyle: { width: "50%" } },
-	{ name: 'Type', value: "roleId", sort: true, direction: true, colStyle: { width: "10%" } },
-
+const header: TableHeaderModel[] = [
+	{ name: '', value: "", sort: false, direction: false, colStyle: { width: "20%" }, isCurrentlySorted: false, style: {} },
+	{ name: 'Staff Code', value: "staffCode", sort: true, direction: true, colStyle: { width: "20%" }, isCurrentlySorted: false, style: {} },
+	{ name: 'Username', value: "username", sort: true, direction: true, colStyle: { width: "40%" }, isCurrentlySorted: false, style: {} },
+	{ name: 'Full Name', value: "firstName", sort: true, direction: true, colStyle: { width: "50%" }, isCurrentlySorted: false, style: {} },
+	{ name: 'Type', value: "roleId", sort: true, direction: true, colStyle: { width: "10%" }, isCurrentlySorted: false, style: {} },
 ]
 
 type Props = {
-    setSelectedOnParent: any
+	setSelectedOnParent: any
 	closeDropdown: any
 }
+
 export const SelectUserComponent = (props: Props) => {
 	const [tableUser, setTableUser] = useState<UserForSelectTableModel[]>([]);
 
@@ -37,11 +38,11 @@ export const SelectUserComponent = (props: Props) => {
 
 	const [dummy, setDummy] = useState(0);
 
-	const [page, setPage] = useState(0);
+	const [page,] = useState(0);
 
 	const [selected, setSelected] = useState<String>("")
 
-	const [param, setParam] = useState({
+	const [param, setParam] = useState<UserParamModel>({
 		search: "",
 		sort: "firstName,asc",
 		types: [Roles.ADMIN.toString(), Roles.STAFF.toString()],
@@ -49,7 +50,6 @@ export const SelectUserComponent = (props: Props) => {
 		self: true,
 		size: 20
 	});
-	
 
 	async function InitializeQuery() {
 		setLoading(true)
@@ -58,7 +58,7 @@ export const SelectUserComponent = (props: Props) => {
 			+ "types=" + param.types.join() + "&"
 			+ "page=" + param.page + "&"
 			+ "size=" + param.size + "&"
-			+ "self=" + param.self+ "&"
+			+ "self=" + param.self + "&"
 			+ "sort=" + param.sort
 
 		setLoading(true)
@@ -71,7 +71,7 @@ export const SelectUserComponent = (props: Props) => {
 				return {
 					staffCode: a.staffCode,
 					username: a.username,
-					fullName : a.firstName+" "+a.lastName,
+					fullName: a.firstName + " " + a.lastName,
 					type: RolesLowerCase[a.roleId],
 				}
 			})
@@ -91,7 +91,7 @@ export const SelectUserComponent = (props: Props) => {
 	}, [dummy])
 
 
-	const preButton = (user: UserModel, setUser:any) => {
+	const preButton = (user: UserModel, setUser: any) => {
 		return (
 			<Form.Check
 				type={"radio"}
@@ -110,7 +110,7 @@ export const SelectUserComponent = (props: Props) => {
 	}
 
 	useEffect(() => {
-			InitializeQuery()
+		InitializeQuery()
 	}, [page])
 
 	return (
@@ -138,7 +138,7 @@ export const SelectUserComponent = (props: Props) => {
 								<Row>
 									<TableComponent headers={header} datas={tableUser} auxData={auxData} auxHeader={[]} buttons={[]} setSortString={setParam} showModalCell={[]} setDummy={setDummy} setModalData={() => { }} setModalShow={undefined} pre_button={preButton} setSelect={setSelected} disableButton={[]}  ></TableComponent>
 								</Row>
-								<PaginationComponent currentPage={param.page} totalPage={totalPage} setDummy={setPage} perPage={param.size} setParamsFunction={setParam} setPage={setPage} fixPageSize={false} ></PaginationComponent>
+								<PaginationComponent currentPage={param.page} totalPage={totalPage} perPage={param.size} setParamsFunction={setParam} fixPageSize={false} ></PaginationComponent>
 							</>
 						}
 					</>

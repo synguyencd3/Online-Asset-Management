@@ -12,12 +12,13 @@ import { faSpinner } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { CategoryModel } from "../../../models/CategoryModel"
 import { DropdownSearchComponent } from "../../commons/DropDownSearchComponent"
+import { TableHeaderModel } from "../../../models/TableHeaderModel"
 
-const header = [
-	{ name: '', value: "", sort: false, direction: false, colStyle: { width: "20%" } },
-	{ name: 'Asset Code', value: "assetCode", sort: true, direction: true, colStyle: { width: "15%" } },
-	{ name: 'Asset Name', value: "name", sort: true, direction: true, colStyle: { width: "50%" } },
-	{ name: 'Category', value: "category", sort: true, direction: true, colStyle: { width: "25%" } },
+const header: TableHeaderModel[] = [
+	{ name: '', value: "", sort: false, direction: false, colStyle: { width: "20%" }, isCurrentlySorted: false, style: {} },
+	{ name: 'Asset Code', value: "assetCode", sort: true, direction: true, colStyle: { width: "15%" }, isCurrentlySorted: false, style: {} },
+	{ name: 'Asset Name', value: "name", sort: true, direction: true, colStyle: { width: "50%" }, isCurrentlySorted: false, style: {} },
+	{ name: 'Category', value: "category", sort: true, direction: true, colStyle: { width: "25%" }, isCurrentlySorted: false, style: {} },
 ]
 
 type Props = {
@@ -37,7 +38,7 @@ export const SelectAssetComponent = (props: Props) => {
 
 	const [dummy, setDummy] = useState(0);
 
-	const [page, setPage] = useState(0);
+	const [page, ] = useState(0);
 
 	const [selected, setSelected] = useState<String>("")
 
@@ -52,12 +53,12 @@ export const SelectAssetComponent = (props: Props) => {
 
 
 	async function getCategory() {
-		if (param.categories.length>0) return;
+		if (param.categories.length > 0) return;
 		let a = await getCategories().then((response) => {
 			const data: CategoryModel[] = response.data.data;
 			setCategory(data);
 			const arrayId = response.data.data.map((category: CategoryModel) => category.id)
-			setParam(p => ({ ...p, categories: arrayId}));
+			setParam(p => ({ ...p, categories: arrayId }));
 			setDummy(Math.random())
 			return data.map(obj => obj.id.toString());
 		}).catch(e => {
@@ -67,7 +68,7 @@ export const SelectAssetComponent = (props: Props) => {
 	}
 
 	async function InitializeQuery() {
-		if (param.categories.length==0) return;
+		if (param.categories.length == 0) return;
 		setLoading(true)
 		let params = "?"
 			+ "search=" + encodeURIComponent(param.search) + "&"
@@ -124,7 +125,7 @@ export const SelectAssetComponent = (props: Props) => {
 
 	useEffect(() => {
 		getCategory()
-	},[])
+	}, [])
 
 	useEffect(() => {
 		InitializeQuery()
@@ -155,7 +156,7 @@ export const SelectAssetComponent = (props: Props) => {
 								<Row>
 									<TableComponent headers={header} datas={tableAsset} auxData={auxData} auxHeader={[]} buttons={[]} setSortString={setParam} showModalCell={[]} setDummy={setDummy} setModalData={() => { }} setModalShow={undefined} pre_button={preButton} setSelect={setSelected} disableButton={[]}  ></TableComponent>
 								</Row>
-								<PaginationComponent currentPage={param.page} totalPage={totalPage} setDummy={setPage} perPage={param.size} setParamsFunction={setParam} setPage={setPage} fixPageSize={false} ></PaginationComponent>
+								<PaginationComponent currentPage={param.page} totalPage={totalPage} perPage={param.size} setParamsFunction={setParam} fixPageSize={false} ></PaginationComponent>
 							</>
 						}
 					</>
