@@ -36,6 +36,34 @@ const modalHeader = ["Asset Code", "Asset Name", "Category", "Specification", "A
 
 const RETURNING_STATE = "RETURNING";
 
+type ConfirmModalType = {
+    confirmTitle: string,
+    confirmQuestion: string,
+    confirmBtnLabel: string,
+    cancelBtnLabel: string
+}
+
+const confirmModalData : {[key: string] : ConfirmModalType} = {
+    "ACCEPTED": {
+        confirmTitle: "Response Confirmation",
+        confirmQuestion: 'Do you want to accept this assignment?',
+        confirmBtnLabel: 'Accept',
+        cancelBtnLabel: 'Cancel'
+    },
+    "DECLINED": {
+        confirmTitle: "Response Confirmation",
+        confirmQuestion: 'Do you want to decline this assignment?',
+        confirmBtnLabel: 'Decline',
+        cancelBtnLabel: 'Cancel'
+    },
+    "RETURNING": {
+        confirmTitle: "Returning Confirmation",
+        confirmQuestion: "Do you want to create a returning request for this asset?",
+        confirmBtnLabel: 'Return',
+        cancelBtnLabel: 'Cancel'
+    },
+}
+
 export const UserHomeComponent: React.FC<Props> = (props: Props) => {
     const [showModal, setShowModal] = useState(false);
     const [modalDetailShow, setModalDetailShow] = useState(false);
@@ -223,7 +251,10 @@ export const UserHomeComponent: React.FC<Props> = (props: Props) => {
                 ""
             )}
             <PasswordModalComponent show={showModal} onClose={handleClose} isFirstLoggedIn={firstLogin} />
-            <ConfirmModalComponent show={showConfirmModal} onConfirm={handleModalConfirm} onCancel={handleModalCancel} confirmTitle={'Response Confirmation'} confirmQuestion={responseData.status == "ACCEPTED" ? 'Do you want to accept this assignment?' : 'Do you want to decline this assignment?'} confirmBtnLabel={responseData.status == 'ACCEPTED' ? 'Accept' : 'Decline'} cancelBtnLabel={'Cancel'} modalSize={'md'} />
+            {confirmModalData[responseData.status] ? 
+                <ConfirmModalComponent show={showConfirmModal} onConfirm={handleModalConfirm} onCancel={handleModalCancel} confirmTitle={confirmModalData[responseData.status].confirmTitle} confirmQuestion={confirmModalData[responseData.status].confirmQuestion} confirmBtnLabel={confirmModalData[responseData.status].confirmBtnLabel} cancelBtnLabel={'Cancel'} modalSize={'md'} />
+                : ''
+            }
         </div>
     );
 };

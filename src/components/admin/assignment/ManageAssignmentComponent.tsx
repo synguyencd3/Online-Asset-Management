@@ -264,10 +264,10 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
     setConfirmModalData({
       onConfirm: () => handleCreateReturningRequest(data[1].id),
       onCancel: handleDeleteCancel,
-      confirmTitle: "Confirmation",
+      confirmTitle: "Returning Confirmation",
       confirmQuestion:
         "Do you want to create a returning request for this asset?",
-      confirmBtnLabel: "Create",
+      confirmBtnLabel: "Return",
       cancelBtnLabel: "Cancel",
     });
   }
