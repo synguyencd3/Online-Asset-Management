@@ -12,7 +12,7 @@ import { FunctionalIconModel } from '../../../models/FunctionalIconModel'
 import { faCheck, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { toDateString, uppercaseStatusToText } from '../../../utils/utils'
 import useSWR from 'swr'
-import { getRequestForReturningSWR } from '../../../services/ReturningService'
+import { getRequestForReturningSWR, sendResponseReturningRequest } from '../../../services/ReturningService'
 import { RequestPageableModel } from '../../../models/PageableModel'
 import { DropdownFilterComponent } from '../../commons/DropdownFilterComponent'
 import { SearchComponent } from '../../commons/SearchComponent'
@@ -45,7 +45,7 @@ const modalHeader = ["No.", "Asset Code", "Asset Name", "Requested By", "Assigne
 
 export const RequestReturningConponent: React.FC<Props> = (props: Props) => {
     const [auxHeader] = useState<string[]>(modalHeader);
-    const [_messageApi, contextHolder] = message.useMessage();
+    const [messageApi, contextHolder] = message.useMessage();
     const [showConfirmModal, setShowConfirmModal] = useState(false); // State for the Logout Modal
     const [responseData, setResponseData] = useState<{ id: number, status: boolean }>({ id: 0, status: false });
     const [param, setParam] = useState<RequestPageableModel>({
@@ -126,7 +126,7 @@ export const RequestReturningConponent: React.FC<Props> = (props: Props) => {
     const {
         data: returningResponse,
         isLoading: isReturningLoading,
-        // mutate: mutateReturning
+        mutate: mutateReturning
     } = useSWR("returning/"
         + param.search
         + param.returnedDate
@@ -136,6 +136,7 @@ export const RequestReturningConponent: React.FC<Props> = (props: Props) => {
         + param.sort.toString(),
         () => { return getRequestForReturningSWR(param) },
         {
+            revalidateOnFocus: false,
             onError: ((err) => message.error(err.response.data.message))
         }
     );
@@ -151,11 +152,30 @@ export const RequestReturningConponent: React.FC<Props> = (props: Props) => {
 
     const handleModalConfirm = () => {
         setShowConfirmModal(false);
-        // responseOwnAssignment(responseData.id); // Call the Confirm function
+        responseReturningRequest(responseData.id, responseData.status); // Call the Confirm function
     }
 
     const handleModalCancel = () => {
         setShowConfirmModal(false); // Hide the Confirm Modal
+    }
+
+    const responseReturningRequest = async (id: number, status: boolean) => {
+        messageApi.open({
+            type: 'loading',
+            content: status === true ? 'Completing returning request...' : 'Canceling returning request...',
+        })
+            .then(async () => {
+                await sendResponseReturningRequest(id, status)
+                    .then((res: any) => {
+                        if (res.status === 200) {
+                            message.success(res.data.message);
+                            mutateReturning();
+                        }
+                    })
+                    .catch((err) => {
+                        message.error(err.response.data.message);
+                    })
+            })
     }
 
     return (
@@ -192,7 +212,7 @@ export const RequestReturningConponent: React.FC<Props> = (props: Props) => {
                 <>
                     {returningResponse?.content.length === 0 ?
                         <Row>
-                            <h5 className="text-center"> No Assignment Found</h5>
+                            <h5 className="text-center"> No Returning Request Found</h5>
                         </Row> :
                         <>
                             <Row className='ps-2'>

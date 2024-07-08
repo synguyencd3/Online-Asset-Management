@@ -27,3 +27,9 @@ export const getRequestForReturningSWR = async (params: RequestPageableModel) =>
 }
 
 export const createReturningRequest = (assignmentId: number) => axios.post(`${AZURE_SERVICE_API}/return-request`, { assignmentId: assignmentId }, CORS_CONFIG);
+const completeReturningRequest = (returningId: number) => axios.put(`${AZURE_SERVICE_API}/return-request/${returningId}`, {}, CORS_CONFIG);
+const cancelReturningRequest = (returningId: number) =>axios.delete(`${AZURE_SERVICE_API}/return-request/${returningId}`, CORS_CONFIG);
+
+export const sendResponseReturningRequest = (returningId: number, status: boolean) => {
+    return status ? completeReturningRequest(returningId) : cancelReturningRequest(returningId);
+};
