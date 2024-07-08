@@ -11,6 +11,16 @@ export type SearchPageableModel = {
     sort: string;
 }
 
+export type RequestPageableModel = {
+    [key: string]: string | Array<string> | number;
+    search: string,
+    states: string[];
+    returnedDate: string,
+    page: number;
+    size: number;
+    sort: string;
+}
+
 export interface PageResponseModel<T> {
     content: T[];
     totalPage: number;

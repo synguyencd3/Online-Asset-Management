@@ -2,7 +2,7 @@ import axios from "axios";
 import { AZURE_SERVICE_API, CORS_CONFIG } from "../utils/Config";
 import { AssignmentCreateModel, AssignmentEditModel, AssignmentResponse } from "../models/AssignmentModel";
 import {
-  PageableModel,
+  PageableModel, 
   PageResponseModel,
 } from "../models/PageableModel";
 import { AssignmentForTableModel } from "../models/AssignmentForTable";

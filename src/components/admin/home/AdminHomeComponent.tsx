@@ -8,7 +8,7 @@ import { ColorPalette } from '../../../utils/ColorPalette';
 import { getOwnAssignementSWR, responseAssignment } from '../../../services/AssignmentService';
 import { AssignmentRequestState, AssignmentState } from '../../../utils/Enum';
 import { PaginationComponent } from '../../commons/PaginationComponent';
-import { Row } from 'react-bootstrap';
+import { Container, Row } from 'react-bootstrap';
 import { LoaderComponent } from '../../commons/LoaderComponent';
 import { message } from 'antd';
 import { ConfirmModalComponent } from '../../commons/ConfirmModalComponent';
@@ -162,7 +162,7 @@ export const AdminHomeComponent: React.FC<Props> = (props: Props) => {
     };
 
     return (
-        <div>
+        <Container>
             {contextHolder}
             <h4 style={{ color: ColorPalette.PRIMARY_COLOR }} className='fw-bold fs-4 ms-1 mt-5 mb-3'>My Assignment</h4>
 
@@ -200,6 +200,6 @@ export const AdminHomeComponent: React.FC<Props> = (props: Props) => {
             )}
             <PasswordModalComponent show={showModal} onClose={handleClose} isFirstLoggedIn={firstLogin} />
             <ConfirmModalComponent show={showConfirmModal} onConfirm={handleModalConfirm} onCancel={handleModalCancel} confirmTitle={'Response Confirmation'} confirmQuestion={responseData.status == "ACCEPTED" ? 'Do you want to accept this assignment?' : 'Do you want to decline this assignment?'} confirmBtnLabel={responseData.status == 'ACCEPTED' ? 'Accept' : 'Decline'} cancelBtnLabel={'Cancel'} modalSize={'md'} />
-        </div>
+        </Container>
     );
 };

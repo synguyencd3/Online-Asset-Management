@@ -50,7 +50,7 @@ export const AssignmentModelComponent = (props: Props) => {
 
   const formatData = (data: AssignmentModalModel): AssignmentModalModel => {
     const formattedData : AssignmentModalModel = { ...data };
-    formattedData.assignedDate = toDateString(data.assignedDate);
+    formattedData.assignedDate = toDateString(data.assignedDate)!;
     formattedData.status = uppercaseStatusToText(data.status);
     return formattedData;
   };

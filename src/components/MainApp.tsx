@@ -20,10 +20,10 @@ export const MainApp: React.FC<{ setHeaderTitle: (title: ReactNode) => void, rol
 
     return (
         <div className="d-flex flex-column flex-md-row mx-4 mt-5" style={{ minWidth: '20vw' }}>
-            <aside className="sidebar-column col-12 col-md-3 col-lg-2 px-2" style={{ position: 'fixed' }}>
+            <aside className="sidebar-column col-12 col-md-3 col-lg-2 px-2">
                 <SidebarComponent setHeaderTitle={setHeaderTitle} roleId={roleId} />
             </aside>
-            <main className="main-column col-12 col-md-9 col-lg-10" style={{ flexFlow: 'column', height: '100%', marginLeft: '15%' }}>
+            <main className="main-column col-12 col-md-9 col-lg-10" style={{ flexFlow: 'column', height: '100%' }}>
                 <Routes>
                     {roleId === 1 ? (
                         <Route element={<PermissionCheck allowedRoles={[1]} userRole={roleId} />}>
