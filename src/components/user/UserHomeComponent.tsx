@@ -17,6 +17,7 @@ import { TableComponent } from '../commons/TableComponent';
 import { toDateString, uppercaseStatusToText } from '../../utils/utils';
 import { BreadcrumbComponent } from '../commons/BreadcrumbComponent';
 import useSWR from 'swr';
+import { createReturningRequest } from '../../services/ReturningService';
 
 type Props = {
     setHeaderTitle: (title: ReactNode) => void
@@ -32,6 +33,8 @@ const header = [
 ]
 const showModalCell = ["assetCode", "assetName", "category", "assignedDate", "state"];
 const modalHeader = ["Asset Code", "Asset Name", "Category", "Specification", "Assigned to", "Assigned by", "Assigned Date", "State", "Note"];
+
+const RETURNING_STATE = "RETURNING";
 
 export const UserHomeComponent: React.FC<Props> = (props: Props) => {
     const [showModal, setShowModal] = useState(false);
@@ -58,8 +61,9 @@ export const UserHomeComponent: React.FC<Props> = (props: Props) => {
         setShowConfirmModal(true);
         setResponseData({ id: data[1].id, status: AssignmentRequestState[AssignmentRequestState.DECLINED] });
     }
-    const returnAsset = () => {
-        window.alert("Return Asset");
+    const returnAsset = (...data: AssignmentModel[]) => {
+        setShowConfirmModal(true);
+        setResponseData({ id: data[1].id, status: RETURNING_STATE });
     }
 
     const acceptIcon: FunctionalIconModel = {
@@ -131,7 +135,30 @@ export const UserHomeComponent: React.FC<Props> = (props: Props) => {
         }
     )
 
+    const handleCreateReturningRequest = async (assignmentId: number) => {
+        setShowConfirmModal(false);
+        messageApi
+          .open({
+            type: "loading",
+            content: "Creating returning request...",
+          })
+          .then(async () => {
+            await createReturningRequest(assignmentId)
+              .then((response) => {
+                message.success(response.data.message);
+                mutateAssignment();
+              })
+              .catch((error) => {
+                message.error(error.response.data.message);
+              });
+          });
+      };
+
     const responseOwnAssignment = async (id: number, status: string) => {
+        if (status === RETURNING_STATE) {
+            handleCreateReturningRequest(id);
+            return;
+        }
         messageApi.open({
             type: 'loading',
             content: status == 'ACCEPTED' ? 'Accepting assignment...' : 'Declining assignment...',

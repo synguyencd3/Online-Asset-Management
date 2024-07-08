@@ -253,7 +253,7 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
     });
   }
 
-  function refreshAssignment(...data: AssignmentForTableModel[]) {
+  function returnAsset(...data: AssignmentForTableModel[]) {
     setShowDisableModal(true);
     setConfirmModalData({
       onConfirm: () => handleCreateReturningRequest(data[1].id),
@@ -282,7 +282,7 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
   const refreshIcon: FunctionalIconModel = {
     icon: faRotateBack,
     style: { color: "blue", rotate: "70deg" },
-    onClickfunction: refreshAssignment,
+    onClickfunction: returnAsset,
   };
 
   const formatRecordList = (records: AssignmentForTableModel[]) => {
