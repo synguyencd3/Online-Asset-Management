@@ -25,3 +25,5 @@ export const getRequestForReturningSWR = async (params: RequestPageableModel) =>
     };
     return pageReturning;
 }
+
+export const createReturningRequest = (assignmentId: number) => axios.post(`${AZURE_SERVICE_API}/return-request`, { assignmentId: assignmentId }, CORS_CONFIG);

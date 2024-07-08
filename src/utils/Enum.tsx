@@ -31,6 +31,7 @@ export enum AssignmentState {
     ACCEPTED = 'Accepted',
     WAITING_FOR_ACCEPTANCE = 'Waiting for Acceptance',
     DECLINED = 'Declined',
+    WAITING_FOR_RETURNING = 'Waiting for Returning',
 }
 
 export enum AssignmentRequestState {

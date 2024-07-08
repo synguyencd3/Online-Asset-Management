@@ -26,6 +26,7 @@ import { BreadcrumbComponent } from "../../commons/BreadcrumbComponent";
 import { SearchComponent } from "../../commons/SearchComponent";
 import { DatePickerComponent } from "../../commons/DatePickerComponent";
 import { ColorPalette } from "../../../utils/ColorPalette";
+import { createReturningRequest } from "../../../services/ReturningService";
 
 const header = [
   {
@@ -97,30 +98,48 @@ const filterData = [
     value: AssignmentState.WAITING_FOR_ACCEPTANCE.toString(),
     defaultChecked: true,
   },
+  {
+    label: "Waiting for returning",
+    value: AssignmentState.WAITING_FOR_RETURNING.toString(),
+    defaultChecked: true,
+  },
 ];
 type Props = {
   setHeaderTitle: (title: ReactNode) => void;
 };
 
+interface ConfirmModalData {
+  onConfirm: () => void;
+  onCancel: () => void;
+  confirmTitle: string;
+  confirmQuestion: string;
+  confirmBtnLabel: string;
+  cancelBtnLabel: string;
+}
+
 export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
   useEffect(() => {
-    props.setHeaderTitle(<BreadcrumbComponent breadcrumb={[
-      {
-        title: 'Manage Assignment',
-        href: `${window.location.origin}/admin/manage-assignments#`
-      }
-    ]} />);
+    props.setHeaderTitle(
+      <BreadcrumbComponent
+        breadcrumb={[
+          {
+            title: "Manage Assignment",
+            href: `${window.location.origin}/admin/manage-assignments#`,
+          },
+        ]}
+      />
+    );
   }, []);
 
   const navigate = useNavigate();
   const location = useLocation();
   const newAssignment = location.state?.newAssignment;
 
+  const [messageApi, contextHolder] = message.useMessage();
   const [modalShow, setModalShow] = useState(false);
   const [modalData, setModalData] = useState<AssignmentForTableModel>();
   const [showDisableModal, setShowDisableModal] = useState(false);
-
-  const [deletedAssignmentId, setDeletedAssignmentId] = useState<number>(0);
+  const [confirmModalData, setConfirmModalData] = useState<ConfirmModalData>();
 
   const [param, setParam] = useState<AssignmentGetParams>({
     search: "",
@@ -128,6 +147,7 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
       AssignmentState.ACCEPTED,
       AssignmentState.DECLINED,
       AssignmentState.WAITING_FOR_ACCEPTANCE,
+      AssignmentState.WAITING_FOR_RETURNING,
     ],
     assignedDate: "",
     page: 0,
@@ -162,26 +182,60 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
   };
 
   const handleDatePicker = (_: any, dateString: string | string[]) => {
-    const formattedDateString = Array.isArray(dateString) ? dateString[0] : dateString;
+    const formattedDateString = Array.isArray(dateString)
+      ? dateString[0]
+      : dateString;
     return handleSetParam((p: AssignmentGetParams) => ({
       ...p,
       assignedDate: formattedDateString,
-    }))
-  }
+    }));
+  };
 
-  const handleDeleteConfirm = async () => {
+  const handleDeleteConfirm = async (assignmentId: number) => {
     setShowDisableModal(false);
-    message.loading("Deleting assignment", 1.2);
-    await deleteAssignmentById(deletedAssignmentId)
-      .then((response) => {
-        message.success(response.data.message);
-        if (newAssignment) {
-          navigate(location.pathname, { state: { newAssignment: undefined } });
-        }
-        mutateAssignment();
+    messageApi
+      .open({
+        type: "loading",
+        content: "Deleting assignment...",
       })
-      .catch((error) => {
-        message.error(error.response.data.message);
+      .then(async () => {
+        await deleteAssignmentById(assignmentId)
+          .then((response) => {
+            message.success(response.data.message);
+            if (newAssignment) {
+              navigate(location.pathname, {
+                state: { newAssignment: undefined },
+              });
+            }
+            mutateAssignment();
+          })
+          .catch((error) => {
+            message.error(error.response.data.message);
+          });
+      });
+  };
+
+  const handleCreateReturningRequest = async (assignmentId: number) => {
+    setShowDisableModal(false);
+    messageApi
+      .open({
+        type: "loading",
+        content: "Creating returning request...",
+      })
+      .then(async () => {
+        await createReturningRequest(assignmentId)
+          .then((response) => {
+            message.success(response.data.message);
+            if (newAssignment) {
+              navigate(location.pathname, {
+                state: { newAssignment: undefined },
+              });
+            }
+            mutateAssignment();
+          })
+          .catch((error) => {
+            message.error(error.response.data.message);
+          });
       });
   };
 
@@ -195,11 +249,27 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
 
   function deleteAssignment(...data: AssignmentForTableModel[]) {
     setShowDisableModal(true);
-    setDeletedAssignmentId(data[1].id);
+    setConfirmModalData({
+      onConfirm: () => handleDeleteConfirm(data[1].id),
+      onCancel: handleDeleteCancel,
+      confirmTitle: "Delete Confirmation",
+      confirmQuestion: "Do you want to delete this assignment?",
+      confirmBtnLabel: "Delete",
+      cancelBtnLabel: "Cancel",
+    });
   }
 
-  function refreshAssignment(...data: AssignmentForTableModel[]) {
-    window.alert(data);
+  function returnAsset(...data: AssignmentForTableModel[]) {
+    setShowDisableModal(true);
+    setConfirmModalData({
+      onConfirm: () => handleCreateReturningRequest(data[1].id),
+      onCancel: handleDeleteCancel,
+      confirmTitle: "Returning Confirmation",
+      confirmQuestion:
+        "Do you want to create a returning request for this asset?",
+      confirmBtnLabel: "Return",
+      cancelBtnLabel: "Cancel",
+    });
   }
 
   const buttons: FunctionalIconModel[] = [];
@@ -218,7 +288,7 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
   const refreshIcon: FunctionalIconModel = {
     icon: faRotateBack,
     style: { color: "blue", rotate: "70deg" },
-    onClickfunction: refreshAssignment,
+    onClickfunction: returnAsset,
   };
 
   const formatRecordList = (records: AssignmentForTableModel[]) => {
@@ -240,7 +310,7 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
       uppercaseStatusToText(state).toLowerCase() === stateEnum.toLowerCase();
     return data.map((item: AssignmentForTableModel) => [
       !isEqualState(item.status, AssignmentState.WAITING_FOR_ACCEPTANCE),
-      isEqualState(item.status, AssignmentState.ACCEPTED),
+      isEqualState(item.status, AssignmentState.ACCEPTED) || isEqualState(item.status, AssignmentState.WAITING_FOR_RETURNING),
       !isEqualState(item.status, AssignmentState.ACCEPTED),
     ]);
   };
@@ -278,7 +348,11 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
 
   return (
     <Container>
-      <h4 style={{ color: ColorPalette.PRIMARY_COLOR }} className='fw-bold fs-4 ms-1 mt-5 mb-3'>
+      {contextHolder}
+      <h4
+        style={{ color: ColorPalette.PRIMARY_COLOR }}
+        className="fw-bold fs-4 ms-1 mt-5 mb-3"
+      >
         Assignment List
       </h4>
       <Row className="py-4 ms-0 pe-2 user-param-row justify-content-between">
@@ -290,14 +364,17 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
                 data={filterData}
                 params={param.status}
                 setParamsFunction={handleSetParam}
-                setDummy={() => { }}
+                setDummy={() => {}}
                 style={{ width: "100%" }}
                 defaultAll={true}
                 paramName={"status"}
               ></DropdownFilterComponent>
             </Col>
             <Col className="d-flex justify-content-start align-items-center px-2">
-              <DatePickerComponent handleDatePicker={handleDatePicker} placeHolderText={"Assigned Date"} />
+              <DatePickerComponent
+                handleDatePicker={handleDatePicker}
+                placeHolderText={"Assigned Date"}
+              />
             </Col>
           </Row>
         </Col>
@@ -308,7 +385,7 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
                 placeholder={""}
                 setParamsFunction={handleSetParam}
                 style={{ width: "100%" }}
-                setDummy={() => { }}
+                setDummy={() => {}}
               />
             </Col>
             <Col sm={4}>
@@ -350,7 +427,7 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
                   buttons={buttons}
                   setSortString={handleSetParam}
                   showModalCell={showModalCell}
-                  setDummy={() => { }}
+                  setDummy={() => {}}
                   setModalData={setModalData}
                   setModalShow={setModalShow}
                   pre_button={undefined}
@@ -361,10 +438,10 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
                 currentPage={param.page}
                 setParamsFunction={handleSetParam}
                 totalPage={assignmentResponse.totalPage}
-                setDummy={() => { }}
+                setDummy={() => {}}
                 perPage={param.size}
                 fixPageSize={false}
-                setPage={() => { }}
+                setPage={() => {}}
               ></PaginationComponent>
             </>
           )}
@@ -380,16 +457,20 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
       ) : (
         ""
       )}
-      <ConfirmModalComponent
-        show={showDisableModal}
-        onConfirm={handleDeleteConfirm}
-        onCancel={handleDeleteCancel}
-        confirmTitle={"Delete Confirmation"}
-        confirmQuestion={"Do you want to delete this assignment?"}
-        confirmBtnLabel={"Delete"}
-        cancelBtnLabel={"Cancel"}
-        modalSize={"md"}
-      />
+      {confirmModalData ? (
+        <ConfirmModalComponent
+          show={showDisableModal}
+          onConfirm={confirmModalData.onConfirm}
+          onCancel={confirmModalData.onCancel}
+          confirmTitle={confirmModalData.confirmTitle}
+          confirmQuestion={confirmModalData.confirmQuestion}
+          confirmBtnLabel={confirmModalData.confirmBtnLabel}
+          cancelBtnLabel={confirmModalData.cancelBtnLabel}
+          modalSize={"md"}
+        />
+      ) : (
+        ""
+      )}
     </Container>
   );
 };
