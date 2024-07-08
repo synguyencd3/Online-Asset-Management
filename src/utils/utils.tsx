@@ -7,6 +7,10 @@ export function uppercaseStatusToText(state: string) {
 }
 
 export function toDateString(date: string) {
-  const d = new Date(date);
-  return new Intl.DateTimeFormat("en-GB").format(d);
+  if (date) {
+    const d = new Date(date);
+    return new Intl.DateTimeFormat("en-GB").format(d);
+  } else {
+    return null;
+  }
 }

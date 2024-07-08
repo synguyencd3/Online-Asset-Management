@@ -3,10 +3,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { ChangeEvent, RefAttributes } from 'react';
 import { ButtonGroup, Dropdown, Form, OverlayTrigger, Tooltip, TooltipProps } from 'react-bootstrap'
 import { JSX } from 'react/jsx-runtime';
+import { DropdownFilterModel } from '../../models/DropdownFilterModel';
 
 type Props = {
 	title: string | null
-	data: { label: string, value: string, defaultChecked: boolean }[]
+	data: DropdownFilterModel[]
 	params: string[] | undefined
 	setParamsFunction: any;
 	paramName: string
@@ -66,15 +67,22 @@ export const DropdownFilterComponent = (props: Props) => {
 		<Dropdown as={ButtonGroup} style={props.style}>
 			{/* do NOT remove Overlay Trigger */}
 			<OverlayTrigger placement="top" delay={{ show: 150, hide: 150 }} overlay={renderTooltip}>
-				<Dropdown.Toggle split variant="outline-dark" style={{ minWidth: "150px", textAlign: "left", width: "100%" }}>
-					{props.title ?? "Option"}
+				<Dropdown.Toggle
+					className='d-flex align-items-center justify-content-between'
+					variant='outline-dark'
+					style={{ minWidth: "250px", textAlign: "left", width: "100%", position: 'relative' }}>
+					<span style={{ flex: 1, paddingRight: '20px' }}>{props.title ?? "Option"}</span>
+					<div style={{
+						position: 'absolute',
+						left: 'calc(100% - 40px)', 
+						height: '100%',
+						borderLeft: '1px solid black'
+					}}></div>
+					<FontAwesomeIcon icon={faFilter} id="dropdown-checkboxes" className="custom-icon" />
 				</Dropdown.Toggle>
 			</OverlayTrigger>
-			<Dropdown.Toggle split variant="outline-dark" id="dropdown-checkboxes" style={{ width: "100%", maxWidth: "50px" }}>
-				<FontAwesomeIcon icon={faFilter} className="custom-icon" />
-			</Dropdown.Toggle>
 
-			<Dropdown.Menu style={{ width: "100%" , maxHeight:"270px", overflowY:"auto"}}>
+			<Dropdown.Menu style={{ width: "100%", maxHeight: "270px", overflowY: "auto" }}>
 				<Form className='px-3'>
 					<Form.Check
 						type="checkbox"

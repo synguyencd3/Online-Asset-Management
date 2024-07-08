@@ -186,7 +186,7 @@ export const PasswordModalComponent: React.FC<ChangePasswordModalProps> = ({ sho
                                         aria-required
                                     />
                                     <InputGroup.Text className='bg-transparent border-0'>
-                                        <FontAwesomeIcon icon={showConfirm ? faEye : faEyeSlash} onClick={handleShowConfirmPassword}></FontAwesomeIcon>
+                                        <FontAwesomeIcon icon={showConfirm ? faEye : faEyeSlash} onClick={handleShowConfirmPassword} />
                                     </InputGroup.Text>
                                 </InputGroup>
                                 {formik.touched.confirmPassword && formik.errors.confirmPassword ? (

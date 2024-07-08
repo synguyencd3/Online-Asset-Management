@@ -17,13 +17,21 @@ import { ConfirmModalComponent } from '../../commons/ConfirmModalComponent';
 import useSWR from 'swr';
 import { SearchComponent } from '../../commons/SearchComponent';
 import { BreadcrumbComponent } from '../../commons/BreadcrumbComponent';
+import { ColorPalette } from '../../../utils/ColorPalette';
+import { TableHeaderModel } from '../../../models/TableHeaderModel';
+import { DropdownFilterModel } from '../../../models/DropdownFilterModel';
 
-const header = [{ name: 'Asset Code', value: "assetCode", sort: true, direction: true, colStyle: { width: "12%" } }, { name: 'Asset Name', value: "name", sort: true, direction: true, colStyle: { width: "40%" } }, { name: 'Category', value: "category.name", sort: true, direction: true, colStyle: { maxWidth: '200px' } }, { name: 'State', value: "status", sort: true, direction: true, colStyle: { width: "15%" } }]
+const header: TableHeaderModel[] = [
+	{ name: 'Asset Code', value: "assetCode", sort: true, direction: true, colStyle: { width: "12%" }, style: {}, isCurrentlySorted: true },
+	{ name: 'Asset Name', value: "name", sort: true, direction: true, colStyle: { width: "40%" }, style: {}, isCurrentlySorted: false },
+	{ name: 'Category', value: "category.name", sort: true, direction: true, colStyle: { maxWidth: '200px' }, style: {}, isCurrentlySorted: false },
+	{ name: 'State', value: "status", sort: true, direction: true, colStyle: { width: "15%" }, style: {}, isCurrentlySorted: false }
+]
 const showModalCell = ["assetCode", "assetName"]
 const modalHeader = ["Asset Code", "Asset Name", "Category", "Installed Date", "State", "Location", "Specification"]
 
 type Props = {
-    setHeaderTitle: (title: ReactNode) => void
+	setHeaderTitle: (title: ReactNode) => void
 }
 
 export const ManageAssetComponent: React.FC<Props> = (props: Props) => {
@@ -38,10 +46,11 @@ export const ManageAssetComponent: React.FC<Props> = (props: Props) => {
 	useEffect(() => {
 		props.setHeaderTitle(<BreadcrumbComponent breadcrumb={[
 			{
-			  title: 'Manage Asset',
-			  href: `${window.location.origin}/admin/manage-assets#`
+				title: 'Manage Asset',
+				href: `${window.location.origin}/admin/manage-assets#`
 			}
-		  ]} />);
+		]} />
+		);
 	}, [])
 
 	const [param, setParam] = useState<AssetParamModel>({
@@ -53,7 +62,7 @@ export const ManageAssetComponent: React.FC<Props> = (props: Props) => {
 		sort: "assetCode,asc",
 	});
 
-	const [_dummy, setDummy] = useState(0);
+	const [_, setDummy] = useState(0);
 
 	let newAsset = location.state?.newAsset;
 
@@ -113,7 +122,7 @@ export const ManageAssetComponent: React.FC<Props> = (props: Props) => {
 			}, ...tableAsset.filter(a => a.assetCode !== newAsset.assetCode)]
 		}
 	}
-	
+
 	// button
 	const buttons: FunctionalIconModel[] = [];
 
@@ -171,6 +180,7 @@ export const ManageAssetComponent: React.FC<Props> = (props: Props) => {
 		style: "",
 		onClickfunction: editAsset
 	};
+
 	const deleteIcon: FunctionalIconModel = {
 		icon: faCircleXmark,
 		style: { color: 'red' },
@@ -182,16 +192,16 @@ export const ManageAssetComponent: React.FC<Props> = (props: Props) => {
 	//--------------------------- 
 
 	// Dropdown Filter
-	let filterState = [];
-	let state1 = { label: "Assigned", value: "ASSIGNED", defaultChecked: true }
-	let state2 = { label: "Available", value: "AVAILABLE", defaultChecked: true }
-	let state3 = { label: "Not available", value: "NOT_AVAILABLE", defaultChecked: true }
-	let state4 = { label: "Waiting for recyling", value: "WAITING_FOR_RECYCLING", defaultChecked: false }
-	let state5 = { label: "Recycled", value: "RECYCLED", defaultChecked: false }
-	filterState.push(state1, state2, state3, state4, state5);
+	let filterState: DropdownFilterModel[] = [
+		{ label: "Assigned", value: "ASSIGNED", defaultChecked: true },
+		{ label: "Available", value: "AVAILABLE", defaultChecked: true },
+		{ label: "Not available", value: "NOT_AVAILABLE", defaultChecked: true },
+		{ label: "Waiting for recyling", value: "WAITING_FOR_RECYCLING", defaultChecked: false },
+		{ label: "Recycled", value: "RECYCLED", defaultChecked: false },
+	]
 
-	let filterCategory: { label: string; value: string; defaultChecked: boolean; }[] = [];
-	category ? category.data.data.forEach((c: CategoryModel) => { filterCategory.push({ label: c.name, value: c.id.toString(), defaultChecked: true }) }) : "";
+	let filterCategory: DropdownFilterModel[] = [];
+	category?.data.data.forEach((c: CategoryModel) => { filterCategory.push({ label: c.name, value: c.id.toString(), defaultChecked: true }) });
 
 	//----------------------------
 
@@ -200,22 +210,30 @@ export const ManageAssetComponent: React.FC<Props> = (props: Props) => {
 	///////////////////////
 
 	return (
-		<Container style={{ maxWidth: "100%" }} className="p-4">
-			<h4 className="ms-1" style={{ color: "red", fontWeight: "bold" }}>
+		<Container>
+			<h4 style={{ color: ColorPalette.PRIMARY_COLOR }} className='fw-bold fs-4 ms-1 mt-5 mb-3'>
 				Asset List
 			</h4>
-			<Row className="py-4 ms-0 pe-2 user-param-row">
-				<Col sm={3} className="d-flex justify-content-start align-items-center px-2">
-					<DropdownFilterComponent title={"State"} data={filterState} params={param.states} setParamsFunction={handleSetParam} setDummy={setDummy} style={{ width: "100%" }} defaultAll={false} paramName={'states'} ></DropdownFilterComponent>
+			<Row className="py-4 ms-0 pe-2 user-param-row justify-content-between">
+				<Col sm={5}>
+					<Row>
+						<Col sm={6} className="d-flex justify-content-start align-items-center px-2">
+							<DropdownFilterComponent title={"State"} data={filterState} params={param.states} setParamsFunction={handleSetParam} setDummy={setDummy} style={{ width: "100%" }} defaultAll={false} paramName={'states'} ></DropdownFilterComponent>
+						</Col>
+						<Col sm={6} className="d-flex justify-content-start align-items-center px-2">
+							<DropdownFilterComponent title={"Category"} data={filterCategory} params={param.categories} setParamsFunction={handleSetParam} setDummy={setDummy} style={{ width: "100%" }} defaultAll={true} paramName={'categories'}></DropdownFilterComponent>
+						</Col>
+					</Row>
 				</Col>
-				<Col sm={3} className="d-flex justify-content-start align-items-center px-2">
-					<DropdownFilterComponent title={"Category"} data={filterCategory} params={param.categories} setParamsFunction={handleSetParam} setDummy={setDummy} style={{ width: "100%" }} defaultAll={true} paramName={'categories'}></DropdownFilterComponent>
-				</Col>
-				<Col className="d-flex justify-content-end align-items-center">
-					<SearchComponent placeholder={""} setParamsFunction={handleSetParam} style={{ width: "100%" }} setDummy={()=>{}}></SearchComponent>
-				</Col>
-				<Col sm={3} className="d-flex justify-content-end align-items-center" style={{ maxWidth: "230px" }}>
-					<Button variant="danger" onClick={() => { return navigate('./new') }} style={{ width: "230px" }}>Create New Asset</Button>
+				<Col sm={6}>
+					<Row>
+						<Col sm={8} className="d-flex justify-content-end align-items-center">
+							<SearchComponent placeholder={"Search by Name or Asset Code"} setParamsFunction={handleSetParam} style={{ width: "100%" }} setDummy={() => { } } class={''}></SearchComponent>
+						</Col>
+						<Col sm={4} className="d-flex justify-content-end align-items-center" style={{ maxWidth: "230px" }}>
+							<Button variant="danger" onClick={() => { return navigate('./new') }} style={{ width: "230px" }}>Create New Asset</Button>
+						</Col>
+					</Row>
 				</Col>
 			</Row>
 			{!asset ?
@@ -235,7 +253,7 @@ export const ManageAssetComponent: React.FC<Props> = (props: Props) => {
 							<Row>
 								<TableComponent headers={header} datas={tableAsset} auxData={tableAsset} auxHeader={modalHeader} buttons={buttons} setSortString={handleSetParam} showModalCell={showModalCell} setDummy={setDummy} setModalData={setModalData} setModalShow={setModalShow} pre_button={undefined} disableButton={disableButtonArray}  ></TableComponent>
 							</Row>
-							<PaginationComponent currentPage={param.page} setParamsFunction={handleSetParam} totalPage={asset.totalPage} setDummy={setDummy} setPage={setDummy} perPage={param.size} fixPageSize={false} ></PaginationComponent>
+							<PaginationComponent currentPage={param.page} setParamsFunction={handleSetParam} totalPage={asset.totalPage} perPage={param.size} fixPageSize={false} ></PaginationComponent>
 						</>
 					}
 				</>

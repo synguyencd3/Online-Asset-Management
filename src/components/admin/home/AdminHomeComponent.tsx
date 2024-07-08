@@ -8,7 +8,7 @@ import { ColorPalette } from '../../../utils/ColorPalette';
 import { getOwnAssignementSWR, responseAssignment } from '../../../services/AssignmentService';
 import { AssignmentRequestState, AssignmentState } from '../../../utils/Enum';
 import { PaginationComponent } from '../../commons/PaginationComponent';
-import { Row } from 'react-bootstrap';
+import { Container, Row } from 'react-bootstrap';
 import { LoaderComponent } from '../../commons/LoaderComponent';
 import { message } from 'antd';
 import { ConfirmModalComponent } from '../../commons/ConfirmModalComponent';
@@ -17,21 +17,53 @@ import { AssignmentForTableModel } from '../../../models/AssignmentForTable';
 import { toDateString, uppercaseStatusToText } from '../../../utils/utils';
 import { BreadcrumbComponent } from '../../commons/BreadcrumbComponent';
 import useSWR from 'swr';
+import { TableHeaderModel } from '../../../models/TableHeaderModel';
+import { createReturningRequest } from '../../../services/ReturningService';
 
 type Props = {
     setHeaderTitle: (title: ReactNode) => void
 }
 
-const header = [
-    { name: 'Asset Code', value: "assetCode", sort: true, direction: true, colStyle: {} },
-    { name: 'Asset Name', value: "assetName", sort: true, direction: true, colStyle: {} },
-    { name: 'Category', value: "category", sort: true, direction: true, colStyle: {} },
-    { name: 'Assigned Date', value: "assignedDate", sort: true, direction: true, colStyle: {} },
-    { name: 'State', value: "state", sort: true, direction: true, colStyle: {} },
-    { name: '', value: "", sort: true, direction: true, colStyle: {} },
+const header: TableHeaderModel[] = [
+    { name: 'Asset Code', value: "assetCode", sort: true, direction: true, colStyle: {}, isCurrentlySorted: true, style: {} },
+    { name: 'Asset Name', value: "assetName", sort: true, direction: true, colStyle: {}, isCurrentlySorted: false, style: {} },
+    { name: 'Category', value: "category", sort: true, direction: true, colStyle: {}, isCurrentlySorted: false, style: {} },
+    { name: 'Assigned Date', value: "assignedDate", sort: true, direction: true, colStyle: {}, isCurrentlySorted: false, style: {} },
+    { name: 'State', value: "state", sort: true, direction: true, colStyle: {}, isCurrentlySorted: false, style: {} },
+    { name: '', value: "", sort: true, direction: true, colStyle: {}, isCurrentlySorted: false, style: {} },
 ]
 const showModalCell = ["assetCode", "assetName", "category", "assignedDate", "state"];
 const modalHeader = ["Asset Code", "Asset Name", "Category", "Specification", "Assigned to", "Assigned by", "Assigned Date", "State", "Note"];
+
+const RETURNING_STATE = "RETURNING";
+
+type ConfirmModalType = {
+    confirmTitle: string,
+    confirmQuestion: string,
+    confirmBtnLabel: string,
+    cancelBtnLabel: string
+}
+
+const confirmModalData : {[key: string] : ConfirmModalType} = {
+    "ACCEPTED": {
+        confirmTitle: "Response Confirmation",
+        confirmQuestion: 'Do you want to accept this assignment?',
+        confirmBtnLabel: 'Accept',
+        cancelBtnLabel: 'Cancel'
+    },
+    "DECLINED": {
+        confirmTitle: "Response Confirmation",
+        confirmQuestion: 'Do you want to decline this assignment?',
+        confirmBtnLabel: 'Decline',
+        cancelBtnLabel: 'Cancel'
+    },
+    "RETURNING": {
+        confirmTitle: "Returning Confirmation",
+        confirmQuestion: "Do you want to create a returning request for this asset?",
+        confirmBtnLabel: 'Return',
+        cancelBtnLabel: 'Cancel'
+    },
+}
 
 export const AdminHomeComponent: React.FC<Props> = (props: Props) => {
     const [showModal, setShowModal] = useState(false);
@@ -58,8 +90,9 @@ export const AdminHomeComponent: React.FC<Props> = (props: Props) => {
         setShowConfirmModal(true);
         setResponseData({ id: data[1].id, status: AssignmentRequestState[AssignmentRequestState.DECLINED] });
     }
-    const returnAsset = () => {
-        window.alert("Return Asset");
+    const returnAsset = (...data: AssignmentModel[]) => {
+        setShowConfirmModal(true);
+        setResponseData({ id: data[1].id, status: RETURNING_STATE });
     }
 
     const acceptIcon: FunctionalIconModel = {
@@ -98,7 +131,7 @@ export const AdminHomeComponent: React.FC<Props> = (props: Props) => {
             uppercaseStatusToText(state).toLowerCase() === stateEnum.toLowerCase();
         return data.map((item: AssignmentHomeViewModel) => [
             !isEqualState(item.status, AssignmentState.WAITING_FOR_ACCEPTANCE),
-            isEqualState(item.status, AssignmentState.ACCEPTED),
+            isEqualState(item.status, AssignmentState.ACCEPTED) || isEqualState(item.status, AssignmentState.WAITING_FOR_RETURNING),
             !isEqualState(item.status, AssignmentState.ACCEPTED),
         ]);
     };
@@ -129,7 +162,30 @@ export const AdminHomeComponent: React.FC<Props> = (props: Props) => {
         }
     )
 
+    const handleCreateReturningRequest = async (assignmentId: number) => {
+      setShowConfirmModal(false);
+      messageApi
+        .open({
+          type: "loading",
+          content: "Creating returning request...",
+        })
+        .then(async () => {
+          await createReturningRequest(assignmentId)
+            .then((response) => {
+              message.success(response.data.message);
+              mutateAssignment();
+            })
+            .catch((error) => {
+              message.error(error.response.data.message);
+            });
+        });
+    };
+
     const responseOwnAssignment = async (id: number, status: string) => {
+        if (status === RETURNING_STATE) {
+            handleCreateReturningRequest(id);
+            return;
+        }
         messageApi.open({
             type: 'loading',
             content: status == 'ACCEPTED' ? 'Accepting assignment...' : 'Declining assignment...',
@@ -162,44 +218,92 @@ export const AdminHomeComponent: React.FC<Props> = (props: Props) => {
     };
 
     return (
-        <div>
-            {contextHolder}
-            <h4 style={{ color: ColorPalette.PRIMARY_COLOR }} className='fw-bold fs-4 ms-1 mt-5 mb-3'>My Assignment</h4>
+      <Container>
+        {contextHolder}
+        <h4
+          style={{ color: ColorPalette.PRIMARY_COLOR }}
+          className="fw-bold fs-4 ms-1 mt-5 mb-3"
+        >
+          My Assignment
+        </h4>
 
-            {isAssignmentLoading ?
-                <LoaderComponent />
-                :
-                <>
-                    {assignmentResponse?.content.length === 0 ?
-                        <Row>
-                            <h5 className="text-center"> No Assignment Found</h5>
-                        </Row> :
-                        <>
-                            <Row className='ps-2'>
-                                <p className='fs-5' style={{ color: "gray" }}>
-                                    Total : {assignmentResponse?.content.length ?? 0}
-                                </p>
-                            </Row>
-                            <Row>
-                                <TableComponent headers={header} datas={formatRecordList(assignmentResponse?.content!)} setSortString={setParam} auxData={assignmentResponse?.content!} auxHeader={auxHeader} buttons={buttons} showModalCell={showModalCell} setDummy={() => { }} setModalData={setModalData} setModalShow={setModalDetailShow} pre_button={undefined} disableButton={setDisableButtonState(assignmentResponse?.content!)} />
-                            </Row>
-                            <PaginationComponent currentPage={param.page} totalPage={assignmentResponse?.totalPage!} setParamsFunction={setParam} setDummy={() => { }} perPage={param.size} setPage={() => {Math.random()}} fixPageSize={false} />
-                        </>
-                    }
-                </>
-            }
-            {modalData ? (
-                <AssignmentModelComponent
-                    title={"Detailed Assignment Information"}
-                    show={modalDetailShow}
-                    onHide={() => setModalDetailShow(false)}
-                    data={modalData}
-                />
+        {isAssignmentLoading ? (
+          <LoaderComponent />
+        ) : (
+          <>
+            {assignmentResponse?.content.length === 0 ? (
+              <Row>
+                <h5 className="text-center"> No Assignment Found</h5>
+              </Row>
             ) : (
-                ""
+              <>
+                <Row className="ps-2">
+                  <p className="fs-5" style={{ color: "gray" }}>
+                    Total : {assignmentResponse?.content.length ?? 0}
+                  </p>
+                </Row>
+                <Row>
+                  <TableComponent
+                    headers={header}
+                    datas={formatRecordList(assignmentResponse?.content!)}
+                    setSortString={setParam}
+                    auxData={assignmentResponse?.content!}
+                    auxHeader={auxHeader}
+                    buttons={buttons}
+                    showModalCell={showModalCell}
+                    setDummy={() => {}}
+                    setModalData={setModalData}
+                    setModalShow={setModalDetailShow}
+                    pre_button={undefined}
+                    disableButton={setDisableButtonState(
+                      assignmentResponse?.content!
+                    )}
+                  />
+                </Row>
+                <PaginationComponent
+                  currentPage={param.page}
+                  totalPage={assignmentResponse?.totalPage!}
+                  setParamsFunction={setParam}
+                  perPage={param.size}
+                  fixPageSize={false}
+                />
+              </>
             )}
-            <PasswordModalComponent show={showModal} onClose={handleClose} isFirstLoggedIn={firstLogin} />
-            <ConfirmModalComponent show={showConfirmModal} onConfirm={handleModalConfirm} onCancel={handleModalCancel} confirmTitle={'Response Confirmation'} confirmQuestion={responseData.status == "ACCEPTED" ? 'Do you want to accept this assignment?' : 'Do you want to decline this assignment?'} confirmBtnLabel={responseData.status == 'ACCEPTED' ? 'Accept' : 'Decline'} cancelBtnLabel={'Cancel'} modalSize={'md'} />
-        </div>
+          </>
+        )}
+        {modalData ? (
+          <AssignmentModelComponent
+            title={"Detailed Assignment Information"}
+            show={modalDetailShow}
+            onHide={() => setModalDetailShow(false)}
+            data={modalData}
+          />
+        ) : (
+          ""
+        )}
+        <PasswordModalComponent
+          show={showModal}
+          onClose={handleClose}
+          isFirstLoggedIn={firstLogin}
+        />
+        {confirmModalData[responseData.status] ? (
+          <ConfirmModalComponent
+            show={showConfirmModal}
+            onConfirm={handleModalConfirm}
+            onCancel={handleModalCancel}
+            confirmTitle={confirmModalData[responseData.status].confirmTitle}
+            confirmQuestion={
+              confirmModalData[responseData.status].confirmQuestion
+            }
+            confirmBtnLabel={
+              confirmModalData[responseData.status].confirmBtnLabel
+            }
+            cancelBtnLabel={"Cancel"}
+            modalSize={"md"}
+          />
+        ) : (
+          ""
+        )}
+      </Container>
     );
 };

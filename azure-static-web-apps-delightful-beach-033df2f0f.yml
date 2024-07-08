@@ -3,11 +3,11 @@ name: Azure Static Web Apps CI/CD
 pr:
   branches:
     include:
-      - TASK_3689
+      - TASL_3472
 trigger:
   branches:
     include:
-      - TASK_3689
+      - TASL_3472
 
 jobs:
 - job: build_and_deploy_job

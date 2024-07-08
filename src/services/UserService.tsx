@@ -32,6 +32,7 @@ function buildParam(param: UserParamModel) {
         + "types=" + param.types.join() + "&"
         + "page=" + param.page + "&"
         + "size=" + param.size + "&"
+        + "self=" + param.self + "&"
         + "sort=" + param.sort;
     return params;
 }

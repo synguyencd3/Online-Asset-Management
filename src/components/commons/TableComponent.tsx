@@ -21,11 +21,11 @@ type Props = {
 	setModalData: any
 	setModalShow: any
 	pre_button: any
-	setSelect?:any
+	setSelect?: any
 	disableButton: boolean[][]
 }
 
-export const TableComponent = ({ headers, datas, auxData, buttons, setSortString, showModalCell, setDummy, setModalData, setModalShow, pre_button, setSelect, disableButton }: Props) => {
+export const TableComponent = ({ headers, datas, auxData, buttons, setSortString, showModalCell, setModalData, setModalShow, pre_button, setSelect, disableButton }: Props) => {
 	const [header, setHeader] = useState(headers);
 	const cellCLickStyle = 'cell text-truncate'
 	const handleClick = (e: React.MouseEvent<any>, key: object) => {
@@ -38,12 +38,16 @@ export const TableComponent = ({ headers, datas, auxData, buttons, setSortString
 	};
 
 	function onClickSort(h: TableHeaderModel, index: number) {
-		h.direction = !h.direction;
+		let dir = h.direction;
+		header.forEach((a) => {
+			a.isCurrentlySorted = false;
+		})
+		h.direction = !dir;
+		h.isCurrentlySorted = true;
 		header[index] = h;
 		setHeader([...header]);
 		let t = h.value + "," + (h.direction ? "asc" : "desc")
 		setSortString((sortString: any) => ({ ...sortString, sort: t }));
-		setDummy(Math.random())
 	}
 	return (
 		<>
@@ -52,13 +56,16 @@ export const TableComponent = ({ headers, datas, auxData, buttons, setSortString
 					<thead id='table-header'>
 						<tr>
 							{headers?.map((h, index) => (
-								<th key={h.name}>
+								<th key={h.name} className={""} style={h.style}>
 									{h.name.length > 0 ?
-										<div className='table-header header-border'>
+										<div className={'table-header header-border ' + (h.isCurrentlySorted ? "sorting-header" : "")}>
 											{h.name}
 											{h.sort ?
-												<FontAwesomeIcon values={h.name} icon={h.direction ? faSortDown : faSortUp} onClick={() => { onClickSort(h, index); }} style={{ marginLeft: "10px" }} />
-												:""}
+												<FontAwesomeIcon values={h.name}
+													icon={h.direction ? faSortDown : faSortUp}
+													// icon={ faSort}
+													onClick={() => { onClickSort(h, index); }} style={{ marginLeft: "10px" }} />
+												: ""}
 										</div>
 										: '\u200B'
 									}
@@ -69,14 +76,14 @@ export const TableComponent = ({ headers, datas, auxData, buttons, setSortString
 					<tbody>
 						{datas?.map((data: Object, index) => (
 							<tr key={index} onClick={(e) => { handleClick(e, auxData[index]) }}>
-								{pre_button ? <td>{pre_button(data,setSelect)}</td> : ""}
+								{pre_button ? <td>{pre_button(data, setSelect)}</td> : ""}
 								{
 									Object.entries(data).map(([key, value], idx) => {
 										if (showModalCell.includes(key)) {
 											return (
 												<td key={idx} className='modalClick' style={headers[idx].colStyle}>
 													<div className={cellCLickStyle}>
-														{value?.toString()  || '\u200B'}
+														{value?.toString() || '\u200B'}
 													</div>
 												</td>
 											)
@@ -84,7 +91,7 @@ export const TableComponent = ({ headers, datas, auxData, buttons, setSortString
 											return (
 												<td key={idx} className='' style={headers[idx].colStyle}>
 													<div className='cellnoClick text-truncate'>
-														{value?.toString()  || '\u200B'}
+														{value?.toString() || '\u200B'}
 													</div>
 												</td>
 											)
@@ -96,13 +103,13 @@ export const TableComponent = ({ headers, datas, auxData, buttons, setSortString
 									<Row className='g-3 justify-content-center'>
 										{buttons?.map((button: FunctionalIconModel, bIndex) => (
 											<Col key={bIndex} id={'table_icon_' + bIndex + index} className='d-flex justify-content-end'>
-												<FontAwesomeIcon 
-												size='lg' 
-												className={disableButton[index][bIndex] ? "disable-icon" : "normal-icon"} 
-												icon={button.icon} 
-												onClick={(e) => { disableButton[index][bIndex] ? () => {} : button.onClickfunction(e, auxData[index], data) }}
-												fontWeight={700}
-												style={button.style} />
+												<FontAwesomeIcon
+													size='lg'
+													className={disableButton[index][bIndex] ? "disable-icon" : "normal-icon"}
+													icon={button.icon}
+													onClick={(e) => { disableButton[index][bIndex] ? () => { } : button.onClickfunction(e, auxData[index], data) }}
+													fontWeight={700}
+													style={button.style} />
 											</Col>
 										))}
 									</Row>

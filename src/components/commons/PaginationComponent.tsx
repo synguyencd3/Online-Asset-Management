@@ -1,25 +1,23 @@
 import { message } from "antd";
-import { Col, Container, Form, Pagination, Row } from "react-bootstrap";
+import { FormEvent, useState } from "react";
+import { Col, Container, Form, OverlayTrigger, Pagination, Popover, Row } from "react-bootstrap";
 
 type Props = {
     currentPage: number;
     totalPage: number;
     perPage: number
     setParamsFunction: any;
-    setDummy: any;
-    setPage: any;
     fixPageSize: boolean
 }
-export const PaginationComponent = ({ currentPage, totalPage, setParamsFunction, setDummy, perPage, setPage, fixPageSize }: Props) => {
+export const PaginationComponent = ({ currentPage, totalPage, setParamsFunction, perPage, fixPageSize }: Props) => {
     const isFirstPage = currentPage === 0;
     const isLastPage = currentPage === totalPage - 1;
-
+    const [customPage, setCustomPage] = useState(currentPage + 1);
     const handlePageChange = (page: number) => {
         if (page === currentPage) {
             return
         }
         setParamsFunction((p: any) => ({ ...p, page: page }))
-        setPage(Math.random())
     };
 
     function handlePerPageChange(e: string) {
@@ -28,8 +26,27 @@ export const PaginationComponent = ({ currentPage, totalPage, setParamsFunction,
             return
         }
         setParamsFunction((p: any) => ({ ...p, size: e }))
-        setDummy(Math.random())
     }
+    function handleCustomPageSubmit(e: FormEvent<HTMLFormElement>) {
+        e.preventDefault();
+        // redundant
+        if (customPage > totalPage || customPage <= 0) {
+            message.warning("Please choose another value")
+            return
+        }
+        handlePageChange(customPage - 1);
+    }
+
+    const popover = (
+        <Popover id="popover-basic" style={{ maxWidth: "150px" }} >
+            <Popover.Header style={{ textAlign: "center" }}>Choose Page</Popover.Header>
+            <Popover.Body>
+                <Form onSubmit={(e) => handleCustomPageSubmit(e)}>
+                    <Form.Control type="number" min={1} max={totalPage} onChange={(e) => { setCustomPage(Number.parseInt(e.target.value)); }}></Form.Control>
+                </Form>
+            </Popover.Body>
+        </Popover>
+    );
 
     const renderPageItems = () => {
         const items = [];
@@ -48,12 +65,17 @@ export const PaginationComponent = ({ currentPage, totalPage, setParamsFunction,
                     );
                 }
                 items.push(
-                    <Pagination.Ellipsis key="rightEllipsis" />
+                    <OverlayTrigger key={"rightEllipsisOverlay"} trigger="click" placement="top" overlay={popover}>
+                        <Pagination.Ellipsis key="rightEllipsis" />
+                    </OverlayTrigger>
                 )
             }
             else if (totalPage - currentPage < 5) {
                 items.push(
-                    <Pagination.Ellipsis key="leftEllipsis" />
+                    <OverlayTrigger key={"leftEllipsisOverlay"} trigger="click" placement="top" overlay={popover}>
+                        <Pagination.Ellipsis key="leftEllipsis" />
+                    </OverlayTrigger>
+
                 )
                 for (let i = totalPage - 5; i < totalPage; i++) {
                     items.push(
@@ -63,7 +85,9 @@ export const PaginationComponent = ({ currentPage, totalPage, setParamsFunction,
             }
             else {
                 items.push(
-                    <Pagination.Ellipsis key="leftEllipsis" />
+                    <OverlayTrigger key={"leftEllipsisOverlay"} delay={{ show: 100, hide: 0 }} trigger="click" placement="top" overlay={popover} rootClose={true}>
+                        <Pagination.Ellipsis key="leftEllipsis" id="leftEllipsis" />
+                    </OverlayTrigger>
                 )
                 for (let i = currentPage - 2; i < currentPage + 3; i++) {
                     items.push(
@@ -71,7 +95,9 @@ export const PaginationComponent = ({ currentPage, totalPage, setParamsFunction,
                     );
                 }
                 items.push(
-                    <Pagination.Ellipsis key="rightEllipsis" />
+                    <OverlayTrigger key={"rightEllipsisOverlay"} delay={{ show: 100, hide: 0 }} trigger="click" placement="top" overlay={popover} rootClose={true}>
+                        <Pagination.Ellipsis key="rightEllipsis" id="rightEllipsis" />
+                    </OverlayTrigger>
                 )
             }
         }

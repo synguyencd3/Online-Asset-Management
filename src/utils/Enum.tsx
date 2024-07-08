@@ -31,6 +31,7 @@ export enum AssignmentState {
     ACCEPTED = 'Accepted',
     WAITING_FOR_ACCEPTANCE = 'Waiting for Acceptance',
     DECLINED = 'Declined',
+    WAITING_FOR_RETURNING = 'Waiting for Returning',
 }
 
 export enum AssignmentRequestState {
@@ -39,7 +40,17 @@ export enum AssignmentRequestState {
     DECLINED,
 }
 
+// export enum ReturningState {
+//     COMPLETED,
+//     WAITING_FOR_RETURNING,
+// }
+
 export enum ReturningState {
+    COMPLETED = "Completed",
+    WAITING_FOR_RETURNING = "Waiting for Returning",
+}
+
+export enum ReturningParamState {
     COMPLETED,
     WAITING_FOR_RETURNING,
 }

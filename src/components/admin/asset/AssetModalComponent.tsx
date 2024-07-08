@@ -8,6 +8,7 @@ import { useState } from "react";
 import { getWithSWR } from "../../../services/swrService";
 import { PaginationComponent } from "../../commons/PaginationComponent";
 import { LoaderComponent } from "../../commons/LoaderComponent";
+import { TableHeaderModel } from "../../../models/TableHeaderModel";
 
 type Props = {
     title: string;
@@ -34,11 +35,11 @@ const headers = [
     { name: "Location", value: "location" },
     { name: "Specification", value: "specification" },
 ]
-const historyTableHeaders = [
-    { name: "Date", value: "date" },
-    { name: "Assigned To", value: "assignedTo" },
-    { name: "Assigned By", value: "assignedBy" },
-    { name: "Returned Date", value: "returnedDate" },
+const historyTableHeaders: TableHeaderModel[] = [
+    { name: "Date", value: "date", sort: false, direction: false, isCurrentlySorted: false, style: {}, colStyle: {} },
+    { name: "Assigned To", value: "assignedTo", sort: false, direction: false, isCurrentlySorted: false, style: {}, colStyle: {} },
+    { name: "Assigned By", value: "assignedBy", sort: false, direction: false, isCurrentlySorted: false, style: {}, colStyle: {} },
+    { name: "Returned Date", value: "returnedDate", sort: false, direction: false, isCurrentlySorted: false, style: {}, colStyle: {} },
 ]
 
 function toDateString(date: Date) {
@@ -52,9 +53,8 @@ export const AssetModalComponent = (props: Props) => {
     const [asset, setAsset] = useState<ModalAsset>();
     const [history, setHistory] = useState<AssetHistoryModel[]>([]);
     const [readMore, setReadMore] = useState<boolean[]>([]);
-    function setPage(_params: any) { }
 
-    const {isLoading } = useSWR(props.data ? getOneAssetHistoryUrl(props.data, currentPage.page) : null, getWithSWR, {
+    const { isLoading } = useSWR(props.data ? getOneAssetHistoryUrl(props.data, currentPage.page) : null, getWithSWR, {
         onSuccess: (response) => {
             const data = response.data.data;
             const assetT: AssetModel = data.asset;
@@ -149,7 +149,7 @@ export const AssetModalComponent = (props: Props) => {
                     {isLoading ?
                         "" :
                         history && history.length > 0 ?
-                            <PaginationComponent currentPage={currentPage.page} totalPage={totalPage} perPage={10} setParamsFunction={setCurrentPage} setDummy={setPage} setPage={setPage} fixPageSize={true}></PaginationComponent>
+                            <PaginationComponent currentPage={currentPage.page} totalPage={totalPage} perPage={10} setParamsFunction={setCurrentPage} fixPageSize={true}></PaginationComponent>
                             :
                             ""
                     }
