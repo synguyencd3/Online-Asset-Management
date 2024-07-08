@@ -98,6 +98,11 @@ const filterData = [
     value: AssignmentState.WAITING_FOR_ACCEPTANCE.toString(),
     defaultChecked: true,
   },
+  {
+    label: "Waiting for returning",
+    value: AssignmentState.WAITING_FOR_RETURNING.toString(),
+    defaultChecked: true,
+  },
 ];
 type Props = {
   setHeaderTitle: (title: ReactNode) => void;
@@ -142,6 +147,7 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
       AssignmentState.ACCEPTED,
       AssignmentState.DECLINED,
       AssignmentState.WAITING_FOR_ACCEPTANCE,
+      AssignmentState.WAITING_FOR_RETURNING,
     ],
     assignedDate: "",
     page: 0,
@@ -304,7 +310,7 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
       uppercaseStatusToText(state).toLowerCase() === stateEnum.toLowerCase();
     return data.map((item: AssignmentForTableModel) => [
       !isEqualState(item.status, AssignmentState.WAITING_FOR_ACCEPTANCE),
-      isEqualState(item.status, AssignmentState.ACCEPTED),
+      isEqualState(item.status, AssignmentState.ACCEPTED) || isEqualState(item.status, AssignmentState.WAITING_FOR_RETURNING),
       !isEqualState(item.status, AssignmentState.ACCEPTED),
     ]);
   };

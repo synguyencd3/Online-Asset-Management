@@ -102,7 +102,7 @@ export const AdminHomeComponent: React.FC<Props> = (props: Props) => {
             uppercaseStatusToText(state).toLowerCase() === stateEnum.toLowerCase();
         return data.map((item: AssignmentHomeViewModel) => [
             !isEqualState(item.status, AssignmentState.WAITING_FOR_ACCEPTANCE),
-            isEqualState(item.status, AssignmentState.ACCEPTED),
+            isEqualState(item.status, AssignmentState.ACCEPTED) || isEqualState(item.status, AssignmentState.WAITING_FOR_RETURNING),
             !isEqualState(item.status, AssignmentState.ACCEPTED),
         ]);
     };
