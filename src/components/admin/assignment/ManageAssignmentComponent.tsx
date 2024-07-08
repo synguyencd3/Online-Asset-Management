@@ -383,7 +383,7 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
           <Row>
             <Col sm={7}>
               <SearchComponent
-                placeholder={""}
+                placeholder={"Search Asset Code, Asset Name or Assignee Name"}
                 setParamsFunction={handleSetParam}
                 style={{ width: "100%" }}
                 setDummy={() => {}}

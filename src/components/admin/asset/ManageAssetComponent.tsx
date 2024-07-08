@@ -219,7 +219,7 @@ export const ManageAssetComponent: React.FC<Props> = (props: Props) => {
 				<Col sm={6}>
 					<Row>
 						<Col sm={8} className="d-flex justify-content-end align-items-center">
-							<SearchComponent placeholder={""} setParamsFunction={handleSetParam} style={{ width: "100%" }} setDummy={() => { }}></SearchComponent>
+							<SearchComponent placeholder={"Search by Name or Asset Code"} setParamsFunction={handleSetParam} style={{ width: "100%" }} setDummy={() => { }}></SearchComponent>
 						</Col>
 						<Col sm={4} className="d-flex justify-content-end align-items-center" style={{ maxWidth: "230px" }}>
 							<Button variant="danger" onClick={() => { return navigate('./new') }} style={{ width: "230px" }}>Create New Asset</Button>

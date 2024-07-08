@@ -239,7 +239,7 @@ export const ManageUserComponent = (props: Props) => {
 				<Col sm={6}>
 					<Row>
 						<Col sm={7} className="d-flex justify-content-end align-items-center">
-							<SearchComponent placeholder={""} setParamsFunction={handleSetParam} setDummy={setDummy} style={{}}></SearchComponent>
+							<SearchComponent placeholder={"Search Staff Code or Full Name"} setParamsFunction={handleSetParam} setDummy={setDummy} style={{}}></SearchComponent>
 						</Col>
 						<Col sm={5} className="d-flex justify-content-end align-items-center">
 							<Button variant="danger" onClick={() => { return navigate('./new') }} style={{ width: "230px" }}>Create New User</Button>
