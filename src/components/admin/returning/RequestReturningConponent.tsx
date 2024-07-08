@@ -18,23 +18,25 @@ import { DropdownFilterComponent } from '../../commons/DropdownFilterComponent'
 import { SearchComponent } from '../../commons/SearchComponent'
 import { message } from 'antd'
 import { DatePickerComponent } from '../../commons/DatePickerComponent'
+import { TableHeaderModel } from '../../../models/TableHeaderModel'
+import { DropdownFilterModel } from '../../../models/DropdownFilterModel'
 
 type Props = {
     setHeaderTitle: (title: ReactNode) => void
 }
 
-const header = [
-    { name: 'No.', value: "id", sort: true, direction: true, colStyle: {} },
-    { name: 'Asset Code', value: "assignment.asset.assetCode", sort: true, direction: true, colStyle: {} },
-    { name: 'Asset Name', value: "assignment.asset.name", sort: true, direction: true, colStyle: {} },
-    { name: 'Requested By', value: "auditMetadata.createdBy.username", sort: true, direction: true, colStyle: {} },
-    { name: 'Accepted By', value: "acceptedBy", sort: true, direction: true, colStyle: {} },
-    { name: 'Assigned Date', value: "assignment.assignedDate", sort: true, direction: true, colStyle: {} },
-    { name: 'Returned Date', value: "returnedDate", sort: true, direction: true, colStyle: {} },
-    { name: 'State', value: "status", sort: true, direction: true, colStyle: {} },
+const header: TableHeaderModel[] = [
+    { name: 'No.', value: "id", sort: true, direction: true, colStyle: {}, isCurrentlySorted: true, style: {} },
+    { name: 'Asset Code', value: "assignment.asset.assetCode", sort: true, direction: true, colStyle: {}, isCurrentlySorted: false, style: {} },
+    { name: 'Asset Name', value: "assignment.asset.name", sort: true, direction: true, colStyle: {}, isCurrentlySorted: false, style: {} },
+    { name: 'Requested By', value: "auditMetadata.createdBy.username", sort: true, direction: true, colStyle: {}, isCurrentlySorted: false, style: {} },
+    { name: 'Accepted By', value: "acceptedBy", sort: true, direction: true, colStyle: {}, isCurrentlySorted: false, style: {} },
+    { name: 'Assigned Date', value: "assignment.assignedDate", sort: true, direction: true, colStyle: {}, isCurrentlySorted: false, style: {} },
+    { name: 'Returned Date', value: "returnedDate", sort: true, direction: true, colStyle: {}, isCurrentlySorted: false, style: {} },
+    { name: 'State', value: "status", sort: true, direction: true, colStyle: {}, isCurrentlySorted: false, style: {} },
 ]
 
-let filterState = [
+let filterState:DropdownFilterModel[] = [
     { label: "Completed", value: "COMPLETED", defaultChecked: true },
     { label: "Waiting for returning", value: "WAITING_FOR_RETURNING", defaultChecked: true }
 ];
@@ -181,7 +183,7 @@ export const RequestReturningConponent: React.FC<Props> = (props: Props) => {
                     </Row>
                 </Col>
                 <Col sm={4} className="d-flex justify-content-end align-items-center">
-                    <SearchComponent placeholder={""} setParamsFunction={setParam} style={{ width: "100%" }} setDummy={() => { }}></SearchComponent>
+                    <SearchComponent placeholder={""} setParamsFunction={setParam} style={{ width: "100%" }} setDummy={() => { }} class={''}></SearchComponent>
                 </Col>
             </Row>
             {isReturningLoading ?
@@ -201,7 +203,7 @@ export const RequestReturningConponent: React.FC<Props> = (props: Props) => {
                             <Row>
                                 <TableComponent headers={header} datas={formatRecordList(returningResponse?.content!)} setSortString={setParam} auxData={returningResponse?.content!} auxHeader={auxHeader} buttons={buttons} showModalCell={[]} setDummy={() => { }} setModalData={() => { }} setModalShow={() => { }} pre_button={undefined} disableButton={setDisableButtonState(returningResponse?.content!)} />
                             </Row>
-                            <PaginationComponent currentPage={param.page} totalPage={returningResponse?.totalPage!} setParamsFunction={setParam} setDummy={() => { }} perPage={param.size} setPage={() => { Math.random() }} fixPageSize={false} />
+                            <PaginationComponent currentPage={param.page} totalPage={returningResponse?.totalPage!} setParamsFunction={setParam} perPage={param.size} fixPageSize={false} />
                         </>
                     }
                 </>

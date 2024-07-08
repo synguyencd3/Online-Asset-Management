@@ -11,19 +11,20 @@ import { exportReport, getReportViewSWR } from '../../../services/ReportService'
 import { PageableModel } from '../../../models/PageableModel';
 import useSWR from 'swr';
 import { BreadcrumbComponent } from '../../commons/BreadcrumbComponent';
+import { TableHeaderModel } from '../../../models/TableHeaderModel';
 
 type Props = {
     setHeaderTitle: (title: ReactNode) => void;
 }
 
-const header = [
-    { name: 'Category', value: "category", sort: true, direction: true, colStyle: { width: '30%' } },
-    { name: 'Total', value: "total", sort: true, direction: true, colStyle: { width: '10%' } },
-    { name: 'Assigned', value: "assigned", sort: true, direction: true, colStyle: { width: '10%' } },
-    { name: 'Available', value: "available", sort: true, direction: true, colStyle: { width: '10%' } },
-    { name: 'Not Vailable', value: "notAvailable", sort: true, direction: true, colStyle: { width: '15%' } },
-    { name: 'Waiting for recycling', value: "waitingForRecycling", sort: true, direction: true, colStyle: { width: '25%' } },
-    { name: 'Recycled', value: "recycled", sort: true, direction: true, colStyle: { width: '10%' } }
+const header: TableHeaderModel[] = [
+    { name: 'Category', value: "category", sort: true, direction: true, colStyle: { width: '30%' }, isCurrentlySorted: true, style: {} },
+    { name: 'Total', value: "total", sort: true, direction: true, colStyle: { width: '10%' }, isCurrentlySorted: false, style: {} },
+    { name: 'Assigned', value: "assigned", sort: true, direction: true, colStyle: { width: '10%' }, isCurrentlySorted: false, style: {} },
+    { name: 'Available', value: "available", sort: true, direction: true, colStyle: { width: '10%' }, isCurrentlySorted: false, style: {} },
+    { name: 'Not Vailable', value: "notAvailable", sort: true, direction: true, colStyle: { width: '15%' }, isCurrentlySorted: false, style: {} },
+    { name: 'Waiting for recycling', value: "waitingForRecycling", sort: true, direction: true, colStyle: { width: '25%' }, isCurrentlySorted: false, style: {} },
+    { name: 'Recycled', value: "recycled", sort: true, direction: true, colStyle: { width: '10%' }, isCurrentlySorted: false, style: {} }
 ]
 const modalHeader = ["Category", "Total", "Assigned", "Available", "Not Vailable", "Waiting for recycling", "Recycled"];
 
@@ -118,7 +119,7 @@ export const ReportComponent: React.FC<Props> = (props: Props) => {
                             <Row>
                                 <TableComponent headers={header} setSortString={setParam} datas={reportResponse?.content as ReportModel[]} auxData={reportResponse?.content as ReportModel[]} auxHeader={auxHeader} buttons={[]} showModalCell={[]} setDummy={() => { }} setModalData={() => { }} setModalShow={() => { }} pre_button={undefined} disableButton={[]} />
                             </Row>
-                            <PaginationComponent currentPage={param.page} totalPage={reportResponse?.totalPage!} setParamsFunction={setParam} setDummy={() => { }} perPage={param.size} setPage={() => { }} fixPageSize={false} />
+                            <PaginationComponent currentPage={param.page} totalPage={reportResponse?.totalPage!} setParamsFunction={setParam} perPage={param.size}  fixPageSize={false} />
                         </>
                     }
                 </>

@@ -28,14 +28,6 @@ const createUserValidationSchema = Yup.object({
         .required('Last name is required'),
     dateOfBirth: Yup.date()
         .max(eighteenYearsAgo, 'User is under 18. Please select a different date')
-        // .max(new Date(), '\u200B')
-        // .test('is-adult', 'User must be 18 years or older', function () {
-        //     const today = new Date();
-        //     const differenceMs = today.getMilliseconds() - eighteenYearsAgo.getMilliseconds();
-        //     const differenceYears = Math.floor(differenceMs / (1000 * 60 * 60 * 24 * 365.25));
-
-        //     return differenceYears === 18;
-        // })
         .required('Date of birth is required'),
     joinedDate: Yup.date()
         .min(Yup.ref('dateOfBirth'), 'Joined date is not later than Date of Birth. Please select a different date')

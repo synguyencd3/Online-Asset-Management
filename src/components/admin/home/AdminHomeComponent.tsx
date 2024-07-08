@@ -17,19 +17,20 @@ import { AssignmentForTableModel } from '../../../models/AssignmentForTable';
 import { toDateString, uppercaseStatusToText } from '../../../utils/utils';
 import { BreadcrumbComponent } from '../../commons/BreadcrumbComponent';
 import useSWR from 'swr';
+import { TableHeaderModel } from '../../../models/TableHeaderModel';
 import { createReturningRequest } from '../../../services/ReturningService';
 
 type Props = {
     setHeaderTitle: (title: ReactNode) => void
 }
 
-const header = [
-    { name: 'Asset Code', value: "assetCode", sort: true, direction: true, colStyle: {} },
-    { name: 'Asset Name', value: "assetName", sort: true, direction: true, colStyle: {} },
-    { name: 'Category', value: "category", sort: true, direction: true, colStyle: {} },
-    { name: 'Assigned Date', value: "assignedDate", sort: true, direction: true, colStyle: {} },
-    { name: 'State', value: "state", sort: true, direction: true, colStyle: {} },
-    { name: '', value: "", sort: true, direction: true, colStyle: {} },
+const header: TableHeaderModel[] = [
+    { name: 'Asset Code', value: "assetCode", sort: true, direction: true, colStyle: {}, isCurrentlySorted: true, style: {} },
+    { name: 'Asset Name', value: "assetName", sort: true, direction: true, colStyle: {}, isCurrentlySorted: false, style: {} },
+    { name: 'Category', value: "category", sort: true, direction: true, colStyle: {}, isCurrentlySorted: false, style: {} },
+    { name: 'Assigned Date', value: "assignedDate", sort: true, direction: true, colStyle: {}, isCurrentlySorted: false, style: {} },
+    { name: 'State', value: "state", sort: true, direction: true, colStyle: {}, isCurrentlySorted: false, style: {} },
+    { name: '', value: "", sort: true, direction: true, colStyle: {}, isCurrentlySorted: false, style: {} },
 ]
 const showModalCell = ["assetCode", "assetName", "category", "assignedDate", "state"];
 const modalHeader = ["Asset Code", "Asset Name", "Category", "Specification", "Assigned to", "Assigned by", "Assigned Date", "State", "Note"];
@@ -263,11 +264,7 @@ export const AdminHomeComponent: React.FC<Props> = (props: Props) => {
                   currentPage={param.page}
                   totalPage={assignmentResponse?.totalPage!}
                   setParamsFunction={setParam}
-                  setDummy={() => {}}
                   perPage={param.size}
-                  setPage={() => {
-                    Math.random();
-                  }}
                   fixPageSize={false}
                 />
               </>
