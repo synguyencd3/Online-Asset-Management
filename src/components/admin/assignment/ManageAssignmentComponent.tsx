@@ -343,6 +343,7 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
       if (assignmentList.length > param.size) {
         assignmentList.pop();
       }
+      window.history.replaceState({}, '')
     }
   }
 
