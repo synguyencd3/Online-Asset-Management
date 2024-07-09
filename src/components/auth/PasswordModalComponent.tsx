@@ -49,13 +49,13 @@ export const PasswordModalComponent: React.FC<ChangePasswordModalProps> = ({ sho
         },
         validationSchema: getValidationSchema(isFirstLoggedIn),
         onSubmit: async (values, { resetForm }) => {
+            setIsDisable(true);
             setSuccessMessage('');
 
             messageApi.open({
                 type: 'loading',
                 content: 'Updating password...',
             }).then(async () => {
-                setIsDisable(true);
 
                 const changePswrdData: ChangePasswordModel = {
                     oldPassword: isFirstLoggedIn !== true ? '' : values.oldPassword,
