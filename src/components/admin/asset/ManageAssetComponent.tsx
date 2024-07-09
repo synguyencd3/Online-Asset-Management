@@ -62,8 +62,6 @@ export const ManageAssetComponent: React.FC<Props> = (props: Props) => {
 		sort: "assetCode,asc",
 	});
 
-	const [_, setDummy] = useState(0);
-
 	let newAsset = location.state?.newAsset;
 
 	const [modalShow, setModalShow] = useState(false);
@@ -83,7 +81,7 @@ export const ManageAssetComponent: React.FC<Props> = (props: Props) => {
 
 	const { data: category, isLoading: _isLoadingCategory } = useSWR(getCategoryUrl, categoryFetcher, {
 		onError: () => {
-			message.error("Cannot get Category")
+			message.error("Failed to Load Category")
 		},
 		revalidateOnFocus: false,
 		shouldRetryOnError: false
@@ -96,7 +94,7 @@ export const ManageAssetComponent: React.FC<Props> = (props: Props) => {
 
 	const { data: asset, isLoading: _isLoadingAsset, mutate: mutateAsset } = useSWR(param.categories ? getAssetUrl(param) : null, assetFetcher, {
 		onError: () => {
-			message.error("Cannot get Asset")
+			message.error("Failed to Load Asset")
 		},
 		shouldRetryOnError: false,
 		revalidateOnFocus: false,
@@ -121,6 +119,7 @@ export const ManageAssetComponent: React.FC<Props> = (props: Props) => {
 				state: newAsset.state.charAt(0) + newAsset.state.replace(/_/g, " ").slice(1).toLowerCase()
 			}, ...tableAsset.filter(a => a.assetCode !== newAsset.assetCode)]
 		}
+		window.history.replaceState({}, '')
 	}
 
 	// button
@@ -151,7 +150,7 @@ export const ManageAssetComponent: React.FC<Props> = (props: Props) => {
 						}
 					})
 					.catch((err) => {
-						message.error(`${err.response.data.message}`);
+						message.error(err.response ? err.response.data.message : "Failed to Delete Asset");
 					});
 			});
 	}
@@ -218,17 +217,17 @@ export const ManageAssetComponent: React.FC<Props> = (props: Props) => {
 				<Col sm={5}>
 					<Row>
 						<Col sm={6} className="d-flex justify-content-start align-items-center px-2">
-							<DropdownFilterComponent title={"State"} data={filterState} params={param.states} setParamsFunction={handleSetParam} setDummy={setDummy} style={{ width: "100%" }} defaultAll={false} paramName={'states'} ></DropdownFilterComponent>
+							<DropdownFilterComponent title={"State"} data={filterState} params={param.states} setParamsFunction={handleSetParam} style={{ width: "100%" }} defaultAll={false} paramName={'states'} ></DropdownFilterComponent>
 						</Col>
 						<Col sm={6} className="d-flex justify-content-start align-items-center px-2">
-							<DropdownFilterComponent title={"Category"} data={filterCategory} params={param.categories} setParamsFunction={handleSetParam} setDummy={setDummy} style={{ width: "100%" }} defaultAll={true} paramName={'categories'}></DropdownFilterComponent>
+							<DropdownFilterComponent title={"Category"} data={filterCategory} params={param.categories} setParamsFunction={handleSetParam} style={{ width: "100%" }} defaultAll={true} paramName={'categories'}></DropdownFilterComponent>
 						</Col>
 					</Row>
 				</Col>
 				<Col sm={6}>
 					<Row>
 						<Col sm={8} className="d-flex justify-content-end align-items-center">
-							<SearchComponent placeholder={"Search by Name or Asset Code"} setParamsFunction={handleSetParam} style={{ width: "100%" }} setDummy={() => { } } class={''}></SearchComponent>
+							<SearchComponent placeholder={"Search by Name or Asset Code"} setParamsFunction={handleSetParam} style={{ width: "100%" }} setDummy={() => { }} class={''}></SearchComponent>
 						</Col>
 						<Col sm={4} className="d-flex justify-content-end align-items-center" style={{ maxWidth: "230px" }}>
 							<Button variant="danger" onClick={() => { return navigate('./new') }} style={{ width: "230px" }}>Create New Asset</Button>
@@ -251,7 +250,7 @@ export const ManageAssetComponent: React.FC<Props> = (props: Props) => {
 								</p>
 							</Row>
 							<Row>
-								<TableComponent headers={header} datas={tableAsset} auxData={tableAsset} auxHeader={modalHeader} buttons={buttons} setSortString={handleSetParam} showModalCell={showModalCell} setDummy={setDummy} setModalData={setModalData} setModalShow={setModalShow} pre_button={undefined} disableButton={disableButtonArray}  ></TableComponent>
+								<TableComponent headers={header} datas={tableAsset} auxData={tableAsset} auxHeader={modalHeader} buttons={buttons} setSortString={handleSetParam} showModalCell={showModalCell} setDummy={() => { }} setModalData={setModalData} setModalShow={setModalShow} pre_button={undefined} disableButton={disableButtonArray}  ></TableComponent>
 							</Row>
 							<PaginationComponent currentPage={param.page} setParamsFunction={handleSetParam} totalPage={asset.totalPage} perPage={param.size} fixPageSize={false} ></PaginationComponent>
 						</>

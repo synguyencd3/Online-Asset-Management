@@ -155,7 +155,7 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
 						mutateAssignment();
 					})
 					.catch((error) => {
-						message.error(error.response.data.message);
+						message.error(error.response? error.response.data.message:"Failed to Delete Assignment");
 					});
 			});
 	};
@@ -179,7 +179,7 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
 						mutateAssignment();
 					})
 					.catch((error) => {
-						message.error(error.response.data.message);
+						message.error(error.response? error.response.data.message :"Failed to Create Return Request");
 					});
 			});
 	};
@@ -310,7 +310,6 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
                 data={filterData}
                 params={param.status}
                 setParamsFunction={handleSetParam}
-                setDummy={() => {}}
                 style={{ width: "100%" }}
                 defaultAll={true}
                 paramName={"status"}
