@@ -3,16 +3,17 @@ import { TableComponent } from "../../commons/TableComponent"
 import { ColorPalette } from "../../../utils/ColorPalette"
 import { LoaderComponent } from "../../commons/LoaderComponent"
 import { PaginationComponent } from "../../commons/PaginationComponent"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { message } from 'antd';
 import { UserModel, UserParamModel } from "../../../models/UserModel"
 import { UserForSelectTableModel } from "../../../models/UserModel"
 import { Roles, RolesLowerCase } from "../../../utils/Enum"
-import { getUser } from "../../../services/UserService"
+import { getUserUrl, userFetcher } from "../../../services/UserService"
 import { faSpinner } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { DropdownSearchComponent } from "../../commons/DropDownSearchComponent"
 import { TableHeaderModel } from "../../../models/TableHeaderModel"
+import useSWR from "swr"
 
 const header: TableHeaderModel[] = [
 	{ name: '', value: "", sort: false, direction: false, colStyle: { width: "20%" }, isCurrentlySorted: false, style: {} },
@@ -28,19 +29,17 @@ type Props = {
 }
 
 export const SelectUserComponent = (props: Props) => {
-	const [tableUser, setTableUser] = useState<UserForSelectTableModel[]>([]);
-
-	const [auxData, setAuxData] = useState<UserModel[]>([]);
-
-	const [loading, setLoading] = useState(true);
-
-	const [totalPage, setTotalPage] = useState(0);
-
-	const [dummy, setDummy] = useState(0);
-
-	const [page,] = useState(0);
-
 	const [selected, setSelected] = useState<String>("")
+
+	let tableUser: UserForSelectTableModel[] = [];
+
+	const handleSetParam = (func: (p: UserParamModel) => UserParamModel) => {
+		const newParam = func(param);
+		if (newParam.page === param.page) {
+			newParam.page = 0;
+		}
+		setParam(newParam);
+	};
 
 	const [param, setParam] = useState<UserParamModel>({
 		search: "",
@@ -51,45 +50,29 @@ export const SelectUserComponent = (props: Props) => {
 		size: 20
 	});
 
-	async function InitializeQuery() {
-		setLoading(true)
-		let params = "?"
-			+ "search=" + encodeURIComponent(param.search) + "&"
-			+ "types=" + param.types.join() + "&"
-			+ "page=" + param.page + "&"
-			+ "size=" + param.size + "&"
-			+ "self=" + param.self + "&"
-			+ "sort=" + param.sort
+	const { data: user, isLoading: isLoadingUser} = useSWR(getUserUrl(param), userFetcher, {
+		onError: () => {			
+			message.error("Fail to Load User")
+		},
+		shouldRetryOnError: false,
+		revalidateOnFocus: false,
+	});
 
-		setLoading(true)
+	if (user) {
+		let users = user.content;
 
-		await getUser(params).then((response) => {
-			const data = response.data.data;
-			setParam((p: any) => ({ ...p, page: data.currentPage }));
-			let users: UserModel[] = data.content;
-			let usersforTable: UserForSelectTableModel[] = users.map(a => {
-				return {
-					staffCode: a.staffCode,
-					username: a.username,
-					fullName: a.firstName + " " + a.lastName,
-					type: RolesLowerCase[a.roleId],
-				}
-			})
-			setTableUser(usersforTable)
-			setAuxData(users);
-			setTotalPage(data.totalPage);
-		}).catch(e => {
-			message.error(e.message);
-		});
-		setLoading(false);
+		users.map(user => {
+			
+				let data: UserForSelectTableModel = {
+					staffCode: user.staffCode,
+					fullName: user.firstName + " " + user.lastName,
+					username: user.username,
+					type: RolesLowerCase[user.roleId],
+				};
+				tableUser.push(data);
+		})
 		window.history.replaceState({}, '')
 	}
-
-	useEffect(() => {
-		param.page = 0
-		InitializeQuery()
-	}, [dummy])
-
 
 	const preButton = (user: UserModel, setUser: any) => {
 		return (
@@ -109,10 +92,6 @@ export const SelectUserComponent = (props: Props) => {
 		props.closeDropdown()
 	}
 
-	useEffect(() => {
-		InitializeQuery()
-	}, [page])
-
 	return (
 		<Container>
 			<Row>
@@ -122,11 +101,11 @@ export const SelectUserComponent = (props: Props) => {
 					</h4>
 				</Col>
 				<Col>
-					<DropdownSearchComponent placeholder={"Search by name"} setParamsFunction={setParam} setDummy={setDummy} style={{ width: "100%" }}></DropdownSearchComponent>
+					<DropdownSearchComponent placeholder={"Search by name"} setParamsFunction={setParam} setDummy={()=>{}} style={{ width: "100%" }}></DropdownSearchComponent>
 				</Col>
 			</Row>
 			<Row>
-				{loading ?
+				{!user ?
 					<LoaderComponent></LoaderComponent>
 					:
 					<>
@@ -136,9 +115,9 @@ export const SelectUserComponent = (props: Props) => {
 							</Row> :
 							<>
 								<Row>
-									<TableComponent headers={header} datas={tableUser} auxData={auxData} auxHeader={[]} buttons={[]} setSortString={setParam} showModalCell={[]} setDummy={setDummy} setModalData={() => { }} setModalShow={undefined} pre_button={preButton} setSelect={setSelected} disableButton={[]}  ></TableComponent>
+									<TableComponent headers={header} datas={tableUser} auxData={[]} auxHeader={[]} buttons={[]} setSortString={handleSetParam} showModalCell={[]} setDummy={() => {}} setModalData={() => { }} setModalShow={undefined} pre_button={preButton} setSelect={setSelected} disableButton={[]}  ></TableComponent>
 								</Row>
-								<PaginationComponent currentPage={param.page} totalPage={totalPage} perPage={param.size} setParamsFunction={setParam} fixPageSize={false} ></PaginationComponent>
+								<PaginationComponent currentPage={param.page} totalPage={user.totalPage} perPage={param.size} setParamsFunction={handleSetParam} fixPageSize={false} ></PaginationComponent>
 							</>
 						}
 					</>
@@ -146,7 +125,7 @@ export const SelectUserComponent = (props: Props) => {
 			</Row>
 			<Row>
 				<Col className="d-flex justify-content-end my-4">
-					<Button variant="danger" className="mx-4" style={{ minWidth: "100px" }} type="button" onClick={save} > {loading ? <FontAwesomeIcon icon={faSpinner} spin /> : "Save"}</Button>
+					<Button variant="danger" className="mx-4" style={{ minWidth: "100px" }} type="button" onClick={save} > {isLoadingUser ? <FontAwesomeIcon icon={faSpinner} spin /> : "Save"}</Button>
 					<Button variant="outline-dark" className="ms-4" style={{ minWidth: "100px" }} onClick={props.closeDropdown}>Cancel</Button>
 				</Col>
 			</Row>

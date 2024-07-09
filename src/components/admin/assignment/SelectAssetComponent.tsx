@@ -3,9 +3,9 @@ import { TableComponent } from "../../commons/TableComponent"
 import { ColorPalette } from "../../../utils/ColorPalette"
 import { LoaderComponent } from "../../commons/LoaderComponent"
 import { PaginationComponent } from "../../commons/PaginationComponent"
-import { useEffect, useState } from "react"
-import { getAsset, getCategories } from "../../../services/AssetService"
-import { AssetModel } from "../../../models/AssetModel"
+import { useState } from "react"
+import { assetFetcher, categoryFetcher, getAssetUrl, getCategoryUrl } from "../../../services/AssetService"
+import { AssetModel, AssetParamModel } from "../../../models/AssetModel"
 import { message } from 'antd';
 import { AssetForSelectTableModel } from "../../../models/AssetModel"
 import { faSpinner } from "@fortawesome/free-solid-svg-icons"
@@ -13,6 +13,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { CategoryModel } from "../../../models/CategoryModel"
 import { DropdownSearchComponent } from "../../commons/DropDownSearchComponent"
 import { TableHeaderModel } from "../../../models/TableHeaderModel"
+import useSWR from "swr"
 
 const header: TableHeaderModel[] = [
 	{ name: '', value: "", sort: false, direction: false, colStyle: { width: "20%" }, isCurrentlySorted: false, style: {} },
@@ -26,78 +27,58 @@ type Props = {
 	closeDropdown: any
 }
 export const SelectAssetComponent = (props: Props) => {
-	const [tableAsset, setTableAsset] = useState<AssetForSelectTableModel[]>([]);
-
-	const [auxData, setAuxData] = useState<AssetModel[]>([]);
-
-	const [, setCategory] = useState<CategoryModel[]>([]);
-
-	const [loading, setLoading] = useState(true);
-
-	const [totalPage, setTotalPage] = useState(0);
-
-	const [dummy, setDummy] = useState(0);
-
-	const [page, ] = useState(0);
 
 	const [selected, setSelected] = useState<String>("")
 
-	const [param, setParam] = useState({
+	const [param, setParam] = useState<AssetParamModel>({
 		search: "",
 		states: ["AVAILABLE"],
-		categories: [],
+		categories: undefined,
 		page: 0,
 		size: 20,
 		sort: "assetCode,asc",
 	});
 
+	const handleSetParam = (func: (p: AssetParamModel) => AssetParamModel) => {
+		console.log("sorting")
+		const newParam = func(param);
+		if (newParam.page === param.page) {
+			newParam.page = 0;
+		}
+		setParam(newParam);
+	};
 
-	async function getCategory() {
-		if (param.categories.length > 0) return;
-		let a = await getCategories().then((response) => {
-			const data: CategoryModel[] = response.data.data;
-			setCategory(data);
-			const arrayId = response.data.data.map((category: CategoryModel) => category.id)
-			setParam(p => ({ ...p, categories: arrayId }));
-			setDummy(Math.random())
-			return data.map(obj => obj.id.toString());
-		}).catch(e => {
-			message.error(e.message);
-		});
-		return a;
+	const { data: category, isLoading: _isLoadingCategory } = useSWR(getCategoryUrl, categoryFetcher, {
+		onError: () => {
+			message.error("Failed to Load Category")
+		},
+		revalidateOnFocus: false,
+		shouldRetryOnError: false
+	})
+
+	if (param.categories === undefined && category) {
+		const data = category.data.data as CategoryModel[];
+		param.categories = data.map(obj => obj.id.toString())
 	}
 
-	async function InitializeQuery() {
-		if (param.categories.length == 0) return;
-		setLoading(true)
-		let params = "?"
-			+ "search=" + encodeURIComponent(param.search) + "&"
-			+ "states=" + param.states.join() + "&"
-			+ "categories=" + param.categories.join() + "&"
-			+ "page=" + param.page + "&"
-			+ "size=" + param.size + "&"
-			+ "sort=" + param.sort;
+	const { data: asset, isLoading: _isLoadingAsset } = useSWR(param.categories ? getAssetUrl(param) : null, assetFetcher, {
+		onError: () => {
+			message.error("Failed to Load Asset")
+		},
+		shouldRetryOnError: false,
+		revalidateOnFocus: false,
+	});
 
-		setLoading(true)
-
-		await getAsset(params).then((response) => {
-			const data = response.data.data;
-			setParam((p: any) => ({ ...p, page: data.currentPage }));
-			let assets: AssetModel[] = data.content;
-			let assetsforTable: AssetForSelectTableModel[] = assets.map(a => {
-				return {
-					assetCode: a.assetCode,
-					assetName: a.name,
-					category: a.category,
-				}
-			})
-			setTableAsset(assetsforTable)
-			setAuxData(assets);
-			setTotalPage(data.totalPage);
-		}).catch(e => {
-			message.error(e.message);
-		});
-		setLoading(false);
+	let tableAsset: AssetForSelectTableModel[] = [];
+	if (asset) {
+		let assets = asset.content;
+		tableAsset = assets.map(a => {
+			return {
+				assetCode: a.assetCode,
+				assetName: a.name,
+				category: a.category,
+			}
+		})
 		window.history.replaceState({}, '')
 	}
 
@@ -118,19 +99,6 @@ export const SelectAssetComponent = (props: Props) => {
 		props.closeDropdown()
 	}
 
-	useEffect(() => {
-		param.page = 0
-		InitializeQuery()
-	}, [dummy])
-
-	useEffect(() => {
-		getCategory()
-	}, [])
-
-	useEffect(() => {
-		InitializeQuery()
-	}, [page])
-
 	return (
 		<Container >
 			<Row>
@@ -140,11 +108,11 @@ export const SelectAssetComponent = (props: Props) => {
 					</h4>
 				</Col>
 				<Col>
-					<DropdownSearchComponent placeholder={"Search by name"} setParamsFunction={setParam} setDummy={setDummy} style={{ width: "100%" }}></DropdownSearchComponent>
+					<DropdownSearchComponent placeholder={"Search by name"} setParamsFunction={handleSetParam} setDummy={()=>{}} style={{ width: "100%" }}></DropdownSearchComponent>
 				</Col>
 			</Row>
 			<Row>
-				{loading ?
+				{!asset ?
 					<LoaderComponent></LoaderComponent>
 					:
 					<>
@@ -154,9 +122,9 @@ export const SelectAssetComponent = (props: Props) => {
 							</Row> :
 							<>
 								<Row>
-									<TableComponent headers={header} datas={tableAsset} auxData={auxData} auxHeader={[]} buttons={[]} setSortString={setParam} showModalCell={[]} setDummy={setDummy} setModalData={() => { }} setModalShow={undefined} pre_button={preButton} setSelect={setSelected} disableButton={[]}  ></TableComponent>
+									<TableComponent headers={header} datas={tableAsset} auxData={tableAsset} auxHeader={[]} buttons={[]} setSortString={handleSetParam} showModalCell={[]} setDummy={()=>{}} setModalData={() => { }} setModalShow={undefined} pre_button={preButton} setSelect={setSelected} disableButton={[]}  ></TableComponent>
 								</Row>
-								<PaginationComponent currentPage={param.page} totalPage={totalPage} perPage={param.size} setParamsFunction={setParam} fixPageSize={false} ></PaginationComponent>
+								<PaginationComponent currentPage={param.page} totalPage={asset.totalPage} perPage={param.size} setParamsFunction={handleSetParam} fixPageSize={false} ></PaginationComponent>
 							</>
 						}
 					</>
@@ -164,7 +132,7 @@ export const SelectAssetComponent = (props: Props) => {
 			</Row>
 			<Row>
 				<Col className="d-flex justify-content-end my-4">
-					<Button variant="danger" className="mx-4" style={{ minWidth: "100px" }} type="button" onClick={save}> {loading ? <FontAwesomeIcon icon={faSpinner} spin /> : "Save"}</Button>
+					<Button variant="danger" className="mx-4" style={{ minWidth: "100px" }} type="button" onClick={save}> {_isLoadingAsset ? <FontAwesomeIcon icon={faSpinner} spin /> : "Save"}</Button>
 					<Button variant="outline-dark" className="ms-4" style={{ minWidth: "100px" }} onClick={props.closeDropdown}>Cancel</Button>
 				</Col>
 			</Row>
