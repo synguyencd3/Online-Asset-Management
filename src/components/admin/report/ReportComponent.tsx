@@ -68,7 +68,7 @@ export const ReportComponent: React.FC<Props> = (props: Props) => {
     const downloadXLSX = (data: any[], filename: string = 'report_data.xlsx') => {
         const worksheet = convertToWorksheet(data);
         const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'Asset Report');
         XLSX.writeFile(workbook, filename);
     };
 
@@ -79,7 +79,16 @@ export const ReportComponent: React.FC<Props> = (props: Props) => {
         }).then(async () => {
             await exportReport(param).then((res) => {
                 if (res.status === 200) {
-                    downloadXLSX(res.data.data.content);
+                    const exportReport = res.data.data.content.map((res: ReportModel) => ({
+                        Category: res.category,
+                        Total: res.total,
+                        Assigned: res.assigned,
+                        Available: res.available,
+                        NotAvailable: res.notAvailable,
+                        WaitingForRecycling: res.waitingForRecycling,
+                        Recycled: res.recycled
+                    }));
+                    downloadXLSX(exportReport)
                 }
             }).catch((err) => message.error(err.response.data.message));
         })

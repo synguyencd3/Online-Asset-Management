@@ -11,7 +11,6 @@ type Props = {
 	params: string[] | undefined
 	setParamsFunction: any;
 	paramName: string
-	setDummy: any
 	style: Object
 	defaultAll: boolean
 }
@@ -54,7 +53,6 @@ export const DropdownFilterComponent = (props: Props) => {
 			}
 		}
 		props.setParamsFunction((p: any) => ({ ...p, [props.paramName]: updatedOptions }));
-		props.setDummy(Math.random())
 	};
 
 	const renderTooltip = (props: JSX.IntrinsicAttributes & TooltipProps & RefAttributes<HTMLDivElement>) => (

@@ -96,7 +96,7 @@ export const CreateAssetComponent = (props: Props) => {
           });
         })
         .catch((error) => {
-          message.error(error.response.data.message);
+          message.error(error.response ? error.response.data.message : "Failed to Create Asset");
           setLoading(false);
         });
     },

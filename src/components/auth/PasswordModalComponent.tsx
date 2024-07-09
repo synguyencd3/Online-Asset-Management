@@ -72,10 +72,10 @@ export const PasswordModalComponent: React.FC<ChangePasswordModalProps> = ({ sho
                         }
                         setIsDisable(false);
                     }).catch((err) => {
+                        setIsDisable(false);
                         message.error(String(err.response.data.message));
                     });
             });
-
         }
     });
 
