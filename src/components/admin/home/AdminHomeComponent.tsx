@@ -295,7 +295,7 @@ export const AdminHomeComponent: React.FC<Props> = (props: Props) => {
 					confirmQuestion={
 						confirmModalData[responseData.status].confirmQuestion
 					}
-					confirmBtnLabel={
+					confirmBtnLabel={ 
 						confirmModalData[responseData.status].confirmBtnLabel
 					}
 					cancelBtnLabel={"Cancel"}

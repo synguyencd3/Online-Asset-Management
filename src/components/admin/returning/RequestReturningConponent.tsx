@@ -26,8 +26,8 @@ type Props = {
 }
 
 const header: TableHeaderModel[] = [
-    { name: 'No.', value: "id", sort: true, direction: true, colStyle: {}, isCurrentlySorted: true, style: {} },
-    { name: 'Asset Code', value: "assignment.asset.assetCode", sort: true, direction: true, colStyle: {}, isCurrentlySorted: false, style: {} },
+    { name: 'No.', value: "id", sort: true, direction: true, colStyle: {}, isCurrentlySorted: false, style: {} },
+    { name: 'Asset Code', value: "assignment.asset.assetCode", sort: true, direction: true, colStyle: {}, isCurrentlySorted: true, style: {} },
     { name: 'Asset Name', value: "assignment.asset.name", sort: true, direction: true, colStyle: {}, isCurrentlySorted: false, style: {} },
     { name: 'Requested By', value: "auditMetadata.createdBy.username", sort: true, direction: true, colStyle: {}, isCurrentlySorted: false, style: {} },
     { name: 'Accepted By', value: "acceptedBy", sort: true, direction: true, colStyle: {}, isCurrentlySorted: false, style: {} },
@@ -57,7 +57,7 @@ export const RequestReturningConponent: React.FC<Props> = (props: Props) => {
         returnedDate: "",
         page: 0,
         size: 20,
-        sort: "id,asc",
+        sort: "assignment.asset.assetCode,asc",
     });
 
     const handleSetParam = (
@@ -191,7 +191,6 @@ export const RequestReturningConponent: React.FC<Props> = (props: Props) => {
                                 data={filterState}
                                 params={param.states}
                                 setParamsFunction={handleSetParam}
-                                setDummy={() => Math.random()}
                                 style={{ width: "100%" }}
                                 defaultAll={true}
                                 paramName={"states"}
