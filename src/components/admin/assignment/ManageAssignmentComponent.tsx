@@ -323,8 +323,8 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
             </Col>
           </Row>
         </Col>
-        <Col sm={5}>
-          <Row>
+        <Col sm={6}>
+          <Row className="justify-content-end">
             <Col sm={7}>
               <SearchComponent
 					placeholder={"Search Asset Code, Asset Name or Assignee Name"}
@@ -333,13 +333,14 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
 					setDummy={() => { } } class={""}              
 				/>
             </Col>
-            <Col sm={4}>
+            <Col sm={4} >
               <Button
+								
                 variant="danger"
                 onClick={() => {
                   return navigate("./new");
                 }}
-                style={{ width: "230px" }}
+                style={{ width: "200px" }}
               >
                 Create new assignment
               </Button>

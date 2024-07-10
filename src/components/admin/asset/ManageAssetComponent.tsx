@@ -213,13 +213,13 @@ export const ManageAssetComponent: React.FC<Props> = (props: Props) => {
 			<h4 style={{ color: ColorPalette.PRIMARY_COLOR }} className='fw-bold fs-4 ms-1 mt-5 mb-3'>
 				Asset List
 			</h4>
-			<Row className="py-4 ms-0 pe-2 user-param-row justify-content-between">
-				<Col sm={5}>
+			<Row className="py-4 ms-0 pe-2 user-param-row justify-content-between  align-items-center">
+				<Col sm={6}>
 					<Row>
-						<Col sm={6} className="d-flex justify-content-start align-items-center px-2">
+						<Col sm={6} className=" ">
 							<DropdownFilterComponent title={"State"} data={filterState} params={param.states} setParamsFunction={handleSetParam} style={{ width: "100%" }} defaultAll={false} paramName={'states'} ></DropdownFilterComponent>
 						</Col>
-						<Col sm={6} className="d-flex justify-content-start align-items-center px-2">
+						<Col sm={6} className=" ">
 							<DropdownFilterComponent title={"Category"} data={filterCategory} params={param.categories} setParamsFunction={handleSetParam} style={{ width: "100%" }} defaultAll={true} paramName={'categories'}></DropdownFilterComponent>
 						</Col>
 					</Row>
