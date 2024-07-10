@@ -309,7 +309,6 @@ export const ManageAssetComponent: React.FC<Props> = (props: Props) => {
 						<a
 							type="button"
 							className='btn-link'
-							// style={{color:"rgb(81, 167, 249)",fontWeight:"normal", textDecoration:"underline"}} 
 							onClick={
 								() => {
 									const data = tableAsset.find(a => a.assetCode === deleteAssetCode);
