@@ -92,3 +92,5 @@ export const getOwnAssignementSWR = async (params: PageableModel) => {
   };
   return pageAssignment;
 }
+
+export const checkUserHaveValidAssignment = async (staffCode: string) => axios.get(`${AZURE_SERVICE_API}/assignments/valid/${staffCode}`, CORS_CONFIG);

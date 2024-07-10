@@ -162,7 +162,7 @@ export const RequestReturningConponent: React.FC<Props> = (props: Props) => {
     const responseReturningRequest = async (id: number, status: boolean) => {
         messageApi.open({
             type: 'loading',
-            content: status === true ? 'Completing returning request...' : 'Canceling returning request...',
+            content: status === true ? 'Completing returning request...' : 'Cancelling returning request...',
         })
             .then(async () => {
                 await sendResponseReturningRequest(id, status)
