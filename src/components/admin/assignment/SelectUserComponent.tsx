@@ -3,7 +3,7 @@ import { TableComponent } from "../../commons/TableComponent"
 import { ColorPalette } from "../../../utils/ColorPalette"
 import { LoaderComponent } from "../../commons/LoaderComponent"
 import { PaginationComponent } from "../../commons/PaginationComponent"
-import { useState } from "react"
+import { useRef, useState } from "react"
 import { message } from 'antd';
 import { UserModel, UserParamModel } from "../../../models/UserModel"
 import { UserForSelectTableModel } from "../../../models/UserModel"
@@ -18,7 +18,7 @@ import useSWR from "swr"
 const header: TableHeaderModel[] = [
 	{ name: '', value: "", sort: false, direction: false, colStyle: { width: "20%" }, isCurrentlySorted: false, style: {} },
 	{ name: 'Staff Code', value: "staffCode", sort: true, direction: true, colStyle: { width: "20%" }, isCurrentlySorted: false, style: {} },
-	{ name: 'Username', value: "username", sort: true, direction: true, colStyle: { width: "40%" }, isCurrentlySorted: false, style: {} },
+	{ name: 'Username', value: "username", sort: false, direction: false, colStyle: { width: "40%" }, isCurrentlySorted: false, style: {} },
 	{ name: 'Full Name', value: "firstName", sort: true, direction: true, colStyle: { width: "50%" }, isCurrentlySorted: false, style: {} },
 	{ name: 'Type', value: "roleId", sort: true, direction: true, colStyle: { width: "10%" }, isCurrentlySorted: false, style: {} },
 ]
@@ -32,6 +32,8 @@ export const SelectUserComponent = (props: Props) => {
 	const [selected, setSelected] = useState<String>("")
 
 	let tableUser: UserForSelectTableModel[] = [];
+
+	const containerRef = useRef(null);
 
 	const handleSetParam = (func: (p: UserParamModel) => UserParamModel) => {
 		const newParam = func(param);
@@ -93,7 +95,7 @@ export const SelectUserComponent = (props: Props) => {
 	}
 
 	return (
-		<Container>
+		<Container ref={containerRef}>
 			<Row>
 				<Col>
 					<h4 style={{ color: ColorPalette.PRIMARY_COLOR }} className="mb-4">
@@ -117,7 +119,7 @@ export const SelectUserComponent = (props: Props) => {
 								<Row>
 									<TableComponent headers={header} datas={tableUser} auxData={[]} auxHeader={[]} buttons={[]} setSortString={handleSetParam} showModalCell={[]} setDummy={() => {}} setModalData={() => { }} setModalShow={undefined} pre_button={preButton} setSelect={setSelected} disableButton={[]}  ></TableComponent>
 								</Row>
-								<PaginationComponent currentPage={param.page} totalPage={user.totalPage} perPage={param.size} setParamsFunction={handleSetParam} fixPageSize={false} containerRef={undefined} ></PaginationComponent>
+								<PaginationComponent currentPage={param.page} totalPage={user.totalPage} perPage={param.size} setParamsFunction={handleSetParam} fixPageSize={false} containerRef={containerRef} ></PaginationComponent>
 							</>
 						}
 					</>
