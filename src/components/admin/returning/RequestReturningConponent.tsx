@@ -202,7 +202,7 @@ export const RequestReturningConponent: React.FC<Props> = (props: Props) => {
                     </Row>
                 </Col>
                 <Col sm={4} className="d-flex justify-content-end align-items-center">
-                    <SearchComponent placeholder={""} setParamsFunction={setParam} style={{ width: "100%" }} setDummy={() => { }} class={''}></SearchComponent>
+                    <SearchComponent placeholder={"Search Asset Code, Asset Name or Requester's Username"} setParamsFunction={setParam} style={{ width: "100%" }} setDummy={() => { }} class={''}></SearchComponent>
                 </Col>
             </Row>
             {isReturningLoading ?
@@ -222,7 +222,7 @@ export const RequestReturningConponent: React.FC<Props> = (props: Props) => {
                             <Row>
                                 <TableComponent headers={header} datas={formatRecordList(returningResponse?.content!)} setSortString={setParam} auxData={returningResponse?.content!} auxHeader={auxHeader} buttons={buttons} showModalCell={[]} setDummy={() => { }} setModalData={() => { }} setModalShow={() => { }} pre_button={undefined} disableButton={setDisableButtonState(returningResponse?.content!)} />
                             </Row>
-                            <PaginationComponent currentPage={param.page} totalPage={returningResponse?.totalPage!} setParamsFunction={setParam} perPage={param.size} fixPageSize={false} />
+                            <PaginationComponent currentPage={param.page} totalPage={returningResponse?.totalPage!} setParamsFunction={setParam} perPage={param.size} fixPageSize={false} containerRef={undefined} />
                         </>
                     }
                 </>

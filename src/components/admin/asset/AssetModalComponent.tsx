@@ -4,11 +4,11 @@ import { Col, Container, Modal, Row, Table } from "react-bootstrap";
 import { AssetHistoryModel, AssetModel } from "../../../models/AssetModel";
 import useSWR from "swr";
 import { getOneAssetHistoryUrl } from "../../../services/AssetService";
-import { useState } from "react";
 import { getWithSWR } from "../../../services/swrService";
 import { PaginationComponent } from "../../commons/PaginationComponent";
 import { LoaderComponent } from "../../commons/LoaderComponent";
 import { TableHeaderModel } from "../../../models/TableHeaderModel";
+import { useRef, useState } from "react";
 
 type Props = {
     title: string;
@@ -48,26 +48,41 @@ function toDateString(date: Date) {
 }
 export const AssetModalComponent = (props: Props) => {
 
+    const containerRef = useRef(null);
+
     const [currentPage, setCurrentPage] = useState({ page: 0, size: 10 });
-    const [totalPage, setTotalPage] = useState(0);
-    const [asset, setAsset] = useState<ModalAsset>();
-    const [history, setHistory] = useState<AssetHistoryModel[]>([]);
+    // const [totalPage, setTotalPage] = useState(0);
+    // const [asset, setAsset] = useState<ModalAsset>();
+    // const [history, setHistory] = useState<AssetHistoryModel[]>([]);
     const [readMore, setReadMore] = useState<boolean[]>([]);
 
-    const { isLoading } = useSWR(props.data ? getOneAssetHistoryUrl(props.data, currentPage.page) : null, getWithSWR, {
+
+    const { data: assetHistory, isLoading } = useSWR(props.data ? getOneAssetHistoryUrl(props.data, currentPage.page) : null, getWithSWR, {
         onSuccess: (response) => {
             const data = response.data.data;
             const assetT: AssetModel = data.asset;
             const pageT = data.history;
             const historyT: AssetHistoryModel[] = pageT.content;
-            const totalPageT = pageT.totalPages;
-            setAsset(() => ({ ...assetT, location: assetT.location.toString(), installedDate: toDateString(assetT.installedDate), status: assetT.state.charAt(0) + assetT.state.slice(1).toLowerCase().replace(/_/g, " ") }))
-            setTotalPage(totalPageT);
-            setHistory(historyT);
+            history = (historyT);
             setReadMore(Object.values(assetT).map(a => a.length > 50))
-        }
+        },
+        revalidateOnFocus: true,
+        shouldRetryOnError: false
     })
+    let asset: ModalAsset | undefined = undefined;
+    let history: AssetHistoryModel[] = [];
+    let totalPage = 0;
 
+    if (assetHistory) {
+        const data = assetHistory.data.data;
+        const assetT: AssetModel = data.asset;
+        const pageT = data.history;
+        const historyT: AssetHistoryModel[] = pageT.content;
+        const totalPageT = pageT.totalPages;
+        asset = { ...assetT, location: assetT.location.toString(), installedDate: toDateString(assetT.installedDate), status: assetT.state.charAt(0) + assetT.state.slice(1).toLowerCase().replace(/_/g, " ") };
+        totalPage = (totalPageT);
+        history = (historyT);
+    }
     return (
         <Modal
             {...props}
@@ -84,7 +99,7 @@ export const AssetModalComponent = (props: Props) => {
                 </Container>
             </Modal.Header>
             <Modal.Body>
-                <Container style={{ maxWidth: "95%" }}>
+                <Container style={{ maxWidth: "95%" }} ref={containerRef}>
                     {headers.map((header, index) => {
                         if (asset) {
                             let value = asset[header.value];
@@ -149,7 +164,7 @@ export const AssetModalComponent = (props: Props) => {
                     {isLoading ?
                         "" :
                         history && history.length > 0 ?
-                            <PaginationComponent currentPage={currentPage.page} totalPage={totalPage} perPage={10} setParamsFunction={setCurrentPage} fixPageSize={true}></PaginationComponent>
+                            <PaginationComponent currentPage={currentPage.page} totalPage={totalPage} perPage={10} setParamsFunction={setCurrentPage} fixPageSize={true} containerRef={containerRef}></PaginationComponent>
                             :
                             ""
                     }

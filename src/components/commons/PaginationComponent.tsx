@@ -8,11 +8,13 @@ type Props = {
     perPage: number
     setParamsFunction: any;
     fixPageSize: boolean
+    containerRef: any
 }
-export const PaginationComponent = ({ currentPage, totalPage, setParamsFunction, perPage, fixPageSize }: Props) => {
+export const PaginationComponent = ({ currentPage, totalPage, setParamsFunction, perPage, fixPageSize, containerRef }: Props) => {
     const isFirstPage = currentPage === 0;
     const isLastPage = currentPage === totalPage - 1;
     const [customPage, setCustomPage] = useState(currentPage + 1);
+
     const handlePageChange = (page: number) => {
         if (page === currentPage) {
             return
@@ -38,7 +40,7 @@ export const PaginationComponent = ({ currentPage, totalPage, setParamsFunction,
     }
 
     const popover = (
-        <Popover id="popover-basic" style={{ maxWidth: "150px" }} >
+        <Popover id="popover-basic" style={{ maxWidth: "150px" }}>
             <Popover.Header style={{ textAlign: "center" }}>Choose Page</Popover.Header>
             <Popover.Body>
                 <Form onSubmit={(e) => handleCustomPageSubmit(e)}>
@@ -65,14 +67,14 @@ export const PaginationComponent = ({ currentPage, totalPage, setParamsFunction,
                     );
                 }
                 items.push(
-                    <OverlayTrigger key={"rightEllipsisOverlay"} trigger="click" placement="top" overlay={popover}>
+                    <OverlayTrigger key={"rightEllipsisOverlay"} trigger="click" placement="top" overlay={popover} container={containerRef?.current}>
                         <Pagination.Ellipsis key="rightEllipsis" />
                     </OverlayTrigger>
                 )
             }
             else if (totalPage - currentPage < 5) {
                 items.push(
-                    <OverlayTrigger key={"leftEllipsisOverlay"} trigger="click" placement="top" overlay={popover}>
+                    <OverlayTrigger key={"leftEllipsisOverlay"} trigger="click" placement="top" overlay={popover} container={containerRef?.current}>
                         <Pagination.Ellipsis key="leftEllipsis" />
                     </OverlayTrigger>
 
@@ -85,7 +87,7 @@ export const PaginationComponent = ({ currentPage, totalPage, setParamsFunction,
             }
             else {
                 items.push(
-                    <OverlayTrigger key={"leftEllipsisOverlay"} delay={{ show: 100, hide: 0 }} trigger="click" placement="top" overlay={popover} rootClose={true}>
+                    <OverlayTrigger key={"leftEllipsisOverlay"} delay={{ show: 100, hide: 0 }} trigger="click" placement="top" overlay={popover} rootClose={true} container={containerRef?.current}>
                         <Pagination.Ellipsis key="leftEllipsis" id="leftEllipsis" />
                     </OverlayTrigger>
                 )
@@ -95,7 +97,7 @@ export const PaginationComponent = ({ currentPage, totalPage, setParamsFunction,
                     );
                 }
                 items.push(
-                    <OverlayTrigger key={"rightEllipsisOverlay"} delay={{ show: 100, hide: 0 }} trigger="click" placement="top" overlay={popover} rootClose={true}>
+                    <OverlayTrigger key={"rightEllipsisOverlay"} delay={{ show: 100, hide: 0 }} trigger="click" placement="top" overlay={popover} rootClose={true} container={containerRef?.current}>
                         <Pagination.Ellipsis key="rightEllipsis" id="rightEllipsis" />
                     </OverlayTrigger>
                 )
@@ -112,6 +114,7 @@ export const PaginationComponent = ({ currentPage, totalPage, setParamsFunction,
                         <div className="me-5" style={{ maxWidth: "100%", minWidth: "50px", width: "fit-content", textAlign: "left" }}>
                             <Form.Group as={Row} className="" controlId="location">
                                 <Form.Select name="location" defaultValue={perPage} style={{ width: "100%" }} onChange={(e) => { handlePerPageChange(e.target.value) }}>
+                                    <option value="1" >1 / page</option>
                                     <option value="10" >10 / page</option>
                                     <option value="20" >20 / page</option>
                                     <option value="50" >50 / page</option>
