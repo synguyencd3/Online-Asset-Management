@@ -14,3 +14,31 @@ export function toDateString(date: string) {
     return null;
   }
 }
+
+export type ConfirmModalType = {
+  confirmTitle: string,
+  confirmQuestion: string,
+  confirmBtnLabel: string,
+  cancelBtnLabel: string
+}
+
+export const confirmModalData : {[key: string] : ConfirmModalType} = {
+  "ACCEPTED": {
+      confirmTitle: "Response Confirmation",
+      confirmQuestion: 'Do you want to accept this assignment?',
+      confirmBtnLabel: 'Yes',
+      cancelBtnLabel: 'No'
+  },
+  "DECLINED": {
+      confirmTitle: "Response Confirmation",
+      confirmQuestion: 'Do you want to decline this assignment?',
+      confirmBtnLabel: 'Yes',
+      cancelBtnLabel: 'No'
+  },
+  "RETURNING": {
+      confirmTitle: "Returning Confirmation",
+      confirmQuestion: "Do you want to create a returning request for this asset?",
+      confirmBtnLabel: 'Yes',
+      cancelBtnLabel: 'No'
+  },
+}

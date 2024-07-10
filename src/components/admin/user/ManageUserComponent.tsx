@@ -1,27 +1,29 @@
-import { Button, Col, Container, Row } from "react-bootstrap";
+import { ReactNode, useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { Button, Col, Container, Modal, Row } from "react-bootstrap";
+import { message } from "antd";
+import useSWR from "swr";
+
 import { TableComponent } from "../../commons/TableComponent";
 import { DropdownFilterComponent } from "../../commons/DropdownFilterComponent";
 import { SearchComponent } from "../../commons/SearchComponent";
-import { ReactNode, useEffect, useState } from "react";
-import { UserModel, UserParamModel } from "../../../models/UserModel";
-import { UserForTableModel } from "../../../models/UserModel";
-import { ModalUserModel } from "../../../models/UserModel";
-import { Roles, RolesLowerCase } from "../../../utils/Enum";
-import { FunctionalIconModel } from "../../../models/FunctionalIconModel";
-import { faPencil } from "@fortawesome/free-solid-svg-icons";
-import { faCircleXmark } from "@fortawesome/free-regular-svg-icons/faCircleXmark";
-import { useLocation, useNavigate } from "react-router-dom";
+import { BreadcrumbComponent } from "../../commons/BreadcrumbComponent";
 import { PaginationComponent } from "../../commons/PaginationComponent";
 import { LoaderComponent } from "../../commons/LoaderComponent";
 import { ConfirmModalComponent } from "../../commons/ConfirmModalComponent";
-import { message } from "antd";
-import { disableUser, getUserUrl, userFetcher } from "../../../services/UserService";
 import { DetailModalComponent } from "../../commons/DetailModalComponent";
-import { BreadcrumbComponent } from "../../commons/BreadcrumbComponent";
-import useSWR from "swr";
-import { ColorPalette } from "../../../utils/ColorPalette";
+
 import { TableHeaderModel } from "../../../models/TableHeaderModel";
 import { DropdownFilterModel } from "../../../models/DropdownFilterModel";
+import { UserModel, UserParamModel, UserForTableModel, ModalUserModel } from "../../../models/UserModel";
+import { disableUser, getUserUrl, userFetcher } from "../../../services/UserService";
+import { FunctionalIconModel } from "../../../models/FunctionalIconModel";
+import { faPencil, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faCircleXmark } from "@fortawesome/free-regular-svg-icons";
+import { ColorPalette } from "../../../utils/ColorPalette";
+import { Roles, RolesLowerCase } from "../../../utils/Enum";
+import { checkUserHaveValidAssignment } from "../../../services/AssignmentService";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const header: TableHeaderModel[] = [
 	{ name: 'Staff Code', value: "staffCode", sort: true, direction: true, colStyle: {}, isCurrentlySorted: false, style: {} },
@@ -52,17 +54,14 @@ export const ManageUserComponent = (props: Props) => {
 		size: 20
 	});
 
-	const [_dummy, setDummy] = useState(1);
-
 	let newUser: UserModel | undefined = location.state?.newUser;
 
 	const [modalShow, setModalShow] = useState(false);
 	const [modalData, setModalData] = useState<Object>({});
 
 	const [showDisableModal, setShowDisableModal] = useState(false); // State for the Logout Modal
+	const [showCannotDisableModel, setShowCannotDisableModel] = useState(false); // State for cannot disable modal
 	const [disableStaffCode, setDisableStaffCode] = useState(''); // State for the Logout Modal
-
-	// const [disableButton, setDisableButton] = useState<boolean[][]>([])
 
 	function toDateString(date: string) {
 		let d = new Date(date);
@@ -89,13 +88,12 @@ export const ManageUserComponent = (props: Props) => {
 	};
 
 	const { data: user, isLoading: isLoadingUser, mutate: mutateUser } = useSWR(getUserUrl(param), userFetcher, {
-		onError: () => {
-			message.error("Cannot Get User")
+		onError: () => {			
+			message.error("Fail to Load User")
 		},
 		shouldRetryOnError: false,
 		revalidateOnFocus: false,
 	});
-	console.log(user);
 
 	let tableUser: UserForTableModel[] = [];
 	let modalUsers: ModalUserModel[] = [];
@@ -166,7 +164,27 @@ export const ManageUserComponent = (props: Props) => {
 	}
 
 	function deleteUser(...data: any[]) {
-		handleDisableClick(data[1].staffCode);
+		if (disableStaffCode) return;
+		setDisableStaffCode(data[1].staffCode); // Show the Disable Modal
+		messageApi.open({
+			type: 'loading',
+			content: 'Processing...',
+		})
+		.then(async () => {
+			await checkUserHaveValidAssignment(data[1].staffCode)
+			.then((response) => {
+				if (!response.data.data) {
+					setShowDisableModal(true)
+				}
+				else{
+					setShowCannotDisableModel(true);
+					setDisableStaffCode(""); 
+				}
+			})
+			.catch(() => {
+				setDisableStaffCode(""); 
+			})
+		})
 	}
 
 	const editIcon: FunctionalIconModel = {
@@ -184,11 +202,6 @@ export const ManageUserComponent = (props: Props) => {
 
 	//--------------------------- 
 
-	// Disable User
-	const handleDisableClick = (staffCode: string) => {
-		setShowDisableModal(true)
-		setDisableStaffCode(staffCode); // Show the Disable Modal
-	}
 
 	const handleDisable = async (staffCode: string) => {
 		messageApi.open({
@@ -198,7 +211,7 @@ export const ManageUserComponent = (props: Props) => {
 			.then(async () => {
 				await disableUser(staffCode)
 					.then((res) => {
-						if(newUser){
+						if (newUser) {
 							navigate(location.pathname, { state: { newUser: undefined } });
 						}
 						if (res.status == 200) {
@@ -210,8 +223,8 @@ export const ManageUserComponent = (props: Props) => {
 							}
 						}
 					})
-					.catch((err) => {
-						message.error(`${err.response.data.message}`);
+					.catch((err) => {						
+						message.error(err.response ? err.response.data.message : "Fail to Disable User");
 					});
 			});
 	}
@@ -243,7 +256,7 @@ export const ManageUserComponent = (props: Props) => {
 				<Col sm={6}>
 					<Row>
 						<Col className="d-flex justify-content-start align-items-center px-2">
-							<DropdownFilterComponent title={"Type"} data={filterdata} params={param.types} setParamsFunction={handleSetParam} setDummy={setDummy} style={{}} defaultAll={true} paramName={"types"} />
+							<DropdownFilterComponent title={"Type"} data={filterdata} params={param.types} setParamsFunction={handleSetParam} style={{}} defaultAll={true} paramName={"types"} />
 						</Col>
 					</Row>
 				</Col>
@@ -251,7 +264,7 @@ export const ManageUserComponent = (props: Props) => {
 				<Col sm={6}>
 					<Row>
 						<Col sm={7} className="d-flex justify-content-end align-items-center">
-							<SearchComponent placeholder={"Search Staff Code or Full Name"} setParamsFunction={handleSetParam} setDummy={setDummy} style={{}} class={""}></SearchComponent>
+							<SearchComponent placeholder={"Search Staff Code or Full Name"} setParamsFunction={handleSetParam} setDummy={() => { }} style={{}} class={""}></SearchComponent>
 						</Col>
 						<Col sm={5} className="d-flex justify-content-end align-items-center">
 							<Button variant="danger" onClick={() => { return navigate('./new') }} style={{ width: "230px" }}>Create New User</Button>
@@ -259,11 +272,11 @@ export const ManageUserComponent = (props: Props) => {
 					</Row>
 				</Col>
 			</Row>
-			{isLoadingUser || !user ?
+			{isLoadingUser ?
 				<LoaderComponent></LoaderComponent>
 				:
 				<>
-					{tableUser.length === 0 ?
+					{tableUser.length === 0 || !user?
 						<Row>
 							<h4 className="text-center"> No User Found</h4>
 						</Row> :
@@ -275,9 +288,9 @@ export const ManageUserComponent = (props: Props) => {
 							</Row>
 							<Row>
 								{/* this initfucntion */}
-								<TableComponent headers={header} datas={tableUser} auxData={modalUsers} auxHeader={modalHeader} buttons={buttons} setSortString={handleSetParam} showModalCell={showModalCell} setDummy={setDummy} setModalData={setModalData} setModalShow={setModalShow} pre_button={undefined} disableButton={disableButton} />
+								<TableComponent headers={header} datas={tableUser} auxData={modalUsers} auxHeader={modalHeader} buttons={buttons} setSortString={handleSetParam} showModalCell={showModalCell} setDummy={() => { }} setModalData={setModalData} setModalShow={setModalShow} pre_button={undefined} disableButton={disableButton} />
 							</Row>
-							<PaginationComponent currentPage={param.page} setParamsFunction={handleSetParam} totalPage={user.totalPage} perPage={param.size} fixPageSize={false} ></PaginationComponent>
+							<PaginationComponent currentPage={param.page} setParamsFunction={handleSetParam} totalPage={user.totalPage} perPage={param.size} fixPageSize={false} containerRef={undefined} ></PaginationComponent>
 						</>
 					}
 				</>
@@ -289,7 +302,23 @@ export const ManageUserComponent = (props: Props) => {
 				label={modalHeader}
 				data={modalData}
 			/>
-			<ConfirmModalComponent show={showDisableModal} onConfirm={handleDisableConfirm} onCancel={handleDisableCancel} confirmTitle={'Disable Confirmation'} confirmQuestion={'Do you want to disable this user?'} confirmBtnLabel={'Disable'} cancelBtnLabel={'Cancel'} modalSize={"md"} />
+			<ConfirmModalComponent show={showDisableModal} onConfirm={handleDisableConfirm} onCancel={handleDisableCancel} confirmTitle={'Disable Confirmation'} confirmQuestion={'Do you want to disable this user?'} confirmBtnLabel={'Yes'} cancelBtnLabel={'No'} modalSize={"md"} />
+			<Modal show={showCannotDisableModel} 
+				// onHide={handleCloseModal} 
+				centered 
+				backdrop="static">
+				<Modal.Header>
+					<Container>
+							<Modal.Title  id="contained-modal-title-vcenter" className="d-flex justify-content-between align-items-center" style={{ color: ColorPalette.PRIMARY_COLOR, fontWeight: "bold" }}>
+								Can not disable user
+								<FontAwesomeIcon onClick={()=>{setShowCannotDisableModel(false)}} icon={faXmark} id="close-modal-button" className="px-1" style={{ border: "3px red solid", borderRadius: "5px" }}></FontAwesomeIcon>
+							</Modal.Title>
+					</Container>
+				</Modal.Header>
+				<Modal.Body>
+						<div className="success-message mx-2">There are valid assignments belonging to this user. <br/> Please close all assignments before disabling user.</div>
+				</Modal.Body>
+			</Modal>
 		</Container>
 	);
 }

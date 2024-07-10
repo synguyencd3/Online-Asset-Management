@@ -319,11 +319,11 @@ tr:hover {
 }
 
 
-.assignment-running-placeholder:placeholder-shown::placeholder {
+.search-placeholder:placeholder-shown::placeholder {
   color: transparent;
 }
 
-.assignment-running-placeholder:placeholder-shown {
+.search-placeholder:placeholder-shown {
   text-shadow: 50ch 0 black;
   animation: l6 8s infinite linear;
 }

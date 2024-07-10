@@ -14,7 +14,7 @@ import { ConfirmModalComponent } from '../commons/ConfirmModalComponent';
 import { LoaderComponent } from '../commons/LoaderComponent';
 import { PaginationComponent } from '../commons/PaginationComponent';
 import { TableComponent } from '../commons/TableComponent';
-import { toDateString, uppercaseStatusToText } from '../../utils/utils';
+import { confirmModalData, toDateString, uppercaseStatusToText } from '../../utils/utils';
 import { BreadcrumbComponent } from '../commons/BreadcrumbComponent';
 import useSWR from 'swr';
 import { TableHeaderModel } from '../../models/TableHeaderModel';
@@ -37,33 +37,7 @@ const modalHeader = ["Asset Code", "Asset Name", "Category", "Specification", "A
 
 const RETURNING_STATE = "RETURNING";
 
-type ConfirmModalType = {
-    confirmTitle: string,
-    confirmQuestion: string,
-    confirmBtnLabel: string,
-    cancelBtnLabel: string
-}
 
-const confirmModalData : {[key: string] : ConfirmModalType} = {
-    "ACCEPTED": {
-        confirmTitle: "Response Confirmation",
-        confirmQuestion: 'Do you want to accept this assignment?',
-        confirmBtnLabel: 'Accept',
-        cancelBtnLabel: 'Cancel'
-    },
-    "DECLINED": {
-        confirmTitle: "Response Confirmation",
-        confirmQuestion: 'Do you want to decline this assignment?',
-        confirmBtnLabel: 'Decline',
-        cancelBtnLabel: 'Cancel'
-    },
-    "RETURNING": {
-        confirmTitle: "Returning Confirmation",
-        confirmQuestion: "Do you want to create a returning request for this asset?",
-        confirmBtnLabel: 'Return',
-        cancelBtnLabel: 'Cancel'
-    },
-}
 
 export const UserHomeComponent: React.FC<Props> = (props: Props) => {
     const [showModal, setShowModal] = useState(false);
@@ -236,7 +210,7 @@ export const UserHomeComponent: React.FC<Props> = (props: Props) => {
                             <Row>
                                 <TableComponent headers={header} datas={formatRecordList(assignmentResponse?.content!)} setSortString={setParam} auxData={assignmentResponse?.content!} auxHeader={modalHeader} buttons={buttons} showModalCell={showModalCell} setDummy={() => { }} setModalData={setModalData} setModalShow={setModalDetailShow} pre_button={undefined} disableButton={setDisableButtonState(assignmentResponse?.content!)} />
                             </Row>
-                            <PaginationComponent currentPage={param.page} totalPage={assignmentResponse?.totalPage!} setParamsFunction={setParam} perPage={param.size} fixPageSize={false} />
+                            <PaginationComponent currentPage={param.page} totalPage={assignmentResponse?.totalPage!} setParamsFunction={setParam} perPage={param.size} fixPageSize={false} containerRef={undefined} />
                         </>
                     }
                 </>
@@ -253,7 +227,7 @@ export const UserHomeComponent: React.FC<Props> = (props: Props) => {
             )}
             <PasswordModalComponent show={showModal} onClose={handleClose} isFirstLoggedIn={firstLogin} />
             {confirmModalData[responseData.status] ? 
-                <ConfirmModalComponent show={showConfirmModal} onConfirm={handleModalConfirm} onCancel={handleModalCancel} confirmTitle={confirmModalData[responseData.status].confirmTitle} confirmQuestion={confirmModalData[responseData.status].confirmQuestion} confirmBtnLabel={confirmModalData[responseData.status].confirmBtnLabel} cancelBtnLabel={'Cancel'} modalSize={'md'} />
+                <ConfirmModalComponent show={showConfirmModal} onConfirm={handleModalConfirm} onCancel={handleModalCancel} confirmTitle={confirmModalData[responseData.status].confirmTitle} confirmQuestion={confirmModalData[responseData.status].confirmQuestion} confirmBtnLabel={confirmModalData[responseData.status].confirmBtnLabel} cancelBtnLabel={confirmModalData[responseData.status].cancelBtnLabel} modalSize={'md'} />
                 : ''
             }
         </div>

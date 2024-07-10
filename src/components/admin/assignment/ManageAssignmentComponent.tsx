@@ -155,7 +155,7 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
 						mutateAssignment();
 					})
 					.catch((error) => {
-						message.error(error.response.data.message);
+						message.error(error.response ? error.response.data.message : "Failed to Delete Assignment");
 					});
 			});
 	};
@@ -179,7 +179,7 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
 						mutateAssignment();
 					})
 					.catch((error) => {
-						message.error(error.response.data.message);
+						message.error(error.response? error.response.data.message :"Failed to Create Return Request");
 					});
 			});
 	};
@@ -199,8 +199,8 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
 			onCancel: handleDeleteCancel,
 			confirmTitle: "Delete Confirmation",
 			confirmQuestion: "Do you want to delete this assignment?",
-			confirmBtnLabel: "Delete",
-			cancelBtnLabel: "Cancel",
+			confirmBtnLabel: "Yes",
+			cancelBtnLabel: "No",
 		});
 	}
 
@@ -212,8 +212,8 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
 			confirmTitle: "Returning Confirmation",
 			confirmQuestion:
 				"Do you want to create a returning request for this asset?",
-			confirmBtnLabel: "Return",
-			cancelBtnLabel: "Cancel",
+			confirmBtnLabel: "Yes",
+			cancelBtnLabel: "No",
 		});
 	}
 
@@ -310,7 +310,6 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
                 data={filterData}
                 params={param.status}
                 setParamsFunction={handleSetParam}
-                setDummy={() => {}}
                 style={{ width: "100%" }}
                 defaultAll={true}
                 paramName={"status"}
@@ -324,8 +323,8 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
             </Col>
           </Row>
         </Col>
-        <Col sm={5}>
-          <Row>
+        <Col sm={6}>
+          <Row className="justify-content-end">
             <Col sm={7}>
               <SearchComponent
 					placeholder={"Search Asset Code, Asset Name or Assignee Name"}
@@ -334,13 +333,14 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
 					setDummy={() => { } } class={""}              
 				/>
             </Col>
-            <Col sm={4}>
+            <Col sm={4} >
               <Button
+								
                 variant="danger"
                 onClick={() => {
                   return navigate("./new");
                 }}
-                style={{ width: "230px" }}
+                style={{ width: "200px" }}
               >
                 Create new assignment
               </Button>
@@ -385,7 +385,7 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
 								setParamsFunction={handleSetParam}
 								totalPage={assignmentResponse.totalPage}
 								perPage={param.size}
-								fixPageSize={false}
+								fixPageSize={false} containerRef={undefined}
 							></PaginationComponent>
 						</>
 					)}

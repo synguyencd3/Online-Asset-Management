@@ -12,7 +12,7 @@ import { FunctionalIconModel } from '../../../models/FunctionalIconModel'
 import { faCheck, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { toDateString, uppercaseStatusToText } from '../../../utils/utils'
 import useSWR from 'swr'
-import { getRequestForReturningSWR } from '../../../services/ReturningService'
+import { getRequestForReturningSWR, sendResponseReturningRequest } from '../../../services/ReturningService'
 import { RequestPageableModel } from '../../../models/PageableModel'
 import { DropdownFilterComponent } from '../../commons/DropdownFilterComponent'
 import { SearchComponent } from '../../commons/SearchComponent'
@@ -26,8 +26,8 @@ type Props = {
 }
 
 const header: TableHeaderModel[] = [
-    { name: 'No.', value: "id", sort: true, direction: true, colStyle: {}, isCurrentlySorted: true, style: {} },
-    { name: 'Asset Code', value: "assignment.asset.assetCode", sort: true, direction: true, colStyle: {}, isCurrentlySorted: false, style: {} },
+    { name: 'No.', value: "id", sort: true, direction: true, colStyle: {}, isCurrentlySorted: false, style: {} },
+    { name: 'Asset Code', value: "assignment.asset.assetCode", sort: true, direction: true, colStyle: {}, isCurrentlySorted: true, style: {} },
     { name: 'Asset Name', value: "assignment.asset.name", sort: true, direction: true, colStyle: {}, isCurrentlySorted: false, style: {} },
     { name: 'Requested By', value: "auditMetadata.createdBy.username", sort: true, direction: true, colStyle: {}, isCurrentlySorted: false, style: {} },
     { name: 'Accepted By', value: "acceptedBy", sort: true, direction: true, colStyle: {}, isCurrentlySorted: false, style: {} },
@@ -45,7 +45,7 @@ const modalHeader = ["No.", "Asset Code", "Asset Name", "Requested By", "Assigne
 
 export const RequestReturningConponent: React.FC<Props> = (props: Props) => {
     const [auxHeader] = useState<string[]>(modalHeader);
-    const [_messageApi, contextHolder] = message.useMessage();
+    const [messageApi, contextHolder] = message.useMessage();
     const [showConfirmModal, setShowConfirmModal] = useState(false); // State for the Logout Modal
     const [responseData, setResponseData] = useState<{ id: number, status: boolean }>({ id: 0, status: false });
     const [param, setParam] = useState<RequestPageableModel>({
@@ -57,7 +57,7 @@ export const RequestReturningConponent: React.FC<Props> = (props: Props) => {
         returnedDate: "",
         page: 0,
         size: 20,
-        sort: "id,asc",
+        sort: "assignment.asset.assetCode,asc",
     });
 
     const handleSetParam = (
@@ -126,7 +126,7 @@ export const RequestReturningConponent: React.FC<Props> = (props: Props) => {
     const {
         data: returningResponse,
         isLoading: isReturningLoading,
-        // mutate: mutateReturning
+        mutate: mutateReturning
     } = useSWR("returning/"
         + param.search
         + param.returnedDate
@@ -136,6 +136,7 @@ export const RequestReturningConponent: React.FC<Props> = (props: Props) => {
         + param.sort.toString(),
         () => { return getRequestForReturningSWR(param) },
         {
+            revalidateOnFocus: false,
             onError: ((err) => message.error(err.response.data.message))
         }
     );
@@ -151,11 +152,30 @@ export const RequestReturningConponent: React.FC<Props> = (props: Props) => {
 
     const handleModalConfirm = () => {
         setShowConfirmModal(false);
-        // responseOwnAssignment(responseData.id); // Call the Confirm function
+        responseReturningRequest(responseData.id, responseData.status); // Call the Confirm function
     }
 
     const handleModalCancel = () => {
         setShowConfirmModal(false); // Hide the Confirm Modal
+    }
+
+    const responseReturningRequest = async (id: number, status: boolean) => {
+        messageApi.open({
+            type: 'loading',
+            content: status === true ? 'Completing returning request...' : 'Cancelling returning request...',
+        })
+            .then(async () => {
+                await sendResponseReturningRequest(id, status)
+                    .then((res: any) => {
+                        if (res.status === 200) {
+                            message.success(res.data.message);
+                            mutateReturning();
+                        }
+                    })
+                    .catch((err) => {
+                        message.error(err.response.data.message);
+                    })
+            })
     }
 
     return (
@@ -171,7 +191,6 @@ export const RequestReturningConponent: React.FC<Props> = (props: Props) => {
                                 data={filterState}
                                 params={param.states}
                                 setParamsFunction={handleSetParam}
-                                setDummy={() => Math.random()}
                                 style={{ width: "100%" }}
                                 defaultAll={true}
                                 paramName={"states"}
@@ -183,7 +202,7 @@ export const RequestReturningConponent: React.FC<Props> = (props: Props) => {
                     </Row>
                 </Col>
                 <Col sm={4} className="d-flex justify-content-end align-items-center">
-                    <SearchComponent placeholder={""} setParamsFunction={setParam} style={{ width: "100%" }} setDummy={() => { }} class={''}></SearchComponent>
+                    <SearchComponent placeholder={"Search Asset Code, Asset Name or Requester's Username"} setParamsFunction={setParam} style={{ width: "100%" }} setDummy={() => { }} class={''}></SearchComponent>
                 </Col>
             </Row>
             {isReturningLoading ?
@@ -192,7 +211,7 @@ export const RequestReturningConponent: React.FC<Props> = (props: Props) => {
                 <>
                     {returningResponse?.content.length === 0 ?
                         <Row>
-                            <h5 className="text-center"> No Assignment Found</h5>
+                            <h5 className="text-center"> No Returning Request Found</h5>
                         </Row> :
                         <>
                             <Row className='ps-2'>
@@ -203,12 +222,12 @@ export const RequestReturningConponent: React.FC<Props> = (props: Props) => {
                             <Row>
                                 <TableComponent headers={header} datas={formatRecordList(returningResponse?.content!)} setSortString={setParam} auxData={returningResponse?.content!} auxHeader={auxHeader} buttons={buttons} showModalCell={[]} setDummy={() => { }} setModalData={() => { }} setModalShow={() => { }} pre_button={undefined} disableButton={setDisableButtonState(returningResponse?.content!)} />
                             </Row>
-                            <PaginationComponent currentPage={param.page} totalPage={returningResponse?.totalPage!} setParamsFunction={setParam} perPage={param.size} fixPageSize={false} />
+                            <PaginationComponent currentPage={param.page} totalPage={returningResponse?.totalPage!} setParamsFunction={setParam} perPage={param.size} fixPageSize={false} containerRef={undefined} />
                         </>
                     }
                 </>
             }
-            <ConfirmModalComponent show={showConfirmModal} onConfirm={handleModalConfirm} onCancel={handleModalCancel} confirmTitle={'Response Confirmation'} confirmQuestion={responseData.status === true ? 'Do you want to accept this assignment?' : 'Do you want to decline this assignment?'} confirmBtnLabel={responseData.status === true ? 'Accept' : 'Decline'} cancelBtnLabel={'Cancel'} modalSize={'md'} />
+            <ConfirmModalComponent show={showConfirmModal} onConfirm={handleModalConfirm} onCancel={handleModalCancel} confirmTitle={'Response Confirmation'} confirmQuestion={responseData.status === true ? 'Do you want to accept this assignment?' : 'Do you want to decline this assignment?'} confirmBtnLabel={'Yes'} cancelBtnLabel={'No'} modalSize={'md'} />
         </Container>
     )
 }
