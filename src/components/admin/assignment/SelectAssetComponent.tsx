@@ -3,7 +3,7 @@ import { TableComponent } from "../../commons/TableComponent"
 import { ColorPalette } from "../../../utils/ColorPalette"
 import { LoaderComponent } from "../../commons/LoaderComponent"
 import { PaginationComponent } from "../../commons/PaginationComponent"
-import { useState } from "react"
+import { useRef, useState } from "react"
 import { assetFetcher, categoryFetcher, getAssetUrl, getCategoryUrl } from "../../../services/AssetService"
 import { AssetModel, AssetParamModel } from "../../../models/AssetModel"
 import { message } from 'antd';
@@ -29,6 +29,8 @@ type Props = {
 export const SelectAssetComponent = (props: Props) => {
 
 	const [selected, setSelected] = useState<String>("")
+
+	const containerRef = useRef(null);
 
 	const [param, setParam] = useState<AssetParamModel>({
 		search: "",
@@ -100,7 +102,7 @@ export const SelectAssetComponent = (props: Props) => {
 	}
 
 	return (
-		<Container >
+		<Container ref={containerRef}>
 			<Row>
 				<Col>
 					<h4 style={{ color: ColorPalette.PRIMARY_COLOR }} className="mb-4">
@@ -124,7 +126,7 @@ export const SelectAssetComponent = (props: Props) => {
 								<Row>
 									<TableComponent headers={header} datas={tableAsset} auxData={tableAsset} auxHeader={[]} buttons={[]} setSortString={handleSetParam} showModalCell={[]} setDummy={()=>{}} setModalData={() => { }} setModalShow={undefined} pre_button={preButton} setSelect={setSelected} disableButton={[]}  ></TableComponent>
 								</Row>
-								<PaginationComponent currentPage={param.page} totalPage={asset.totalPage} perPage={param.size} setParamsFunction={handleSetParam} fixPageSize={false} containerRef={undefined} ></PaginationComponent>
+								<PaginationComponent currentPage={param.page} totalPage={asset.totalPage} perPage={param.size} setParamsFunction={handleSetParam} fixPageSize={false} containerRef={containerRef} ></PaginationComponent>
 							</>
 						}
 					</>
