@@ -121,7 +121,7 @@ export const CreateAssignmentComponent = (props: Props) => {
     useEffect(() => {
         props.setHeaderTitle(<BreadcrumbComponent breadcrumb={[
             {
-                title: 'Manage Assignments',
+                title: 'Manage Assignment',
                 href: `${window.location.origin}/admin/manage-assignments#`
             },
             {

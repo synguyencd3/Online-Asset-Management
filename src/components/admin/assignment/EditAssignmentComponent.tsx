@@ -54,26 +54,31 @@ export const EditAssignmentComponent = (props: Props) => {
         note: Yup.string().max(300, "Maximum length is 300"),
     });
 
+    const { data: assignmentResponse, } = useSWR<AssignmentModalModel>(
+        getOneAssignmentUrl(assignmentId),
+        getOneAssignemnt,
+    );
+
     const formik = useFormik({
         initialValues: {
             user: "*",
             asset: "*",
             assignedDate: "",
-            note: ""
+            note: assignmentResponse?.note ?? ""
         },
+        enableReinitialize: true,
         validationSchema: validationSchema,
         onSubmit: async (values) => {
             setLoading(true);
             const data: AssignmentEditModel = {
                 username: selectedUser?.username ?? (assignmentResponse?.assignedTo ?? ""),
                 assetCode: selectedAsset?.assetCode ?? (assignmentResponse?.assetCode ?? ""),
-                note: values.note ?? (assignmentResponse?.note ?? "")
+                note: values?.note ?? (assignmentResponse?.note ?? "")
             };
 
             await editAssignments(data, assignmentId)
                 .then((response) => {
                     message.success(response.data.message);
-                    //const newAssignment: AssignmentForTableModel = response.data.data;
                     setLoading(false);
                     navigate("/admin/manage-assignments");
                 })
@@ -87,7 +92,7 @@ export const EditAssignmentComponent = (props: Props) => {
     useEffect(() => {
         props.setHeaderTitle(<BreadcrumbComponent breadcrumb={[
             {
-                title: 'Manage Assignments',
+                title: 'Manage Assignment',
                 href: `${window.location.origin}/admin/manage-assignments#`
             },
             {
@@ -100,15 +105,6 @@ export const EditAssignmentComponent = (props: Props) => {
 
     const { getFieldProps } = formik;
 
-    const { data: assignmentResponse, } = useSWR<AssignmentModalModel>(
-        getOneAssignmentUrl(assignmentId),
-        getOneAssignemnt,
-    );
-
-
-
-    useEffect(() => {
-    }, [selectedUser, selectedAsset])
 
     return (
         <Container>
@@ -215,7 +211,7 @@ export const EditAssignmentComponent = (props: Props) => {
                             Note
                         </Form.Label>
                         <Col sm={9}>
-                            <Form.Control id="note_field" as="textarea" {...getFieldProps('note')} defaultValue={assignmentResponse.note} />
+                            <Form.Control id="note_field" as="textarea" {...getFieldProps('note')}  />
                             {formik.touched.note && formik.errors.note ? (
                                 <div className="error-message">{formik.errors.note}</div>
                             ) : null}

@@ -1,6 +1,6 @@
 import { ReactNode, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Button, Col, Container, Row } from "react-bootstrap";
+import { Button, Col, Container, Modal, Row } from "react-bootstrap";
 import { message } from "antd";
 import useSWR from "swr";
 
@@ -18,10 +18,12 @@ import { DropdownFilterModel } from "../../../models/DropdownFilterModel";
 import { UserModel, UserParamModel, UserForTableModel, ModalUserModel } from "../../../models/UserModel";
 import { disableUser, getUserUrl, userFetcher } from "../../../services/UserService";
 import { FunctionalIconModel } from "../../../models/FunctionalIconModel";
-import { faPencil } from "@fortawesome/free-solid-svg-icons";
+import { faPencil, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { faCircleXmark } from "@fortawesome/free-regular-svg-icons";
 import { ColorPalette } from "../../../utils/ColorPalette";
 import { Roles, RolesLowerCase } from "../../../utils/Enum";
+import { checkUserHaveValidAssignment } from "../../../services/AssignmentService";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const header: TableHeaderModel[] = [
 	{ name: 'Staff Code', value: "staffCode", sort: true, direction: true, colStyle: {}, isCurrentlySorted: false, style: {} },
@@ -58,6 +60,7 @@ export const ManageUserComponent = (props: Props) => {
 	const [modalData, setModalData] = useState<Object>({});
 
 	const [showDisableModal, setShowDisableModal] = useState(false); // State for the Logout Modal
+	const [showCannotDisableModel, setShowCannotDisableModel] = useState(false); // State for cannot disable modal
 	const [disableStaffCode, setDisableStaffCode] = useState(''); // State for the Logout Modal
 
 	function toDateString(date: string) {
@@ -161,7 +164,27 @@ export const ManageUserComponent = (props: Props) => {
 	}
 
 	function deleteUser(...data: any[]) {
-		handleDisableClick(data[1].staffCode);
+		if (disableStaffCode) return;
+		setDisableStaffCode(data[1].staffCode); // Show the Disable Modal
+		messageApi.open({
+			type: 'loading',
+			content: 'Processing...',
+		})
+		.then(async () => {
+			await checkUserHaveValidAssignment(data[1].staffCode)
+			.then((response) => {
+				if (!response.data.data) {
+					setShowDisableModal(true)
+				}
+				else{
+					setShowCannotDisableModel(true);
+					setDisableStaffCode(""); 
+				}
+			})
+			.catch(() => {
+				setDisableStaffCode(""); 
+			})
+		})
 	}
 
 	const editIcon: FunctionalIconModel = {
@@ -179,11 +202,6 @@ export const ManageUserComponent = (props: Props) => {
 
 	//--------------------------- 
 
-	// Disable User
-	const handleDisableClick = (staffCode: string) => {
-		setShowDisableModal(true)
-		setDisableStaffCode(staffCode); // Show the Disable Modal
-	}
 
 	const handleDisable = async (staffCode: string) => {
 		messageApi.open({
@@ -284,7 +302,23 @@ export const ManageUserComponent = (props: Props) => {
 				label={modalHeader}
 				data={modalData}
 			/>
-			<ConfirmModalComponent show={showDisableModal} onConfirm={handleDisableConfirm} onCancel={handleDisableCancel} confirmTitle={'Disable Confirmation'} confirmQuestion={'Do you want to disable this user?'} confirmBtnLabel={'Disable'} cancelBtnLabel={'Cancel'} modalSize={"md"} />
+			<ConfirmModalComponent show={showDisableModal} onConfirm={handleDisableConfirm} onCancel={handleDisableCancel} confirmTitle={'Disable Confirmation'} confirmQuestion={'Do you want to disable this user?'} confirmBtnLabel={'Yes'} cancelBtnLabel={'No'} modalSize={"md"} />
+			<Modal show={showCannotDisableModel} 
+				// onHide={handleCloseModal} 
+				centered 
+				backdrop="static">
+				<Modal.Header>
+					<Container>
+							<Modal.Title  id="contained-modal-title-vcenter" className="d-flex justify-content-between align-items-center" style={{ color: ColorPalette.PRIMARY_COLOR, fontWeight: "bold" }}>
+								Can not disable user
+								<FontAwesomeIcon onClick={()=>{setShowCannotDisableModel(false)}} icon={faXmark} id="close-modal-button" className="px-1" style={{ border: "3px red solid", borderRadius: "5px" }}></FontAwesomeIcon>
+							</Modal.Title>
+					</Container>
+				</Modal.Header>
+				<Modal.Body>
+						<div className="success-message mx-2">There are valid assignments belonging to this user. <br/> Please close all assignments before disabling user.</div>
+				</Modal.Body>
+			</Modal>
 		</Container>
 	);
 }

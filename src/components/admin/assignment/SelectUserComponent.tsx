@@ -65,8 +65,8 @@ export const SelectUserComponent = (props: Props) => {
 			
 				let data: UserForSelectTableModel = {
 					staffCode: user.staffCode,
-					fullName: user.firstName + " " + user.lastName,
 					username: user.username,
+					fullName: user.firstName + " " + user.lastName,
 					type: RolesLowerCase[user.roleId],
 				};
 				tableUser.push(data);
