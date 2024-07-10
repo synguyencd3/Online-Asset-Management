@@ -155,7 +155,7 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
 						mutateAssignment();
 					})
 					.catch((error) => {
-						message.error(error.response? error.response.data.message:"Failed to Delete Assignment");
+						message.error(error.response ? error.response.data.message : "Failed to Delete Assignment");
 					});
 			});
 	};
@@ -385,7 +385,7 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
 								setParamsFunction={handleSetParam}
 								totalPage={assignmentResponse.totalPage}
 								perPage={param.size}
-								fixPageSize={false}
+								fixPageSize={false} containerRef={undefined}
 							></PaginationComponent>
 						</>
 					)}

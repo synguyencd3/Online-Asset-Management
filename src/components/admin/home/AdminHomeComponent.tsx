@@ -130,7 +130,7 @@ export const AdminHomeComponent: React.FC<Props> = (props: Props) => {
 		+ param.sort.toString(),
 		() => { return getOwnAssignementSWR(param) },
 		{
-			onError: ((err) => message.error(err.response? err.response.data.message : "Failed to get Assignment"))
+			onError: ((err) => message.error(err.response ? err.response.data.message : "Failed to get Assignment"))
 		}
 	)
 
@@ -238,6 +238,7 @@ export const AdminHomeComponent: React.FC<Props> = (props: Props) => {
 								setParamsFunction={setParam}
 								perPage={param.size}
 								fixPageSize={false}
+								containerRef={undefined}
 							/>
 						</>
 					)}
@@ -267,7 +268,7 @@ export const AdminHomeComponent: React.FC<Props> = (props: Props) => {
 					confirmQuestion={
 						confirmModalData[responseData.status].confirmQuestion
 					}
-					confirmBtnLabel={ 
+					confirmBtnLabel={
 						confirmModalData[responseData.status].confirmBtnLabel
 					}
 					cancelBtnLabel={confirmModalData[responseData.status].cancelBtnLabel}

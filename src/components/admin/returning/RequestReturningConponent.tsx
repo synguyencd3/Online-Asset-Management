@@ -202,7 +202,7 @@ export const RequestReturningConponent: React.FC<Props> = (props: Props) => {
                     </Row>
                 </Col>
                 <Col sm={4} className="d-flex justify-content-end align-items-center">
-                    <SearchComponent placeholder={""} setParamsFunction={setParam} style={{ width: "100%" }} setDummy={() => { }} class={''}></SearchComponent>
+                    <SearchComponent placeholder={"Search Asset Code, Asset Name or Requester's Username"} setParamsFunction={setParam} style={{ width: "100%" }} setDummy={() => { }} class={''}></SearchComponent>
                 </Col>
             </Row>
             {isReturningLoading ?
@@ -222,12 +222,12 @@ export const RequestReturningConponent: React.FC<Props> = (props: Props) => {
                             <Row>
                                 <TableComponent headers={header} datas={formatRecordList(returningResponse?.content!)} setSortString={setParam} auxData={returningResponse?.content!} auxHeader={auxHeader} buttons={buttons} showModalCell={[]} setDummy={() => { }} setModalData={() => { }} setModalShow={() => { }} pre_button={undefined} disableButton={setDisableButtonState(returningResponse?.content!)} />
                             </Row>
-                            <PaginationComponent currentPage={param.page} totalPage={returningResponse?.totalPage!} setParamsFunction={setParam} perPage={param.size} fixPageSize={false} />
+                            <PaginationComponent currentPage={param.page} totalPage={returningResponse?.totalPage!} setParamsFunction={setParam} perPage={param.size} fixPageSize={false} containerRef={undefined} />
                         </>
                     }
                 </>
             }
-            <ConfirmModalComponent show={showConfirmModal} onConfirm={handleModalConfirm} onCancel={handleModalCancel} confirmTitle={'Response Confirmation'} confirmQuestion={responseData.status === true ? 'Do you want to accept this assignment?' : 'Do you want to decline this assignment?'} confirmBtnLabel={'Yes'} cancelBtnLabel={'No'} modalSize={'md'} />
+            <ConfirmModalComponent show={showConfirmModal} onConfirm={handleModalConfirm} onCancel={handleModalCancel} confirmTitle={'Response Confirmation'} confirmQuestion={responseData.status === true ? 'Do you want to mark this returning request as \'Completed\'?' : 'Do you want to cancel this returning request?'} confirmBtnLabel={'Yes'} cancelBtnLabel={'No'} modalSize={'md'} />
         </Container>
     )
 }

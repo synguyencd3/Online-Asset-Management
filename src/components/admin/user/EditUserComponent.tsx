@@ -1,7 +1,7 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button, Col, Container, Form, Row } from "react-bootstrap";
 import { ColorPalette } from "../../../utils/ColorPalette";
-import { ReactNode, useEffect, useState } from "react";
+import { FormEvent, ReactNode, useEffect, useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from 'yup';
 import { ModalUserModel } from "../../../models/UserModel";
@@ -12,10 +12,20 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { getOneUser, updateUser } from "../../../services/UserService";
 import { BreadcrumbComponent } from "../../commons/BreadcrumbComponent";
+import { ConfirmModalComponent } from "../../commons/ConfirmModalComponent";
 
 
 
 const eighteenYearsAgo = new Date(new Date().setFullYear(new Date().getFullYear() - 18));
+
+interface ConfirmModalData {
+	onConfirm: () => void;
+	onCancel: () => void;
+	confirmTitle: string;
+	confirmQuestion: string;
+	confirmBtnLabel: string;
+	cancelBtnLabel: string;
+}
 
 const createUserValidationSchema = Yup.object({
     dateOfBirth: Yup.date()
@@ -44,11 +54,32 @@ export const EditUserComponent = (props: Props) => {
     const [user] = useState<ModalUserModel>(location.state.user);
     const [loading, setLoading] = useState(false);
     const [messageApi, contextHolder] = message.useMessage();
+    const [showDisableModal, setShowDisableModal] = useState(false);
+    const [confirmModalData, setConfirmModalData] = useState<ConfirmModalData>();
 
     const navigate = useNavigate();
 
     let staffcodearray = user.staffCode.match(/[A-Za-z]+/);
     const prefix = staffcodearray ? staffcodearray[0] : "SD";
+
+    function openModal(e: FormEvent<HTMLFormElement>) {
+		setShowDisableModal(true);
+		setConfirmModalData({
+			onConfirm: () =>{
+                handleCancel
+                handleSubmit(e)
+            },
+			onCancel: handleCancel,
+			confirmTitle: "Edit Confirmation",
+			confirmQuestion: `You have changed joined date, which may affect their assignments. Do you still want to edit the User?`,
+			confirmBtnLabel: "Yes",
+			cancelBtnLabel: "No",
+		});
+	}
+
+    const handleCancel = () => {
+		setShowDisableModal(false);
+	};
 
     useEffect(() => {
         props.setHeaderTitle(<BreadcrumbComponent breadcrumb={[
@@ -106,6 +137,14 @@ export const EditUserComponent = (props: Props) => {
 
     const { handleSubmit, handleChange, values, errors, getFieldProps, isSubmitting } = formik;
 
+    const handleShowModal = (e: FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        if (formik.touched.joinedDate)
+            openModal(e)
+        else
+            handleSubmit(e);
+    }
+
     useEffect(() => {
         const array = Object.keys(errors);
         if (array) {
@@ -117,7 +156,7 @@ export const EditUserComponent = (props: Props) => {
         <>
             {contextHolder}
             <Container>
-                <Form className="p-5" style={{ maxWidth: "60%", minWidth: "300px", textAlign: "left" }} onSubmit={handleSubmit}>
+                 <Form className="p-5" style={{ maxWidth: "60%", minWidth: "300px", textAlign: "left" }} onSubmit={(e)=>handleShowModal(e)}>   {/* onSubmit={handleShowModal}>   onSubmit={handleSubmit}> */}
                     <h4 style={{ color: ColorPalette.PRIMARY_COLOR, fontWeight: "bold" }} className="mb-4">
                         Edit User
                     </h4>
@@ -228,6 +267,20 @@ export const EditUserComponent = (props: Props) => {
                         </Col>
                     </Row>
                 </Form>
+				{confirmModalData ? (
+				<ConfirmModalComponent
+					show={showDisableModal}
+					onConfirm={confirmModalData.onConfirm}
+					onCancel={confirmModalData.onCancel}
+					confirmTitle={confirmModalData.confirmTitle}
+					confirmQuestion={confirmModalData.confirmQuestion}
+					confirmBtnLabel={confirmModalData.confirmBtnLabel}
+					cancelBtnLabel={confirmModalData.cancelBtnLabel}
+					modalSize={"md"}
+				/>
+			) : (
+				""
+			)}
             </Container>
         </>
     );

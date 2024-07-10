@@ -1,16 +1,16 @@
 import { message } from 'antd';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import React, { ReactNode, useEffect, useState } from 'react'
 import { FunctionalIconModel } from '../../../models/FunctionalIconModel';
-import { faPencil } from '@fortawesome/free-solid-svg-icons';
-import { Button, Col, Container, Row } from 'react-bootstrap';
+import { faPencil, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { Button, Col, Container, Modal, Row } from 'react-bootstrap';
 import { DropdownFilterComponent } from '../../commons/DropdownFilterComponent';
 import { LoaderComponent } from '../../commons/LoaderComponent';
 import { TableComponent } from '../../commons/TableComponent';
 import { PaginationComponent } from '../../commons/PaginationComponent';
 import { faCircleXmark } from '@fortawesome/free-regular-svg-icons';
 import { CategoryModel } from '../../../models/CategoryModel';
-import { assetFetcher, categoryFetcher, deleteAsset, getAssetUrl, getCategoryUrl } from '../../../services/AssetService';
+import { assetFetcher, categoryFetcher, deleteAsset, getAssetUrl, getCategoryUrl, getOneAssetHistory } from '../../../services/AssetService';
 import { AssetForTableModel, AssetModel, AssetParamModel } from '../../../models/AssetModel';
 import { AssetModalComponent } from './AssetModalComponent';
 import { ConfirmModalComponent } from '../../commons/ConfirmModalComponent';
@@ -20,6 +20,8 @@ import { BreadcrumbComponent } from '../../commons/BreadcrumbComponent';
 import { ColorPalette } from '../../../utils/ColorPalette';
 import { TableHeaderModel } from '../../../models/TableHeaderModel';
 import { DropdownFilterModel } from '../../../models/DropdownFilterModel';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import useMessage from 'antd/es/message/useMessage';
 
 const header: TableHeaderModel[] = [
 	{ name: 'Asset Code', value: "assetCode", sort: true, direction: true, colStyle: { width: "12%" }, style: {}, isCurrentlySorted: true },
@@ -40,8 +42,9 @@ export const ManageAssetComponent: React.FC<Props> = (props: Props) => {
 	const location = useLocation();
 
 	const [showDisableModal, setShowDisableModal] = useState(false);
-
+	const [showCannotDisableModel, setShowCannotDisableModel] = useState(false);
 	const [deleteAssetCode, setDeleteAssetCode] = useState('');
+	const [messageApi, contextHolder] = useMessage();
 
 	useEffect(() => {
 		props.setHeaderTitle(<BreadcrumbComponent breadcrumb={[
@@ -165,13 +168,28 @@ export const ManageAssetComponent: React.FC<Props> = (props: Props) => {
 		setDeleteAssetCode('') // Hide the Disable Modal
 	}
 
-	const handleDeleteClick = (staffCode: string) => {
-		setShowDisableModal(true)
-		setDeleteAssetCode(staffCode); // Show the Disable Modal
-	}
-
-	function openModal(...data: any[]) {
-		handleDeleteClick(data[1].assetCode);
+	async function openModal(...data: any[]) {
+		console.log(deleteAssetCode)
+		if (deleteAssetCode) return;
+		setDeleteAssetCode(data[1].assetCode); // Show the Disable Modal
+		messageApi.open({
+			type: 'loading',
+			content: 'Processing...',
+		})
+		.then(async () => {
+			await getOneAssetHistory(data[1].assetCode, 0)
+			.then((response) => {
+				const data = response.data.data;
+				if (data.history.totalElements === 0) {
+					setShowDisableModal(true);
+				} else {
+					setShowCannotDisableModel(true);
+				}
+			})
+			.catch(() => {
+				setDeleteAssetCode(""); 
+			})
+		})
 	}
 
 	const editIcon: FunctionalIconModel = {
@@ -210,6 +228,7 @@ export const ManageAssetComponent: React.FC<Props> = (props: Props) => {
 
 	return (
 		<Container>
+			{contextHolder}
 			<h4 style={{ color: ColorPalette.PRIMARY_COLOR }} className='fw-bold fs-4 ms-1 mt-5 mb-3'>
 				Asset List
 			</h4>
@@ -252,7 +271,7 @@ export const ManageAssetComponent: React.FC<Props> = (props: Props) => {
 							<Row>
 								<TableComponent headers={header} datas={tableAsset} auxData={tableAsset} auxHeader={modalHeader} buttons={buttons} setSortString={handleSetParam} showModalCell={showModalCell} setDummy={() => { }} setModalData={setModalData} setModalShow={setModalShow} pre_button={undefined} disableButton={disableButtonArray}  ></TableComponent>
 							</Row>
-							<PaginationComponent currentPage={param.page} setParamsFunction={handleSetParam} totalPage={asset.totalPage} perPage={param.size} fixPageSize={false} ></PaginationComponent>
+							<PaginationComponent currentPage={param.page} setParamsFunction={handleSetParam} totalPage={asset.totalPage} perPage={param.size} fixPageSize={false} containerRef={undefined} ></PaginationComponent>
 						</>
 					}
 				</>
@@ -265,6 +284,41 @@ export const ManageAssetComponent: React.FC<Props> = (props: Props) => {
 				data={modalData?.assetCode}
 			/>
 			<ConfirmModalComponent show={showDisableModal} onConfirm={handleDeleteConfirm} onCancel={handleDeleteCancel} confirmTitle={'Delete Confirmation'} confirmQuestion={'Do you want to delete this asset?'} confirmBtnLabel={'Yes'} cancelBtnLabel={'No'} modalSize={"md"} />
+			<Modal show={showCannotDisableModel} 
+				centered 
+				backdrop="static">
+				<Modal.Header>
+					<Container>
+							<Modal.Title  id="contained-modal-title-vcenter" className="d-flex justify-content-between align-items-center" style={{ color: ColorPalette.PRIMARY_COLOR, fontWeight: "bold" }}>
+								Cannot Delete Asset
+								<FontAwesomeIcon 
+								onClick={
+									()=>{
+										setShowCannotDisableModel(false); 
+										setDeleteAssetCode('');
+									}
+								} 
+								icon={faXmark} id="close-modal-button" className="px-1" style={{ border: "3px red solid", borderRadius: "5px" }}></FontAwesomeIcon>
+							</Modal.Title>
+					</Container>
+				</Modal.Header>
+				<Modal.Body>
+						<div className="success-message mx-2">
+							Cannot delete the asset because it belongs to one or more historical assignments.<br/>
+							If the asset is not able to be used anymore, please update its state in&nbsp;
+							<a 
+								style={{color:"rgb(81, 167, 249)",fontWeight:"normal", textDecoration:"underline"}} 
+								onClick={
+									()=>{
+										const data = tableAsset.find(a => a.assetCode === deleteAssetCode);
+										editAsset([],data);
+										setDeleteAssetCode('');
+									}
+								}
+							>  Edit Asset page </a>
+						</div>
+				</Modal.Body>
+			</Modal>
 		</Container>
 	);
 }
