@@ -199,8 +199,8 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
 			onCancel: handleDeleteCancel,
 			confirmTitle: "Delete Confirmation",
 			confirmQuestion: "Do you want to delete this assignment?",
-			confirmBtnLabel: "Delete",
-			cancelBtnLabel: "Cancel",
+			confirmBtnLabel: "Yes",
+			cancelBtnLabel: "No",
 		});
 	}
 
@@ -212,8 +212,8 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
 			confirmTitle: "Returning Confirmation",
 			confirmQuestion:
 				"Do you want to create a returning request for this asset?",
-			confirmBtnLabel: "Return",
-			cancelBtnLabel: "Cancel",
+			confirmBtnLabel: "Yes",
+			cancelBtnLabel: "No",
 		});
 	}
 

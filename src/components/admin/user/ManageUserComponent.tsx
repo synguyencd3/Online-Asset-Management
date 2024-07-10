@@ -302,7 +302,7 @@ export const ManageUserComponent = (props: Props) => {
 				label={modalHeader}
 				data={modalData}
 			/>
-			<ConfirmModalComponent show={showDisableModal} onConfirm={handleDisableConfirm} onCancel={handleDisableCancel} confirmTitle={'Disable Confirmation'} confirmQuestion={'Do you want to disable this user?'} confirmBtnLabel={'Disable'} cancelBtnLabel={'Cancel'} modalSize={"md"} />
+			<ConfirmModalComponent show={showDisableModal} onConfirm={handleDisableConfirm} onCancel={handleDisableCancel} confirmTitle={'Disable Confirmation'} confirmQuestion={'Do you want to disable this user?'} confirmBtnLabel={'Yes'} cancelBtnLabel={'No'} modalSize={"md"} />
 			<Modal show={showCannotDisableModel} 
 				// onHide={handleCloseModal} 
 				centered 

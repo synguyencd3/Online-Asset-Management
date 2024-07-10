@@ -14,7 +14,7 @@ import { message } from 'antd';
 import { ConfirmModalComponent } from '../../commons/ConfirmModalComponent';
 import { AssignmentModelComponent } from '../assignment/AssignmentModalComponent';
 import { AssignmentForTableModel } from '../../../models/AssignmentForTable';
-import { toDateString, uppercaseStatusToText } from '../../../utils/utils';
+import { confirmModalData, toDateString, uppercaseStatusToText } from '../../../utils/utils';
 import { BreadcrumbComponent } from '../../commons/BreadcrumbComponent';
 import useSWR from 'swr';
 import { TableHeaderModel } from '../../../models/TableHeaderModel';
@@ -36,34 +36,6 @@ const showModalCell = ["assetCode", "assetName", "category", "assignedDate", "st
 const modalHeader = ["Asset Code", "Asset Name", "Category", "Specification", "Assigned to", "Assigned by", "Assigned Date", "State", "Note"];
 
 const RETURNING_STATE = "RETURNING";
-
-type ConfirmModalType = {
-	confirmTitle: string,
-	confirmQuestion: string,
-	confirmBtnLabel: string,
-	cancelBtnLabel: string
-}
-
-const confirmModalData: { [key: string]: ConfirmModalType } = {
-	"ACCEPTED": {
-		confirmTitle: "Response Confirmation",
-		confirmQuestion: 'Do you want to accept this assignment?',
-		confirmBtnLabel: 'Accept',
-		cancelBtnLabel: 'Cancel'
-	},
-	"DECLINED": {
-		confirmTitle: "Response Confirmation",
-		confirmQuestion: 'Do you want to decline this assignment?',
-		confirmBtnLabel: 'Decline',
-		cancelBtnLabel: 'Cancel'
-	},
-	"RETURNING": {
-		confirmTitle: "Returning Confirmation",
-		confirmQuestion: "Do you want to create a returning request for this asset?",
-		confirmBtnLabel: 'Return',
-		cancelBtnLabel: 'Cancel'
-	},
-}
 
 export const AdminHomeComponent: React.FC<Props> = (props: Props) => {
 	const [showModal, setShowModal] = useState(false);
@@ -298,7 +270,7 @@ export const AdminHomeComponent: React.FC<Props> = (props: Props) => {
 					confirmBtnLabel={ 
 						confirmModalData[responseData.status].confirmBtnLabel
 					}
-					cancelBtnLabel={"Cancel"}
+					cancelBtnLabel={confirmModalData[responseData.status].cancelBtnLabel}
 					modalSize={"md"}
 				/>
 			) : (

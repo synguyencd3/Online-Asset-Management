@@ -264,7 +264,7 @@ export const ManageAssetComponent: React.FC<Props> = (props: Props) => {
 				onHide={() => setModalShow(false)}
 				data={modalData?.assetCode}
 			/>
-			<ConfirmModalComponent show={showDisableModal} onConfirm={handleDeleteConfirm} onCancel={handleDeleteCancel} confirmTitle={'Delete Confirmation'} confirmQuestion={'Do you want to delete this asset?'} confirmBtnLabel={'Delete'} cancelBtnLabel={'Cancel'} modalSize={"md"} />
+			<ConfirmModalComponent show={showDisableModal} onConfirm={handleDeleteConfirm} onCancel={handleDeleteCancel} confirmTitle={'Delete Confirmation'} confirmQuestion={'Do you want to delete this asset?'} confirmBtnLabel={'Yes'} cancelBtnLabel={'No'} modalSize={"md"} />
 		</Container>
 	);
 }
