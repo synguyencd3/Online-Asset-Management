@@ -176,20 +176,20 @@ export const ManageAssetComponent: React.FC<Props> = (props: Props) => {
 			type: 'loading',
 			content: 'Processing...',
 		})
-		.then(async () => {
-			await getOneAssetHistory(data[1].assetCode, 0)
-			.then((response) => {
-				const data = response.data.data;
-				if (data.history.totalElements === 0) {
-					setShowDisableModal(true);
-				} else {
-					setShowCannotDisableModel(true);
-				}
+			.then(async () => {
+				await getOneAssetHistory(data[1].assetCode, 0)
+					.then((response) => {
+						const data = response.data.data;
+						if (data.history.totalElements === 0) {
+							setShowDisableModal(true);
+						} else {
+							setShowCannotDisableModel(true);
+						}
+					})
+					.catch(() => {
+						setDeleteAssetCode("");
+					})
 			})
-			.catch(() => {
-				setDeleteAssetCode(""); 
-			})
-		})
 	}
 
 	const editIcon: FunctionalIconModel = {
@@ -284,39 +284,41 @@ export const ManageAssetComponent: React.FC<Props> = (props: Props) => {
 				data={modalData?.assetCode}
 			/>
 			<ConfirmModalComponent show={showDisableModal} onConfirm={handleDeleteConfirm} onCancel={handleDeleteCancel} confirmTitle={'Delete Confirmation'} confirmQuestion={'Do you want to delete this asset?'} confirmBtnLabel={'Yes'} cancelBtnLabel={'No'} modalSize={"md"} />
-			<Modal show={showCannotDisableModel} 
-				centered 
+			<Modal show={showCannotDisableModel}
+				centered
 				backdrop="static">
 				<Modal.Header>
 					<Container>
-							<Modal.Title  id="contained-modal-title-vcenter" className="d-flex justify-content-between align-items-center" style={{ color: ColorPalette.PRIMARY_COLOR, fontWeight: "bold" }}>
-								Cannot Delete Asset
-								<FontAwesomeIcon 
+						<Modal.Title id="contained-modal-title-vcenter" className="d-flex justify-content-between align-items-center" style={{ color: ColorPalette.PRIMARY_COLOR, fontWeight: "bold" }}>
+							Cannot Delete Asset
+							<FontAwesomeIcon
 								onClick={
-									()=>{
-										setShowCannotDisableModel(false); 
-										setDeleteAssetCode('');
-									}
-								} 
-								icon={faXmark} id="close-modal-button" className="px-1" style={{ border: "3px red solid", borderRadius: "5px" }}></FontAwesomeIcon>
-							</Modal.Title>
-					</Container>
-				</Modal.Header>
-				<Modal.Body>
-						<div className="success-message mx-2">
-							Cannot delete the asset because it belongs to one or more historical assignments.<br/>
-							If the asset is not able to be used anymore, please update its state in&nbsp;
-							<a 
-								style={{color:"rgb(81, 167, 249)",fontWeight:"normal", textDecoration:"underline"}} 
-								onClick={
-									()=>{
-										const data = tableAsset.find(a => a.assetCode === deleteAssetCode);
-										editAsset([],data);
+									() => {
+										setShowCannotDisableModel(false);
 										setDeleteAssetCode('');
 									}
 								}
-							>  Edit Asset page </a>
-						</div>
+								icon={faXmark} id="close-modal-button" className="px-1" style={{ border: "3px red solid", borderRadius: "5px" }}></FontAwesomeIcon>
+						</Modal.Title>
+					</Container>
+				</Modal.Header>
+				<Modal.Body>
+					<div className="success-message mx-2">
+						Cannot delete the asset because it belongs to one or more historical assignments.<br />
+						If the asset is not able to be used anymore, please update its state in&nbsp;
+						<a
+							type="button"
+							className='btn-link'
+							// style={{color:"rgb(81, 167, 249)",fontWeight:"normal", textDecoration:"underline"}} 
+							onClick={
+								() => {
+									const data = tableAsset.find(a => a.assetCode === deleteAssetCode);
+									editAsset([], data);
+									setDeleteAssetCode('');
+								}
+							}
+						>  Edit Asset page </a>
+					</div>
 				</Modal.Body>
 			</Modal>
 		</Container>
