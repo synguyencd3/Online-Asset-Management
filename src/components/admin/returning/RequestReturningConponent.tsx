@@ -227,7 +227,7 @@ export const RequestReturningConponent: React.FC<Props> = (props: Props) => {
                     }
                 </>
             }
-            <ConfirmModalComponent show={showConfirmModal} onConfirm={handleModalConfirm} onCancel={handleModalCancel} confirmTitle={'Response Confirmation'} confirmQuestion={responseData.status === true ? 'Do you want to accept this assignment?' : 'Do you want to decline this assignment?'} confirmBtnLabel={'Yes'} cancelBtnLabel={'No'} modalSize={'md'} />
+            <ConfirmModalComponent show={showConfirmModal} onConfirm={handleModalConfirm} onCancel={handleModalCancel} confirmTitle={'Response Confirmation'} confirmQuestion={responseData.status === true ? 'Do you want to mark this returning request as \'Completed\'?' : 'Do you want to cancel this returning request?'} confirmBtnLabel={'Yes'} cancelBtnLabel={'No'} modalSize={'md'} />
         </Container>
     )
 }
