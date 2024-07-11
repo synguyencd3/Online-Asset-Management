@@ -1,26 +1,15 @@
 import axios from "axios";
 import { AZURE_SERVICE_API, CORS_CONFIG } from "../utils/Config";
-import { AssignmentCreateModel, AssignmentEditModel, AssignmentResponse } from "../models/AssignmentModel";
-import {
-  PageableModel, 
-  PageResponseModel,
-} from "../models/PageableModel";
+import { AssignmentCreateModel, AssignmentEditModel, AssignmentGetParams, AssignmentResponse } from "../models/AssignmentModel";
+import { PageableModel, PageResponseModel, } from "../models/PageableModel";
 import { AssignmentForTableModel } from "../models/AssignmentForTable";
 import { AssignmentModalModel } from "../models/AssignmentModel";
+import { message } from "antd";
 
 // export const getAssignments = async (params: string) => await axios.get(`${AZURE_SERVICE_API}/assignments` + params, CORS_CONFIG);
 export const createAssignments = async (data: AssignmentCreateModel) => await axios.post(`${AZURE_SERVICE_API}/assignments`, data, CORS_CONFIG);
 export const editAssignments = async (data: AssignmentEditModel, id: number) => await axios.patch(`${AZURE_SERVICE_API}/assignments/${id}`, data, CORS_CONFIG);
 
-export interface AssignmentGetParams {
-  [key: string]: string | Array<string> | number;
-  search: string;
-  status: Array<string>;
-  assignedDate: string;
-  page: number;
-  size: number;
-  sort: string;
-}
 
 const toStringParams = (params: AssignmentGetParams) => {
   params = {
@@ -46,6 +35,7 @@ export const getAssignmentsUrl = (params: AssignmentGetParams) => {
 };
 
 export const getAssignments = async (url: string) => {
+  message.loading({ content: 'Loading Assignment...', key: 'loadingAssignment' });
   const response = await axios.get(url, CORS_CONFIG);
   const pageAssignment: PageResponseModel<AssignmentForTableModel> = {
     content: [],
@@ -65,6 +55,7 @@ export const getAssignments = async (url: string) => {
     };
     pageAssignment.content.push(item);
   });
+  message.destroy('loadingAssignment');
   return pageAssignment;
 };
 

@@ -19,6 +19,16 @@ export type AssignmentModel = {
     assignmentNote: string;
 }
 
+export interface AssignmentGetParams {
+    [key: string]: string | Array<string> | number;
+    search: string;
+    status: Array<string>;
+    assignedDate: string;
+    page: number;
+    size: number;
+    sort: string;
+}
+
 export type AssignmentHomeViewModel = {
     assetCode: string;
     assetName: string;
@@ -38,7 +48,7 @@ export type AssignmentTableModel = {
 }
 
 export type AssignmentModalModel = {
-    [key: string]: string | number; 
+    [key: string]: string | number;
     id: number;
     assetCode: string,
     assetName: string,

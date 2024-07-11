@@ -2,6 +2,7 @@ import axios from "axios";
 import { AZURE_SERVICE_API, CORS_CONFIG } from "../utils/Config";
 import { AssetCreateModel, AssetEditRequestModel, AssetModel, AssetParamModel } from "../models/AssetModel";
 import { PageResponseModel } from "../models/PageableModel";
+import { message } from "antd";
 
 export const assetsEndpoint = `${AZURE_SERVICE_API}/assets`;
 
@@ -23,9 +24,14 @@ export const getCategoryUrl = () => `${AZURE_SERVICE_API}/categories`;
 
 export const getOneAssetHistoryUrl = (assetCode: string, page: string | number) => `${AZURE_SERVICE_API}/assets/history/${assetCode}?page=${page}`;
 
-export const categoryFetcher = (url: string) => axios.get(url, CORS_CONFIG).then((response) => { ; return response; })
+export const categoryFetcher = async (url: string) => {
+    const response = await axios.get(url, CORS_CONFIG);
+    return response;
+}
 
 export const assetFetcher = async (url: string) => {
+
+    message.loading({ content: 'Loading Asset...', key: 'loadingAsset' });
 
     const response = await axios.get(url, CORS_CONFIG)
 
@@ -42,6 +48,7 @@ export const assetFetcher = async (url: string) => {
             specification: a.specification,
         }
     })
+    message.destroy('loadingAsset')
     return data;
 }
 
