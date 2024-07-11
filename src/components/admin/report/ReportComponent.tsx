@@ -58,6 +58,7 @@ export const ReportComponent: React.FC<Props> = (props: Props) => {
             onError: ((err) => message.error(err.response.data.message))
         }
     )
+    header.forEach(h => { if (h.value === param.sort.split(",")[0]) { h.isCurrentlySorted = true } else { h.isCurrentlySorted = false } })
 
     // Step 2: Convert the data to a worksheet
     const convertToWorksheet = (data: any[]): XLSX.WorkSheet => {
