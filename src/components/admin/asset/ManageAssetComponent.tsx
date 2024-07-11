@@ -24,10 +24,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import useMessage from 'antd/es/message/useMessage';
 
 const header: TableHeaderModel[] = [
-	{ name: 'Asset Code', value: "assetCode", sort: true, direction: true, colStyle: { width: "12%" }, style: {}, isCurrentlySorted: true },
-	{ name: 'Asset Name', value: "name", sort: true, direction: false, colStyle: { width: "40%" }, style: {}, isCurrentlySorted: false },
-	{ name: 'Category', value: "category.name", sort: true, direction: false, colStyle: { maxWidth: '200px' }, style: {}, isCurrentlySorted: false },
-	{ name: 'State', value: "status", sort: true, direction: false, colStyle: { width: "15%" }, style: {}, isCurrentlySorted: false }
+	{ name: 'Asset Code', value: "assetCode", sort: true, direction: true, colStyle: { width: "fit-content" }, style: {}, isCurrentlySorted: true },
+	{ name: 'Asset Name', value: "name", sort: true, direction: false, colStyle: { width: "fit-content" }, style: {}, isCurrentlySorted: false },
+	{ name: 'Category', value: "category.name", sort: true, direction: false, colStyle: { maxWidth: '200px', width: "fit-content" }, style: {}, isCurrentlySorted: false },
+	{ name: 'State', value: "status", sort: true, direction: false, colStyle: { width: "fit-content" }, style: {}, isCurrentlySorted: false }
 ]
 const showModalCell = ["assetCode", "assetName"]
 const modalHeader = ["Asset Code", "Asset Name", "Category", "Installed Date", "State", "Location", "Specification"]
@@ -40,10 +40,6 @@ export const ManageAssetComponent: React.FC<Props> = (props: Props) => {
 
 	const navigate = useNavigate();
 	const location = useLocation();
-
-	const [showDisableModal, setShowDisableModal] = useState(false);
-	const [showCannotDisableModel, setShowCannotDisableModel] = useState(false);
-	const [deleteAssetCode, setDeleteAssetCode] = useState('');
 	const [messageApi, contextHolder] = useMessage();
 
 	useEffect(() => {
@@ -55,6 +51,10 @@ export const ManageAssetComponent: React.FC<Props> = (props: Props) => {
 		]} />
 		);
 	}, [])
+
+	const [showDisableModal, setShowDisableModal] = useState(false);
+	const [showCannotDisableModel, setShowCannotDisableModel] = useState(false);
+	const [deleteAssetCode, setDeleteAssetCode] = useState('');
 
 	const [param, setParam] = useState<AssetParamModel>({
 		search: "",
@@ -84,7 +84,7 @@ export const ManageAssetComponent: React.FC<Props> = (props: Props) => {
 
 	const { data: category, isLoading: _isLoadingCategory } = useSWR(getCategoryUrl, categoryFetcher, {
 		onError: () => {
-			message.error("Failed to Load Category")
+			messageApi.error("Failed to Load Category")
 		},
 		revalidateOnFocus: false,
 		shouldRetryOnError: false
@@ -95,9 +95,9 @@ export const ManageAssetComponent: React.FC<Props> = (props: Props) => {
 		param.categories = data.map(obj => obj.id.toString())
 	}
 
-	const { data: asset, isLoading: _isLoadingAsset, mutate: mutateAsset } = useSWR(param.categories ? getAssetUrl(param) : null, assetFetcher, {
+	const { data: asset, mutate: mutateAsset } = useSWR(param.categories ? getAssetUrl(param) : null, assetFetcher, {
 		onError: () => {
-			message.error("Failed to Load Asset")
+			messageApi.error("Failed to Load Asset")
 		},
 		shouldRetryOnError: false,
 		revalidateOnFocus: false,
@@ -145,7 +145,7 @@ export const ManageAssetComponent: React.FC<Props> = (props: Props) => {
 							navigate(location.pathname, { state: { newAsset: undefined } });
 						}
 						if (res.status == 204) {
-							message.success("Asset deleted successfully");
+							messageApi.success("Asset deleted successfully");
 							if (tableAsset.length === 1 && asset?.currentPage !== 1) {
 								handleSetParam((p) => ({ ...p, page: 0 }));
 							} else {
@@ -154,7 +154,7 @@ export const ManageAssetComponent: React.FC<Props> = (props: Props) => {
 						}
 					})
 					.catch((err) => {
-						message.error(err.response ? err.response.data.message : "Failed to Delete Asset");
+						messageApi.error(err.response ? err.response.data.message : "Failed to Delete Asset");
 					});
 			});
 	}

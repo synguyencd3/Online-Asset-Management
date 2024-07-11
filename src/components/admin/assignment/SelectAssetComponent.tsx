@@ -19,7 +19,7 @@ const header: TableHeaderModel[] = [
 	{ name: '', value: "", sort: false, direction: false, colStyle: { width: "20%" }, isCurrentlySorted: false, style: {} },
 	{ name: 'Asset Code', value: "assetCode", sort: true, direction: true, colStyle: { width: "15%" }, isCurrentlySorted: false, style: {} },
 	{ name: 'Asset Name', value: "name", sort: true, direction: true, colStyle: { width: "50%" }, isCurrentlySorted: false, style: {} },
-	{ name: 'Category', value: "category", sort: true, direction: true, colStyle: { width: "25%" }, isCurrentlySorted: false, style: {} },
+	{ name: 'Category', value: "category", sort: true, direction: true, colStyle: { width: "250px", maxWidth:"200px" }, isCurrentlySorted: false, style: {} },
 ]
 
 type Props = {

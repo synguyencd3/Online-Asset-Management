@@ -7,19 +7,12 @@ import { ReactNode, useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { useLocation, useNavigate } from "react-router-dom";
-import { message } from "antd";
-import {
-  AssetDetailModel,
-  AssetEditRequestModel,
-  AssetForTableModel,
-} from "../../../models/AssetModel";
-import {
-  getOneAssetUrl,
-  updateAsset,
-} from "../../../services/AssetService";
+import { AssetDetailModel, AssetEditRequestModel, AssetForTableModel, } from "../../../models/AssetModel";
+import { getOneAssetUrl, updateAsset, } from "../../../services/AssetService";
 import useSWR from "swr";
 import { getWithSWR } from "../../../services/swrService";
 import { BreadcrumbComponent } from "../../commons/BreadcrumbComponent";
+import { message } from "antd";
 
 const assetValidationSchema = Yup.object({
   assetName: Yup.string()
@@ -37,9 +30,7 @@ const assetValidationSchema = Yup.object({
 });
 
 function formatAssetState(state: string) {
-  state = state
-    .toLowerCase()
-    .replace(/_/g, " ");
+  state = state.toLowerCase().replace(/_/g, " ");
   state = state.charAt(0).toUpperCase() + state.slice(1);
   return state;
 }
@@ -50,8 +41,6 @@ type Props = {
 
 export const EditAssetComponent = (props: Props) => {
   const location = useLocation();
-  const assetProps: AssetForTableModel = location.state.assetProps;
-  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -66,6 +55,9 @@ export const EditAssetComponent = (props: Props) => {
       }
     ]} />);
   }, [])
+
+  const assetProps: AssetForTableModel = location.state.assetProps;
+  const [loading, setLoading] = useState(false);
 
   const formik = useFormik({
     initialValues: {
@@ -95,7 +87,7 @@ export const EditAssetComponent = (props: Props) => {
           });
         })
         .catch((error) => {
-          message.error(error.response? error.response.data.message : "Failed to Edit Asset");
+          message.error(error.response ? error.response.data.message : "Failed to Edit Asset");
           setLoading(false);
         });
     },

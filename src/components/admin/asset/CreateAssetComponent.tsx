@@ -1,26 +1,19 @@
+import { ReactNode, useEffect, useState } from "react";
 import { Button, Col, Container, Dropdown, Form, Row } from "react-bootstrap";
 import { ColorPalette } from "../../../utils/ColorPalette";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { AssetState } from "../../../utils/Enum";
-import { ReactNode, useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faClose, faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
-import {
-  CategoryCreateModel,
-  CategoryModel,
-} from "../../../models/CategoryModel";
+import { CategoryCreateModel, CategoryModel, } from "../../../models/CategoryModel";
 import useSWR from "swr";
-import {
-  categoriesEndpoint,
-  createCategories,
-  getCategories,
-} from "../../../services/CategoryService";
-import { message } from "antd";
+import { categoriesEndpoint, createCategories, getCategories, } from "../../../services/CategoryService";
 import { AssetCreateModel, AssetForTableModel } from "../../../models/AssetModel";
 import { createAsset } from "../../../services/AssetService";
 import { BreadcrumbComponent } from "../../commons/BreadcrumbComponent";
+import useMessage from "antd/es/message/useMessage";
 
 const assetValidationSchema = Yup.object({
   assetName: Yup.string()
@@ -42,10 +35,12 @@ type Props = {
 };
 
 export const CreateAssetComponent = (props: Props) => {
+  const navigate = useNavigate();
+  const [messageApi, contextHolder] = useMessage();
+
   const [loading, setLoading] = useState(false);
   const [loadingCreateCategory, setLoadingCreateCategory] = useState(false);
   const [addCategory, setAddCategory] = useState(false);
-  const navigate = useNavigate();
   const [showDropdown, setShowDropdown] = useState(false);
 
   const { data: categoriesResponse, mutate: mutateCategories } = useSWR(
@@ -87,7 +82,7 @@ export const CreateAssetComponent = (props: Props) => {
 
       await createAsset(data)
         .then((response) => {
-          message.success(response.data.message);
+          messageApi.success(response.data.message);
           const newAsset: AssetForTableModel = response.data.data;
           setLoading(false);
           navigate("/admin/manage-assets", {
@@ -96,7 +91,7 @@ export const CreateAssetComponent = (props: Props) => {
           });
         })
         .catch((error) => {
-          message.error(error.response ? error.response.data.message : "Failed to Create Asset");
+          messageApi.error(error.response ? error.response.data.message : "Failed to Create Asset");
           setLoading(false);
         });
     },
@@ -117,12 +112,12 @@ export const CreateAssetComponent = (props: Props) => {
       await createCategories(values)
         .then((response) => {
           setLoadingCreateCategory(false);
-          message.success(response.data.message);
+          messageApi.success(response.data.message);
           mutateCategories();
           categoryFormik.resetForm();
         })
         .catch((error) => {
-          message.error(error.response.data.message);
+          messageApi.error(error.response.data.message);
           setLoadingCreateCategory(false);
         });
     },
@@ -144,6 +139,7 @@ export const CreateAssetComponent = (props: Props) => {
   return (
     <div>
       <Container>
+        {contextHolder}
         <Form
           className="p-5"
           style={{ maxWidth: "60%", minWidth: "300px", textAlign: "left" }}

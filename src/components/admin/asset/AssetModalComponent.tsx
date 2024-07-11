@@ -26,6 +26,7 @@ type ModalAsset = {
     specification: string;
     status: string
 }
+
 const headers = [
     { name: "Asset Code", value: "assetCode" },
     { name: "Asset Name", value: "name" },
@@ -35,6 +36,7 @@ const headers = [
     { name: "Location", value: "location" },
     { name: "Specification", value: "specification" },
 ]
+
 const historyTableHeaders: TableHeaderModel[] = [
     { name: "Date", value: "date", sort: false, direction: false, isCurrentlySorted: false, style: {}, colStyle: {} },
     { name: "Assigned To", value: "assignedTo", sort: false, direction: false, isCurrentlySorted: false, style: {}, colStyle: {} },
@@ -46,16 +48,13 @@ function toDateString(date: Date) {
     let d = new Date(date);
     return new Intl.DateTimeFormat("en-GB").format(d);
 }
+
 export const AssetModalComponent = (props: Props) => {
 
     const containerRef = useRef(null);
 
     const [currentPage, setCurrentPage] = useState({ page: 0, size: 10 });
-    // const [totalPage, setTotalPage] = useState(0);
-    // const [asset, setAsset] = useState<ModalAsset>();
-    // const [history, setHistory] = useState<AssetHistoryModel[]>([]);
     const [readMore, setReadMore] = useState<boolean[]>([]);
-
 
     const { data: assetHistory, isLoading } = useSWR(props.data ? getOneAssetHistoryUrl(props.data, currentPage.page) : null, getWithSWR, {
         onSuccess: (response) => {
@@ -69,6 +68,7 @@ export const AssetModalComponent = (props: Props) => {
         revalidateOnFocus: true,
         shouldRetryOnError: false
     })
+
     let asset: ModalAsset | undefined = undefined;
     let history: AssetHistoryModel[] = [];
     let totalPage = 0;
@@ -84,17 +84,12 @@ export const AssetModalComponent = (props: Props) => {
         history = (historyT);
     }
     return (
-        <Modal
-            {...props}
-            dialogClassName="asset-detail-modal"
-            centered
-            backdrop={false}
-        >
+        <Modal {...props} dialogClassName="asset-detail-modal" centered backdrop={false}>
             <Modal.Header >
                 <Container style={{ maxWidth: "90%" }}>
                     <Modal.Title id="contained-modal-title-vcenter" className="d-flex justify-content-between align-items-center" style={{ color: "red", fontWeight: "bold" }}>
                         {props.title ?? "Title"}
-                        <FontAwesomeIcon icon={faXmark} id="close-modal-button" className="px-1" onClick={props.onHide} style={{ border: "3px red solid", borderRadius: "5px" }}></FontAwesomeIcon>
+                        <FontAwesomeIcon icon={faXmark} id="close-modal-button" className="px-1" onClick={props.onHide} style={{ border: "3px red solid", borderRadius: "5px" }}/>
                     </Modal.Title>
                 </Container>
             </Modal.Header>
@@ -127,7 +122,7 @@ export const AssetModalComponent = (props: Props) => {
                             History
                         </Col>
                         {isLoading ?
-                            <LoaderComponent></LoaderComponent> :
+                            <LoaderComponent/> :
                             <Col sm={10} style={{ maxHeight: "500px", height: history.length > 0 ? "460px" : "" }}>
                                 <Table hover responsive className='table' id='table' style={{ minWidth: "auto" }}>
                                     <thead id='table-header'>

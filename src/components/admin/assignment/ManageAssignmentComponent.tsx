@@ -11,12 +11,7 @@ import { faPencil, faRotateBack } from "@fortawesome/free-solid-svg-icons";
 import { faCircleXmark } from "@fortawesome/free-regular-svg-icons/faCircleXmark";
 import { ConfirmModalComponent } from "../../commons/ConfirmModalComponent";
 import { AssignmentForTableModel } from "../../../models/AssignmentForTable";
-import {
-	AssignmentGetParams,
-	deleteAssignmentById,
-	getAssignments,
-	getAssignmentsUrl,
-} from "../../../services/AssignmentService";
+import { deleteAssignmentById, getAssignments, getAssignmentsUrl,} from "../../../services/AssignmentService";
 import useSWR from "swr";
 import { PageResponseModel } from "../../../models/PageableModel";
 import { message } from "antd";
@@ -29,15 +24,16 @@ import { ColorPalette } from "../../../utils/ColorPalette";
 import { createReturningRequest } from "../../../services/ReturningService";
 import { TableHeaderModel } from "../../../models/TableHeaderModel";
 import { DropdownFilterModel } from "../../../models/DropdownFilterModel";
+import { AssignmentGetParams } from "../../../models/AssignmentModel";
 
 const header: TableHeaderModel[] = [
-	{ name: "No.", value: "id", sort: true, direction: true, colStyle: { width: "5%" }, isCurrentlySorted: false, style: {} },
-	{ name: "Asset Code", value: "assetCode", sort: true, direction: true, colStyle: { width: "12%" }, isCurrentlySorted: true, style: {} },
-	{ name: "Asset Name", value: "assetName", sort: true, direction: true, colStyle: { width: "20%" }, isCurrentlySorted: false, style: {} },
-	{ name: "Assigned To", value: "assignedTo", sort: true, direction: true, colStyle: { width: "12%" }, isCurrentlySorted: false, style: {} },
-	{ name: "Assigned By", value: "assignedBy", sort: true, direction: true, colStyle: { width: "12%" }, isCurrentlySorted: false, style: {} },
-	{ name: "Assigned Date", value: "assignedDate", sort: true, direction: true, colStyle: { width: "12%" }, isCurrentlySorted: false, style: {} },
-	{ name: "State", value: "status", sort: true, direction: true, colStyle: { width: "17%" }, isCurrentlySorted: false, style: {} },
+	{ name: "No.", value: "id", sort: true, direction: true, colStyle: { width: "fit-content" }, isCurrentlySorted: false, style: {} },
+	{ name: "Asset Code", value: "assetCode", sort: true, direction: true, colStyle: { width: "fit-content" }, isCurrentlySorted: true, style: {} },
+	{ name: "Asset Name", value: "assetName", sort: true, direction: true, colStyle: { width: "fit-content" }, isCurrentlySorted: false, style: {} },
+	{ name: "Assigned To", value: "assignedTo", sort: true, direction: true, colStyle: { width: "fit-content" }, isCurrentlySorted: false, style: {} },
+	{ name: "Assigned By", value: "assignedBy", sort: true, direction: true, colStyle: { width: "fit-content" }, isCurrentlySorted: false, style: {} },
+	{ name: "Assigned Date", value: "assignedDate", sort: true, direction: true, colStyle: { width: "fit-content" }, isCurrentlySorted: false, style: {} },
+	{ name: "State", value: "status", sort: true, direction: true, colStyle: { width: "fit-content" }, isCurrentlySorted: false, style: {} },
 ];
 const showModalCell = ["assetCode", "assetName"];
 const modalHeader: string[] = [];
@@ -63,6 +59,10 @@ interface ConfirmModalData {
 }
 
 export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
+	const navigate = useNavigate();
+	const location = useLocation();
+	const [messageApi, contextHolder] = message.useMessage();
+
 	useEffect(() => {
 		props.setHeaderTitle(
 			<BreadcrumbComponent
@@ -76,15 +76,13 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
 		);
 	}, []);
 
-	const navigate = useNavigate();
-	const location = useLocation();
-	const newAssignment = location.state?.newAssignment;
 
-	const [messageApi, contextHolder] = message.useMessage();
 	const [modalShow, setModalShow] = useState(false);
 	const [modalData, setModalData] = useState<AssignmentForTableModel>();
 	const [showDisableModal, setShowDisableModal] = useState(false);
 	const [confirmModalData, setConfirmModalData] = useState<ConfirmModalData>();
+
+	const newAssignment = location.state?.newAssignment;
 
 	const [param, setParam] = useState<AssignmentGetParams>({
 		search: "",
@@ -100,11 +98,7 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
 		sort: "assetCode,asc",
 	});
 
-	const {
-		data: assignmentResponse,
-		isLoading: isAssignmentLoading,
-		error: assignmentError,
-		mutate: mutateAssignment,
+	const { data: assignmentResponse, isLoading: isAssignmentLoading, error: assignmentError, mutate: mutateAssignment,
 	} = useSWR<PageResponseModel<AssignmentForTableModel>>(
 		getAssignmentsUrl(param),
 		getAssignments,
@@ -113,9 +107,7 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
 		}
 	);
 
-	const handleSetParam = (
-		func: (p: AssignmentGetParams) => AssignmentGetParams
-	) => {
+	const handleSetParam = (func: (p: AssignmentGetParams) => AssignmentGetParams) => {
 		const newParam = func(param);
 		if (newParam.page === param.page) {
 			newParam.page = 0;
@@ -179,7 +171,7 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
 						mutateAssignment();
 					})
 					.catch((error) => {
-						message.error(error.response? error.response.data.message :"Failed to Create Return Request");
+						message.error(error.response ? error.response.data.message : "Failed to Create Return Request");
 					});
 			});
 	};
@@ -293,62 +285,62 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
 		header.forEach(h => { if (h.value === param.sort.split(",")[0]) { h.isCurrentlySorted = true } else { h.isCurrentlySorted = false } })
 	}
 
-  return (
-    <Container>
-      {contextHolder}
-      <h4
-        style={{ color: ColorPalette.PRIMARY_COLOR }}
-        className="fw-bold fs-4 ms-1 mt-5 mb-3"
-      >
-        Assignment List
-      </h4>
-      <Row className="py-4 ms-0 pe-2 user-param-row justify-content-between">
-        <Col sm={5}>
-          <Row>
-            <Col className="d-flex justify-content-start align-items-center px-2">
-              <DropdownFilterComponent
-                title={"State"}
-                data={filterData}
-                params={param.status}
-                setParamsFunction={handleSetParam}
-                style={{ width: "100%" }}
-                defaultAll={true}
-                paramName={"status"}
-              ></DropdownFilterComponent>
-            </Col>
-            <Col className="d-flex justify-content-start align-items-center px-2">
-              <DatePickerComponent
-                handleDatePicker={handleDatePicker}
-                placeHolderText={"Assigned Date"}
-              />
-            </Col>
-          </Row>
-        </Col>
-        <Col sm={6}>
-          <Row className="justify-content-end">
-            <Col sm={7}>
-              <SearchComponent
-					placeholder={"Search Asset Code, Asset Name or Assignee Name"}
-					setParamsFunction={handleSetParam}
-					style={{ width: "100%" }}
-					setDummy={() => { } } class={""}              
-				/>
-            </Col>
-            <Col sm={4} >
-              <Button
-								
-                variant="danger"
-                onClick={() => {
-                  return navigate("./new");
-                }}
-                style={{ width: "200px" }}
-              >
-                Create new assignment
-              </Button>
-            </Col>
-          </Row>
-        </Col>
-      </Row>
+	return (
+		<Container>
+			{contextHolder}
+			<h4
+				style={{ color: ColorPalette.PRIMARY_COLOR }}
+				className="fw-bold fs-4 ms-1 mt-5 mb-3"
+			>
+				Assignment List
+			</h4>
+			<Row className="py-4 ms-0 pe-2 user-param-row justify-content-between">
+				<Col sm={5}>
+					<Row>
+						<Col className="d-flex justify-content-start align-items-center px-2">
+							<DropdownFilterComponent
+								title={"State"}
+								data={filterData}
+								params={param.status}
+								setParamsFunction={handleSetParam}
+								style={{ width: "100%" }}
+								defaultAll={true}
+								paramName={"status"}
+							></DropdownFilterComponent>
+						</Col>
+						<Col className="d-flex justify-content-start align-items-center px-2">
+							<DatePickerComponent
+								handleDatePicker={handleDatePicker}
+								placeHolderText={"Assigned Date"}
+							/>
+						</Col>
+					</Row>
+				</Col>
+				<Col sm={6}>
+					<Row className="justify-content-end">
+						<Col sm={7}>
+							<SearchComponent
+								placeholder={"Search Asset Code, Asset Name or Assignee Name"}
+								setParamsFunction={handleSetParam}
+								style={{ width: "100%" }}
+								setDummy={() => { }} class={""}
+							/>
+						</Col>
+						<Col sm={4} >
+							<Button
+
+								variant="danger"
+								onClick={() => {
+									return navigate("./new");
+								}}
+								style={{ width: "200px" }}
+							>
+								Create new assignment
+							</Button>
+						</Col>
+					</Row>
+				</Col>
+			</Row>
 
 			{isAssignmentLoading || !assignmentResponse ? (
 				<LoaderComponent></LoaderComponent>
