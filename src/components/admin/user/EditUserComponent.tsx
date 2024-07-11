@@ -1,48 +1,98 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button, Col, Container, Form, Row } from "react-bootstrap";
 import { ColorPalette } from "../../../utils/ColorPalette";
-import { useEffect, useState } from "react";
+import { FormEvent, ReactNode, useEffect, useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from 'yup';
-import { ModalUserModel } from "../../../models/ModalUserModel";
+import { ModalUserModel } from "../../../models/UserModel";
 import { RolesLowerCase } from "../../../utils/Enum";
 import { UserModel } from "../../../models/UserModel";
 import { message } from "antd";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { getOneUser, updateUser } from "../../../services/UserService";
+import { BreadcrumbComponent } from "../../commons/BreadcrumbComponent";
+import { ConfirmModalComponent } from "../../commons/ConfirmModalComponent";
 
-type Props = {
-}
+
+
 const eighteenYearsAgo = new Date(new Date().setFullYear(new Date().getFullYear() - 18));
+
+interface ConfirmModalData {
+	onConfirm: () => void;
+	onCancel: () => void;
+	confirmTitle: string;
+	confirmQuestion: string;
+	confirmBtnLabel: string;
+	cancelBtnLabel: string;
+}
 
 const createUserValidationSchema = Yup.object({
     dateOfBirth: Yup.date()
         .max(eighteenYearsAgo, 'User is under 18. Please select a different date')
-        .required(''),
+        .required('Date of birth is required'),
     joinedDate: Yup.date()
         .min(Yup.ref('dateOfBirth'), 'Joined date is not later than Date of Birth. Please select a different date')
         .test('is-weekend', 'Joined date is Saturday or Sunday. Please select a different date', function (value) {
             return (value && (value.getDay() != 6 && value.getDay() != 0))
         })
-        .required(''),
-    gender: Yup.string().required('')
+        .required('Joined date is required'),
+    gender: Yup.string().required('Gender is required')
 });
 function formatDate(date: string) {
     let d = date.split("/");
     return ([d[2], d[1], d[0]].join('-'))
 }
-export const EditUserComponent = (_props: Props) => {
+
+type Props = {
+    setHeaderTitle: (title: ReactNode) => void
+}
+
+export const EditUserComponent = (props: Props) => {
     const location = useLocation();
 
     const [user] = useState<ModalUserModel>(location.state.user);
     const [loading, setLoading] = useState(false);
     const [messageApi, contextHolder] = message.useMessage();
+    const [showDisableModal, setShowDisableModal] = useState(false);
+    const [confirmModalData, setConfirmModalData] = useState<ConfirmModalData>();
 
     const navigate = useNavigate();
 
     let staffcodearray = user.staffCode.match(/[A-Za-z]+/);
     const prefix = staffcodearray ? staffcodearray[0] : "SD";
+
+    function openModal(e: FormEvent<HTMLFormElement>) {
+		setShowDisableModal(true);
+		setConfirmModalData({
+			onConfirm: () =>{
+                handleCancel
+                handleSubmit(e)
+            },
+			onCancel: handleCancel,
+			confirmTitle: "Edit Confirmation",
+			confirmQuestion: `You have changed joined date, which may affect their assignments. Do you still want to edit the User?`,
+			confirmBtnLabel: "Yes",
+			cancelBtnLabel: "No",
+		});
+	}
+
+    const handleCancel = () => {
+		setShowDisableModal(false);
+	};
+
+    useEffect(() => {
+        props.setHeaderTitle(<BreadcrumbComponent breadcrumb={[
+            {
+              title: 'Manage User',
+              href: `${window.location.origin}/admin/manage-users#`
+            },
+            {
+              title: "Edit User",
+              href: `${window.location.origin}/admin/manage-users/edit#`
+            }
+          ]} />);
+    }, [])
 
     const formik = useFormik({
         initialValues: {
@@ -65,7 +115,7 @@ export const EditUserComponent = (_props: Props) => {
                 type: values.roleId
             }
             if (!formik.dirty) {
-                messageApi.open({ type: 'warning', content: 'Please Change Infomation before Submit', });
+                messageApi.open({ type: 'warning', content: 'Please Change Information before Submit', });
                 setLoading(false);
                 return;
             }
@@ -87,6 +137,14 @@ export const EditUserComponent = (_props: Props) => {
 
     const { handleSubmit, handleChange, values, errors, getFieldProps, isSubmitting } = formik;
 
+    const handleShowModal = (e: FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        if (formik.touched.joinedDate)
+            openModal(e)
+        else
+            handleSubmit(e);
+    }
+
     useEffect(() => {
         const array = Object.keys(errors);
         if (array) {
@@ -94,13 +152,11 @@ export const EditUserComponent = (_props: Props) => {
         }
     }, [isSubmitting])
 
-    console.log(values);
-
     return (
         <>
             {contextHolder}
             <Container>
-                <Form className="p-5" style={{ maxWidth: "60%", minWidth: "300px", textAlign: "left" }} onSubmit={handleSubmit}>
+                 <Form className="p-5" style={{ maxWidth: "60%", minWidth: "300px", textAlign: "left" }} onSubmit={(e)=>handleShowModal(e)}>   {/* onSubmit={handleShowModal}>   onSubmit={handleSubmit}> */}
                     <h4 style={{ color: ColorPalette.PRIMARY_COLOR, fontWeight: "bold" }} className="mb-4">
                         Edit User
                     </h4>
@@ -182,7 +238,7 @@ export const EditUserComponent = (_props: Props) => {
                             <span className='mx-1' style={{ color: ColorPalette.PRIMARY_COLOR }}>*</span>
                         </Form.Label>
                         <Col sm={9}>
-                            <Form.Select name="prefix" value={values.prefix} onChange={handleChange} >
+                            <Form.Select name="prefix" value={values.prefix} onChange={handleChange} disabled>
                                 <option value="SD">SD</option>
                                 <option value="BPS" >BPS</option>
                             </Form.Select>
@@ -195,7 +251,7 @@ export const EditUserComponent = (_props: Props) => {
                                 <span className='mx-1' style={{ color: ColorPalette.PRIMARY_COLOR }}>*</span>
                             </Form.Label>
                             <Col sm={9}>
-                                <Form.Select name="location" value={values.location} onChange={handleChange} >
+                                <Form.Select name="location" value={values.location} onChange={handleChange} disabled>
                                     <option value="HCM" >HCM: Ho Chi Minh</option>
                                     <option value="HN" >HN: Ha Noi</option>
                                     <option value="DN" >DN: Da Nang</option>
@@ -211,6 +267,20 @@ export const EditUserComponent = (_props: Props) => {
                         </Col>
                     </Row>
                 </Form>
+				{confirmModalData ? (
+				<ConfirmModalComponent
+					show={showDisableModal}
+					onConfirm={confirmModalData.onConfirm}
+					onCancel={confirmModalData.onCancel}
+					confirmTitle={confirmModalData.confirmTitle}
+					confirmQuestion={confirmModalData.confirmQuestion}
+					confirmBtnLabel={confirmModalData.confirmBtnLabel}
+					cancelBtnLabel={confirmModalData.cancelBtnLabel}
+					modalSize={"md"}
+				/>
+			) : (
+				""
+			)}
             </Container>
         </>
     );

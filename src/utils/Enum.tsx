@@ -29,27 +29,48 @@ export enum StaffState {
 // should change to number ?
 export enum AssignmentState {
     ACCEPTED = 'Accepted',
-    WATING_FOR_ACCEPTANCE = 'Wating for Acceptance',
+    WAITING_FOR_ACCEPTANCE = 'Waiting for Acceptance',
     DECLINED = 'Declined',
+    WAITING_FOR_RETURNING = 'Waiting for Returning',
 }
 
+export enum AssignmentRequestState {
+    ACCEPTED,
+    WAITING_FOR_ACCEPTANCE,
+    DECLINED,
+}
+
+// export enum ReturningState {
+//     COMPLETED,
+//     WAITING_FOR_RETURNING,
+// }
+
 export enum ReturningState {
+    COMPLETED = "Completed",
+    WAITING_FOR_RETURNING = "Waiting for Returning",
+}
+
+export enum ReturningParamState {
     COMPLETED,
-    WATING_FOR_RETURNING,
+    WAITING_FOR_RETURNING,
 }
 
 export enum AssetState {
     AVAILABLE = "Available",
-    NOT_AVAILABLE = "Not Available",
+    NOT_AVAILABLE = "Not available",
     ASSIGNED = "Assigned",
+    WAITING_FOR_RECYCLING = "Waiting for recycling",
+    RECYCLED = "Recycled"
 }
 
 export enum Roles {
     ADMIN = 1, STAFF = 2
 }
+
 export enum RolesLowerCase {
     Admin = 1, Staff = 2
 }
+
 export enum RolesAsString {
     ADMIN = "Admin", STAFF = "Staff"
 }

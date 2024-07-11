@@ -12,6 +12,8 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
+  --bs-breadcrumb-divider: '>';
+
   /* Color Palette */
   --PRIMARY-COLOR: #E30613;
   --SECONDARY-COLOR: #CF2338;
@@ -49,6 +51,8 @@ h1 {
   line-height: 1.1;
 }
 
+
+
 /* button {
   border: 1px solid #1a1a1a;
   border-radius: 10px;
@@ -82,8 +86,13 @@ button:focus-visible {
   }
 }
 
+
 svg:hover {
   cursor: pointer;
+}
+
+.disable-icon:hover {
+  cursor: default;
 }
 
 /*------------------------------*/
@@ -92,14 +101,15 @@ table {
   border-collapse: collapse;
   width: 100%;
   table-layout: auto;
-  border-spacing: 10px;
+  /* border-spacing: 10px; */
+  min-width: fit-content;
+  overflow-x: auto;
 }
 
 tr,
 td,
 th {
   border: 0;
-  text-align: left;
   vertical-align: middle;
 }
 
@@ -110,12 +120,14 @@ th {
 .cell,
 .cellnoClick {
   border-bottom: 1px solid rgb(142, 142, 142);
+
 }
 
 td {
   margin-left: 8px;
-  max-width: 200px;
-  width: auto;
+  /* max-width: 200px; */
+  min-width: 50px;
+  width: fit-content;
 }
 
 tr:nth-child(even) {
@@ -126,7 +138,21 @@ tr:hover {
   cursor: pointer;
 }
 
+.cell {
+  width: auto;
+}
+
 .last-cell {
+  width: fit-content;
+  min-width: 60px;
+}
+
+.last-cell:hover {
+  cursor: default;
+}
+
+.last-cell .col {
+  min-width: 30px;
   width: fit-content;
 }
 
@@ -151,7 +177,9 @@ tr:hover {
 }
 
 .form-check-input:focus,
-.form-control:focus {
+.form-control:focus,
+#dropdown-custom-2:focus,
+#dropdown-toggle-text:focus {
   border-color: red;
   outline: 0;
   box-shadow: 0 0 0 .25rem transparent;
@@ -167,23 +195,26 @@ tr:hover {
   border-radius: 5px !important;
 }
 
-.password-onfocus {
+.password-onfocus,
+.calendar-onfocus {
   border: 1px solid grey;
   border-radius: 0.375rem;
   transition: border 0.2s;
 }
 
-.password-onfocus:focus-within {
+.password-onfocus:focus-within,
+.calendar-onfocus:focus-within {
   border: 1px solid red;
   border-radius: 0.375rem;
 }
 
+/* Loader */
 .loader {
   width: 50px;
-  padding: 8px;
+  padding: 4px;
   aspect-ratio: 1;
   border-radius: 50%;
-  background: #25b09b;
+  background: red;
   --_m:
     conic-gradient(#0000 10%, #000),
     linear-gradient(#000 0 0) content-box;
@@ -191,9 +222,10 @@ tr:hover {
   mask: var(--_m);
   -webkit-mask-composite: source-out;
   mask-composite: subtract;
-  animation: l3 1s infinite linear;
+  animation: l3 0.8s infinite linear;
 }
 
+/* ------ */
 @keyframes l3 {
   to {
     transform: rotate(1turn)
@@ -226,4 +258,78 @@ tr:hover {
 
 .pagination {
   --bs-pagination-disabled-bg: white
+}
+
+#dropdown-custom-2:hover {
+  background-color: transparent;
+  text-align: left;
+  color: black;
+}
+
+#dropdown-custom-2 {
+  background-color: transparent;
+  text-align: left;
+  color: black;
+}
+
+.dropdown-item.active,
+.dropdown-item:active {
+  color: var(--DARK-400-COLOR);
+  text-decoration: none;
+  background-color: var(--SLIVER-200-COLOR);
+}
+
+#add-category-dropdown-item:active,
+#add-category-dropdown-item:hover,
+#add-category-dropdown-item:focus {
+  background-color: transparent;
+}
+
+.disable-icon {
+  opacity: 20%;
+}
+
+.asset-detail-modal {
+  max-width: 800px;
+  /* Set your desired width here */
+  width: 100%;
+}
+
+.assignment-detail-modal {
+  max-width: 600px;
+  /* Set your desired width here */
+  width: 100%;
+}
+
+.modal-header {
+  background-color: rgb(239, 241, 245);
+  border-bottom: 1px solid black;
+}
+
+.modal-content {
+  border: 1px solid black;
+}
+
+.show-more:hover {
+  cursor: pointer;
+}
+
+.sorting-header{
+  color: #E30613;
+}
+
+
+.search-placeholder:placeholder-shown::placeholder {
+  color: transparent;
+}
+
+.search-placeholder:placeholder-shown {
+  text-shadow: 50ch 0 black;
+  animation: l6 8s infinite linear;
+}
+
+@keyframes l6 {
+  100% {
+    text-shadow: -50ch 0 black
+  }
 }

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { ReactNode, useState } from 'react';
 import { Navbar, Container } from 'react-bootstrap';
 import { ColorPalette } from '../../utils/ColorPalette';
 import { useNavigate } from 'react-router-dom';
@@ -12,7 +12,7 @@ import { ConfirmModalComponent } from './ConfirmModalComponent';
 
 interface HeaderComponentProps {
     username: string,
-    title: string,
+    title: ReactNode,
     logo: string,
     handleLogout: (state: boolean, headerTitle: string) => void
 }
@@ -30,10 +30,8 @@ export const HeaderComponent: React.FC<HeaderComponentProps> = ({ username, titl
             content: 'Logging out...',
         })
             .then(async () => {
-                console.log(import.meta.env.VITE_AZURE_BACKEND_DOMAIN);
                 await logout()
                     .then((res) => {
-                        console.log(res);
                         if (res.status == 200) {
                             handleLogout(true, 'Online Asset Management');
                             sessionStorage.removeItem('isLoggedIn');
@@ -42,13 +40,10 @@ export const HeaderComponent: React.FC<HeaderComponentProps> = ({ username, titl
                             sessionStorage.removeItem('roleId');
                             sessionStorage.removeItem('location');
                             navigator('/');
-                            console.log(res.data);
-                            console.log(res.status);
                             message.success(`Logout successfully!`);
                         }
                     })
                     .catch((err) => {
-                        console.log(process.env.REACT_APP_AZURE_BACKEND_DOMAIN);
                         const errorData = err.response.data.substring(0, err.response.data.indexOf('}') + 1);
                         const errorResponse: ErrorResponse = JSON.parse(errorData);
                         message.error(`${errorResponse.message}`);
@@ -80,13 +75,13 @@ export const HeaderComponent: React.FC<HeaderComponentProps> = ({ username, titl
 
     return (
         <>
-            <Navbar className="navbar" style={{ backgroundColor: ColorPalette.PRIMARY_COLOR, height: '90px' }}>
+            <Navbar className="navbar" style={{ position: 'sticky', top: 0, zIndex: 10, backgroundColor: ColorPalette.PRIMARY_COLOR, height: '90px' }}>
                 {contextHolder}
                 <Container fluid className='d-flex justify-content-between'>
-                    <Navbar.Brand href="#" id='navigate-bar' className='d-flex align-items-center ps-5'>
+                    <div id='navigate-bar' className='d-flex align-items-center ps-5'>
                         {logo ? <img src={logo} className='logo my-auto' alt='logo' /> : <div></div>}
-                        <h3 className="my-2 mx-4 fs-3 text-white fw-semibold" id='navbar-title'>{title}</h3>
-                    </Navbar.Brand>
+                        <h3 className="mt-4 mx-4 fs-4 text-white fw-semibold" id='navbar-title'>{title}</h3>
+                    </div>
                     {sessionStorage.getItem('isLoggedIn') ? (
                         <div id="navbarNavDarkDropdown">
                             <ul className="navbar-nav">
@@ -106,7 +101,7 @@ export const HeaderComponent: React.FC<HeaderComponentProps> = ({ username, titl
                 </Container>
             </Navbar>
             <PasswordModalComponent show={showPasswordModal} onClose={handleClose} isFirstLoggedIn={true} />
-            <ConfirmModalComponent show={showLogoutModal} onConfirm={handleLogoutConfirm} onCancel={handleLogoutCancel} confirmTitle={'Are you sure?'} confirmQuestion={'Do you want to log out?'} confirmBtnLabel={'Log out'} cancelBtnLabel={'Cancel'} modalSize={'sm'} />
+            <ConfirmModalComponent show={showLogoutModal} onConfirm={handleLogoutConfirm} onCancel={handleLogoutCancel} confirmTitle={'Log Out'} confirmQuestion={'Do you want to log out?'} confirmBtnLabel={'Yes'} cancelBtnLabel={'No'} modalSize={'sm'} />
         </>
     )
 }

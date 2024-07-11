@@ -36,6 +36,7 @@ export const PasswordModalComponent: React.FC<ChangePasswordModalProps> = ({ sho
     const [isFirstLogIn, setIsFirstLogIn] = useState<boolean>(isFirstLoggedIn);
     const [successMessage, setSuccessMessage] = useState<string>('');
     const [messageApi, contextHolder] = message.useMessage();
+    const [isDisable, setIsDisable] = useState<boolean>(false);
     const [showOld, setShowOld] = useState<boolean>(false);
     const [showNew, setShowNew] = useState<boolean>(false);
     const [showConfirm, setShowConfirm] = useState<boolean>(false);
@@ -48,12 +49,14 @@ export const PasswordModalComponent: React.FC<ChangePasswordModalProps> = ({ sho
         },
         validationSchema: getValidationSchema(isFirstLoggedIn),
         onSubmit: async (values, { resetForm }) => {
+            setIsDisable(true);
             setSuccessMessage('');
 
             messageApi.open({
                 type: 'loading',
                 content: 'Updating password...',
             }).then(async () => {
+
                 const changePswrdData: ChangePasswordModel = {
                     oldPassword: isFirstLoggedIn !== true ? '' : values.oldPassword,
                     newPassword: values.newPassword,
@@ -61,19 +64,18 @@ export const PasswordModalComponent: React.FC<ChangePasswordModalProps> = ({ sho
 
                 await changePassword(changePswrdData)
                     .then((res) => {
-                        console.log(res);
                         if (res.status == 200) {
                             resetForm();
                             setIsFirstLogIn(true);
                             sessionStorage.setItem('isFirstLogin', 'true');
                             setSuccessMessage('Your password has been changed successfully!');
                         }
+                        setIsDisable(false);
                     }).catch((err) => {
-                        console.log(String(err.response.data.message));
+                        setIsDisable(false);
                         message.error(String(err.response.data.message));
                     });
             });
-
         }
     });
 
@@ -184,7 +186,7 @@ export const PasswordModalComponent: React.FC<ChangePasswordModalProps> = ({ sho
                                         aria-required
                                     />
                                     <InputGroup.Text className='bg-transparent border-0'>
-                                        <FontAwesomeIcon icon={showConfirm ? faEye : faEyeSlash} onClick={handleShowConfirmPassword}></FontAwesomeIcon>
+                                        <FontAwesomeIcon icon={showConfirm ? faEye : faEyeSlash} onClick={handleShowConfirmPassword} />
                                     </InputGroup.Text>
                                 </InputGroup>
                                 {formik.touched.confirmPassword && formik.errors.confirmPassword ? (
@@ -200,7 +202,7 @@ export const PasswordModalComponent: React.FC<ChangePasswordModalProps> = ({ sho
                                     className="mx-2 fw-semibold text-white"
                                     type="submit"
                                     style={{ minWidth: "90px", backgroundColor: ColorPalette.PRIMARY_COLOR, border: 'none' }}
-                                    disabled={!formik.isValid || !formik.dirty}>
+                                    disabled={!formik.isValid || !formik.dirty || isDisable}>
                                     Save
                                 </Button>
                                 {isFirstLogIn !== false && (

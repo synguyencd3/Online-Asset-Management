@@ -1,17 +1,30 @@
-import { Button, Col, Container, Form, Row } from "react-bootstrap";
+import { Button, Col, Container, Dropdown, Form, Row } from "react-bootstrap";
 import { ColorPalette } from "../../../utils/ColorPalette";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { AssetState } from "../../../utils/Enum";
-import { useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSpinner } from "@fortawesome/free-solid-svg-icons";
+import { faCheck, faClose, faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
+import {
+  CategoryCreateModel,
+  CategoryModel,
+} from "../../../models/CategoryModel";
+import useSWR from "swr";
+import {
+  categoriesEndpoint,
+  createCategories,
+  getCategories,
+} from "../../../services/CategoryService";
+import { message } from "antd";
+import { AssetCreateModel, AssetForTableModel } from "../../../models/AssetModel";
+import { createAsset } from "../../../services/AssetService";
+import { BreadcrumbComponent } from "../../commons/BreadcrumbComponent";
 
 const assetValidationSchema = Yup.object({
   assetName: Yup.string()
     .max(100, "Asset name must be at most 100 characters")
-    .matches(/^[a-zA-Z]+$/, "Asset name cannot contain special characters")
     .required("Asset name is required"),
   categoryName: Yup.string()
     // .max(100, 'Last name must be at most 128 characters')
@@ -24,9 +37,34 @@ const assetValidationSchema = Yup.object({
     .required("Installed date is required"),
 });
 
-export const CreateAssetComponent = () => {
+type Props = {
+  setHeaderTitle: (title: ReactNode) => void
+};
+
+export const CreateAssetComponent = (props: Props) => {
   const [loading, setLoading] = useState(false);
+  const [loadingCreateCategory, setLoadingCreateCategory] = useState(false);
+  const [addCategory, setAddCategory] = useState(false);
   const navigate = useNavigate();
+  const [showDropdown, setShowDropdown] = useState(false);
+
+  const { data: categoriesResponse, mutate: mutateCategories } = useSWR(
+    categoriesEndpoint,
+    getCategories
+  );
+
+  useEffect(() => {
+    props.setHeaderTitle(<BreadcrumbComponent breadcrumb={[
+      {
+        title: 'Manage Asset',
+        href: `${window.location.origin}/admin/manage-assets#`
+      },
+      {
+        title: "Create New Asset",
+        href: `${window.location.origin}/admin/manage-assets/new#`
+      }
+    ]} />);
+  }, []);
 
   const formik = useFormik({
     initialValues: {
@@ -34,17 +72,75 @@ export const CreateAssetComponent = () => {
       categoryName: "",
       specification: "",
       installedDate: "",
-      state: AssetState.AVAILABLE,
+      assetState: AssetState.AVAILABLE,
     },
     validationSchema: assetValidationSchema,
     onSubmit: async (values) => {
-      console.log(values);
-      setLoading(false);
-    }
-    // onChange: (event: any) => {
-    //   console.log(event);
-    // },
+      setLoading(true);
+      const data: AssetCreateModel = {
+        assetName: values.assetName,
+        categoryName: values.categoryName,
+        specification: values.specification,
+        installDate: values.installedDate,
+        assetState: values.assetState.toUpperCase().replace(/ /g, "_"),
+      };
+
+      await createAsset(data)
+        .then((response) => {
+          message.success(response.data.message);
+          const newAsset: AssetForTableModel = response.data.data;
+          setLoading(false);
+          navigate("/admin/manage-assets", {
+            replace: true,
+            state: { newAsset: newAsset },
+          });
+        })
+        .catch((error) => {
+          message.error(error.response ? error.response.data.message : "Failed to Create Asset");
+          setLoading(false);
+        });
+    },
   });
+
+  const categoryFormik = useFormik<CategoryCreateModel>({
+    initialValues: {
+      name: "",
+    },
+    validationSchema: Yup.object({
+      name: Yup.string()
+        .max(100, "Category name must be at most 100 characters")
+        .required("Category name is required"),
+    }),
+    onSubmit: async (values) => {
+      if (!categoryFormik.isValid) return;
+      setLoadingCreateCategory(true);
+      await createCategories(values)
+        .then((response) => {
+          setLoadingCreateCategory(false);
+          message.success(response.data.message);
+          mutateCategories();
+          categoryFormik.resetForm();
+        })
+        .catch((error) => {
+          message.error(error.response.data.message);
+          setLoadingCreateCategory(false);
+        });
+    },
+  });
+
+  const toggleDropdown = (isShow: boolean) => {
+    setShowDropdown(isShow);
+    if (!isShow) {
+      setAddCategory(false);
+      categoryFormik.resetForm();
+    }
+  };
+
+  const handleCategoryChange = (category: CategoryModel) => {
+    formik.setFieldValue("categoryName", category.name);
+    toggleDropdown(false);
+  };
+
   return (
     <div>
       <Container>
@@ -58,7 +154,7 @@ export const CreateAssetComponent = () => {
           </h4>
           <Form.Group as={Row} className="mb-3" controlId="assetName">
             <Form.Label column sm={3}>
-              Name
+              Name <span className='mx-1' style={{ color: ColorPalette.PRIMARY_COLOR }}>*</span>
             </Form.Label>
             <Col sm={9}>
               <Form.Control
@@ -72,21 +168,124 @@ export const CreateAssetComponent = () => {
           </Form.Group>
           <Form.Group as={Row} className="mb-3" controlId="categoryName">
             <Form.Label column sm={3}>
-              Category
+              Category <span className='mx-1' style={{ color: ColorPalette.PRIMARY_COLOR }}>*</span>
             </Form.Label>
             <Col sm={9}>
-              <Form.Control
-                type="text"
-                {...formik.getFieldProps("categoryName")}
-              />
-              {/* {formik.touched.lastName && formik.errors.lastName ? (
-            <div className="error-message">{formik.errors.lastName}</div>
-          ) : null} */}
+              <Dropdown
+                show={showDropdown}
+                onToggle={toggleDropdown}
+                autoClose="outside"
+              >
+                <Dropdown.Toggle
+                  variant="outline-dark"
+                  id="dropdown-custom-2"
+                  className="w-100 pe-0"
+                  style={{ height: "39px" }}
+                >
+                  <input
+                    type="text"
+                    className="w-100 border-0 h-100 form-select ps-0 py-0"
+                    id="dropdown-toggle-text"
+                    readOnly
+                    {...formik.getFieldProps("categoryName")}
+                  />
+                </Dropdown.Toggle>
+
+                <Dropdown.Menu
+                  style={{
+                    width: "100%",
+                    background: ColorPalette.SLIVER_100_COLOR,
+                  }}
+                  className="border-dark"
+                >
+                  <div style={{ minWidth: "fit-content" }}>
+                    {categoriesResponse?.data.data.map(
+                      (category: CategoryModel) => (
+                        <Dropdown.Item
+                          key={category.id}
+                          onClick={() => {
+                            handleCategoryChange(category);
+                          }}
+                        >
+                          {category.name}
+                        </Dropdown.Item>
+                      )
+                    )}
+                    <Dropdown.Divider className="border-dark" />
+                  </div>
+                  <div id="add-category-dropdown-item" className="px-3">
+                    {addCategory ? (
+                      <Form.Group className="d-flex">
+                        <Col sm={10}>
+                          <Form.Control
+                            type="text"
+                            placeholder="New Category Name"
+                            className="rounded-0"
+                            style={{ height: "30px" }}
+                            id="newCategoryName"
+                            maxLength={100}
+                            {...categoryFormik.getFieldProps("name")}
+                          />
+                        </Col>
+                        <Col className="d-flex ps-2">
+                          <Col className="d-flex align-items-center justify-content-center">
+                            {loadingCreateCategory ? (
+                              <FontAwesomeIcon
+                                size="lg"
+                                icon={faSpinner}
+                                spin
+                                color={ColorPalette.PRIMARY_COLOR}
+                              />
+                            ) : (
+                              <FontAwesomeIcon
+                                size="lg"
+                                icon={faCheck}
+                                onClick={() =>
+                                  categoryFormik.dirty && categoryFormik.isValid
+                                    ? categoryFormik.handleSubmit()
+                                    : null
+                                }
+                                color={
+                                  categoryFormik.dirty && categoryFormik.isValid
+                                    ? ColorPalette.PRIMARY_COLOR
+                                    : ColorPalette.SLIVER_400_COLOR
+                                }
+                              />
+                            )}
+                          </Col>
+                          <Col className="d-flex align-items-center justify-content-center">
+                            <FontAwesomeIcon
+                              size="lg"
+                              icon={faClose}
+                              onClick={() => {
+                                setAddCategory(false);
+                                categoryFormik.resetForm();
+                              }}
+                            />
+                          </Col>
+                        </Col>
+                      </Form.Group>
+                    ) : (
+                      <button
+                        className="btn-link text-danger"
+                        onClick={() => setAddCategory(true)}
+                        style={{ cursor: "pointer" }}>
+                        <i>Add New Category</i>
+                      </button>
+                    )}
+                  </div>
+                </Dropdown.Menu>
+              </Dropdown>
+              {formik.touched.categoryName && formik.errors.categoryName ? (
+                <div className="error-message">
+                  {formik.errors.categoryName}
+                </div>
+              ) : null}
             </Col>
           </Form.Group>
           <Form.Group as={Row} className="mb-3" controlId="specification">
             <Form.Label column sm={3}>
-              Specification
+              Specification <span className='mx-1' style={{ color: ColorPalette.PRIMARY_COLOR }}>*</span>
             </Form.Label>
             <Col sm={9}>
               <Form.Control
@@ -103,7 +302,7 @@ export const CreateAssetComponent = () => {
           </Form.Group>
           <Form.Group as={Row} className="mb-3" controlId="installedDate">
             <Form.Label column sm={3}>
-              Installed Date
+              Installed Date <span className='mx-1' style={{ color: ColorPalette.PRIMARY_COLOR }}>*</span>
             </Form.Label>
             <Col sm={9}>
               <Form.Control
@@ -117,14 +316,14 @@ export const CreateAssetComponent = () => {
               ) : null}
             </Col>
           </Form.Group>
-          <Form.Group as={Row} className="mb-3" controlId="state">
+          <Form.Group as={Row} className="mb-3" controlId="assetState">
             <Form.Label column sm={3}>
-              State
+              State <span className='mx-1' style={{ color: ColorPalette.PRIMARY_COLOR }}>*</span>
             </Form.Label>
-            <Col sm={9} id="state" className="red-border-on-focus">
+            <Col sm={9} id="assetState" className="red-border-on-focus">
               <Form.Check
                 label={AssetState.AVAILABLE}
-                name="state"
+                name="assetState"
                 value={AssetState.AVAILABLE}
                 type="radio"
                 id={AssetState.AVAILABLE}
@@ -134,7 +333,7 @@ export const CreateAssetComponent = () => {
               />
               <Form.Check
                 label={AssetState.NOT_AVAILABLE}
-                name="state"
+                name="assetState"
                 value={AssetState.NOT_AVAILABLE}
                 type="radio"
                 id={AssetState.NOT_AVAILABLE}
@@ -149,7 +348,7 @@ export const CreateAssetComponent = () => {
                 className="mx-4"
                 style={{ minWidth: "100px" }}
                 type="submit"
-                disabled={!formik.dirty || !formik.isValid}
+                disabled={!formik.dirty || !formik.isValid || loading}
               >
                 {" "}
                 {loading ? <FontAwesomeIcon icon={faSpinner} spin /> : "Save"}

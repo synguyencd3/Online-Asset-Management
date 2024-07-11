@@ -3,3 +3,7 @@ export type CategoryModel = {
     name: string;
     prefix: string
 }
+
+export type CategoryCreateModel = {
+    name: string;
+}

@@ -1,13 +1,18 @@
-import { useEffect, useState } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import './App.css';
 import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import { HeaderComponent } from './components/commons/HeaderComponent';
 import { LogInComponent } from './components/auth/LogInComponent';
 import { MainApp } from './components/MainApp';
 import { NotHavePermission } from './components/auth/NotHavePermission';
+import { logoSVG } from './utils/ImageFiles';
+import { BreadcrumbComponent } from './components/commons/BreadcrumbComponent';
 
 function App() {
-    const [headerTitle, setHeaderTitle] = useState<string>('Online Asset Management');
+    const [headerTitle, setHeaderTitle] = useState<ReactNode>(<BreadcrumbComponent breadcrumb={[{
+        title: 'Online Management Asset',
+        href: `${window.location.origin}#`
+    }]} />);
     const [isLoggedIn, setIsLoggedIn] = useState<boolean>(Boolean(sessionStorage.getItem('isLoggedIn')) === true);
     const [username, setUsername] = useState('');
     const [roleId, setRoleId] = useState(Number(sessionStorage.getItem('roleId')));
@@ -30,8 +35,6 @@ function App() {
         setIsLoggedIn(state);
         sessionStorage.setItem('isLoggedIn', 'true');
         setRoleId(roleId);
-        console.log(roleId);
-        console.log(typeof roleId);
     };
 
     const handleLogout = (state: boolean, title: string) => {
@@ -49,7 +52,7 @@ function App() {
     return (
         <Router>
             <div style={{ flexFlow: 'column', height: '100%' }}>
-                <HeaderComponent title={headerTitle} handleLogout={handleLogout} logo={isLoggedIn ? '' : '/nashtech_logo.svg'} username={username} />
+                <HeaderComponent title={headerTitle} handleLogout={handleLogout} logo={isLoggedIn ? '' : logoSVG} username={username} />
                 <Routes>
                     <Route
                         path='/'

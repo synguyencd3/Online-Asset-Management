@@ -1,0 +1,2 @@
+export const logoSVG = 'https://firebasestorage.googleapis.com/v0/b/assets-427513.appspot.com/o/nashtech_logo.svg?alt=media&token=6aa77f8b-82ad-45e7-b37b-eb0386228df9';
+export const logoPNG = 'https://firebasestorage.googleapis.com/v0/b/assets-427513.appspot.com/o/nashtech_logo.png?alt=media&token=50e14512-e5f6-4dbe-b0e0-4f81574b6628';

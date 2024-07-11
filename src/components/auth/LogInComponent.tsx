@@ -47,14 +47,12 @@ export const LogInComponent: React.FC<LoginProps> = ({ setIsLoggedIn, setUsernam
                 .then(async () => {
                     await login(logInData)
                         .then((res) => {
-                            console.log(res);
                             if (res.status == 200) {
                                 const loginResponse: LogInResponseModel = {
                                     username: res.data.data.username ?? 'username',
                                     roleId: res.data.data.roleId,
                                     location: res.data.data.location
                                 }
-                                console.log(loginResponse);
                                 setUsername(loginResponse.username);
                                 sessionStorage.setItem('isLoggedIn', 'true');
                                 sessionStorage.setItem('isFirstLogin', res.data.data.isChangePassword);
@@ -67,9 +65,7 @@ export const LogInComponent: React.FC<LoginProps> = ({ setIsLoggedIn, setUsernam
                         })
                         .catch((err) => {
                             setLoading(false);
-                            console.log(err.response.status);
                             if (err.response.status === 401) {
-                                console.log(err.response.data.message);
                                 message.error(err.response.data.message);
                             }
                             if (err.response.status == 403) {

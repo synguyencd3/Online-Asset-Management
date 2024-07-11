@@ -19,11 +19,14 @@ export const ConfirmModalComponent: React.FC<ConfirmModalProps> = ({ modalSize, 
             <Modal.Header className='border-bottom border-1 border-secondary' style={{ paddingLeft: '2.5vw', backgroundColor: '#EEE' }}>
                 <Modal.Title style={{ color: '#dc3545', fontWeight: 'bold' }}>{confirmTitle}</Modal.Title>
             </Modal.Header>
-            <Modal.Body className='pb-0' style={{ paddingLeft: '2.15vw' }}>
-                <p className='px-2' style={{ fontSize: '17px' }}>{confirmQuestion}</p>
+            <Modal.Body className='pb-0' style={{ paddingTop: '2vh', paddingLeft: '2.15vw' }}>
+                <p className='px-2' style={{ fontSize: '1.15rem' }}>{confirmQuestion}</p>
             </Modal.Body>
-            <Modal.Footer style={{ paddingLeft: '2.35vw', paddingTop: 0, paddingBottom: '2vh', borderTop: 'none', display: "flex", justifyContent: "start" }}>
-                <Button style={{ backgroundColor: ColorPalette.PRIMARY_COLOR, border: 'none' }} className='fw-semibold px-3' onClick={onConfirm}>
+            <Modal.Footer style={{ paddingLeft: '2.35vw', paddingTop: '0.5vh', paddingBottom: '1vh', borderTop: 'none', display: "flex", justifyContent: "start" }}>
+                <Button
+                    style={{ backgroundColor: ColorPalette.PRIMARY_COLOR, border: 'none' }}
+                    className='fw-semibold px-3'
+                    onClick={onConfirm}>
                     {confirmBtnLabel}
                 </Button>
                 <Button variant="outline-secondary" className='fw-semibold px-3' onClick={onCancel}>
