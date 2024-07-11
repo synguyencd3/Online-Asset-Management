@@ -269,7 +269,7 @@ export const ManageAssetComponent: React.FC<Props> = (props: Props) => {
 								</p>
 							</Row>
 							<Row>
-								<TableComponent headers={header} datas={tableAsset} auxData={tableAsset} auxHeader={modalHeader} buttons={buttons} setSortString={handleSetParam} showModalCell={showModalCell} setDummy={() => { }} setModalData={setModalData} setModalShow={setModalShow} pre_button={undefined} disableButton={disableButtonArray}  ></TableComponent>
+								<TableComponent headers={header} datas={tableAsset} auxData={tableAsset} auxHeader={modalHeader} buttons={buttons} setSortParam={handleSetParam} showModalCell={showModalCell} setDummy={() => { }} setModalData={setModalData} setModalShow={setModalShow} pre_button={undefined} disableButton={disableButtonArray}  ></TableComponent>
 							</Row>
 							<PaginationComponent currentPage={param.page} setParamsFunction={handleSetParam} totalPage={asset.totalPage} perPage={param.size} fixPageSize={false} containerRef={undefined} ></PaginationComponent>
 						</>

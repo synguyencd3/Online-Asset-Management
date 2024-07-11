@@ -117,7 +117,7 @@ export const SelectUserComponent = (props: Props) => {
 							</Row> :
 							<>
 								<Row>
-									<TableComponent headers={header} datas={tableUser} auxData={[]} auxHeader={[]} buttons={[]} setSortString={handleSetParam} showModalCell={[]} setDummy={() => {}} setModalData={() => { }} setModalShow={undefined} pre_button={preButton} setSelect={setSelected} disableButton={[]}  ></TableComponent>
+									<TableComponent headers={header} datas={tableUser} auxData={[]} auxHeader={[]} buttons={[]} setSortParam={handleSetParam} showModalCell={[]} setDummy={() => {}} setModalData={() => { }} setModalShow={undefined} pre_button={preButton} setSelect={setSelected} disableButton={[]}  ></TableComponent>
 								</Row>
 								<PaginationComponent currentPage={param.page} totalPage={user.totalPage} perPage={param.size} setParamsFunction={handleSetParam} fixPageSize={false} containerRef={containerRef} ></PaginationComponent>
 							</>

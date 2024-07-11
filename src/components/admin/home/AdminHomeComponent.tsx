@@ -218,7 +218,7 @@ export const AdminHomeComponent: React.FC<Props> = (props: Props) => {
 								<TableComponent
 									headers={header}
 									datas={formatRecordList(assignmentResponse?.content!)}
-									setSortString={setParam}
+									setSortParam={setParam}
 									auxData={assignmentResponse?.content!}
 									auxHeader={auxHeader}
 									buttons={buttons}

@@ -371,7 +371,7 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
 									auxData={assignmentList}
 									auxHeader={modalHeader}
 									buttons={buttons}
-									setSortString={handleSetParam}
+									setSortParam={handleSetParam}
 									showModalCell={showModalCell}
 									setDummy={() => { }}
 									setModalData={setModalData}

@@ -8,7 +8,7 @@ import { FunctionalIconModel } from '../../models/FunctionalIconModel'
 
 type Props = {
 	headers: TableHeaderModel[];
-	setSortString: any;
+	setSortParam: any;
 	datas: Object[]
 
 	//auxData and auxHeader item should have exact index as data
@@ -25,7 +25,7 @@ type Props = {
 	disableButton: boolean[][]
 }
 
-export const TableComponent = ({ headers, datas, auxData, buttons, setSortString, showModalCell, setModalData, setModalShow, pre_button, setSelect, disableButton }: Props) => {
+export const TableComponent = ({ headers, datas, auxData, buttons, setSortParam, showModalCell, setModalData, setModalShow, pre_button, setSelect, disableButton }: Props) => {
 	const [header, setHeader] = useState(headers);
 	const cellCLickStyle = 'cell text-truncate'
 	const handleClick = (e: React.MouseEvent<any>, key: object) => {
@@ -47,7 +47,7 @@ export const TableComponent = ({ headers, datas, auxData, buttons, setSortString
 		header[index] = h;
 		setHeader([...header]);
 		let t = h.value + "," + (h.direction ? "asc" : "desc")
-		setSortString((sortString: any) => ({ ...sortString, sort: t }));
+		setSortParam((p: any) => ({ ...p, sort: t }));
 	}
 	return (
 		<>

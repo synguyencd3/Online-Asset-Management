@@ -288,7 +288,7 @@ export const ManageUserComponent = (props: Props) => {
 							</Row>
 							<Row>
 								{/* this initfucntion */}
-								<TableComponent headers={header} datas={tableUser} auxData={modalUsers} auxHeader={modalHeader} buttons={buttons} setSortString={handleSetParam} showModalCell={showModalCell} setDummy={() => { }} setModalData={setModalData} setModalShow={setModalShow} pre_button={undefined} disableButton={disableButton} />
+								<TableComponent headers={header} datas={tableUser} auxData={modalUsers} auxHeader={modalHeader} buttons={buttons} setSortParam={handleSetParam} showModalCell={showModalCell} setDummy={() => { }} setModalData={setModalData} setModalShow={setModalShow} pre_button={undefined} disableButton={disableButton} />
 							</Row>
 							<PaginationComponent currentPage={param.page} setParamsFunction={handleSetParam} totalPage={user.totalPage} perPage={param.size} fixPageSize={false} containerRef={undefined} ></PaginationComponent>
 						</>
