@@ -290,6 +290,7 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
 			}
 			window.history.replaceState({}, '')
 		}
+		header.forEach(h => { if (h.value === param.sort.split(",")[0]) { h.isCurrentlySorted = true } else { h.isCurrentlySorted = false } })
 	}
 
   return (

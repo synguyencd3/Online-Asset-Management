@@ -25,9 +25,9 @@ import useMessage from 'antd/es/message/useMessage';
 
 const header: TableHeaderModel[] = [
 	{ name: 'Asset Code', value: "assetCode", sort: true, direction: true, colStyle: { width: "12%" }, style: {}, isCurrentlySorted: true },
-	{ name: 'Asset Name', value: "name", sort: true, direction: true, colStyle: { width: "40%" }, style: {}, isCurrentlySorted: false },
-	{ name: 'Category', value: "category.name", sort: true, direction: true, colStyle: { maxWidth: '200px' }, style: {}, isCurrentlySorted: false },
-	{ name: 'State', value: "status", sort: true, direction: true, colStyle: { width: "15%" }, style: {}, isCurrentlySorted: false }
+	{ name: 'Asset Name', value: "name", sort: true, direction: false, colStyle: { width: "40%" }, style: {}, isCurrentlySorted: false },
+	{ name: 'Category', value: "category.name", sort: true, direction: false, colStyle: { maxWidth: '200px' }, style: {}, isCurrentlySorted: false },
+	{ name: 'State', value: "status", sort: true, direction: false, colStyle: { width: "15%" }, style: {}, isCurrentlySorted: false }
 ]
 const showModalCell = ["assetCode", "assetName"]
 const modalHeader = ["Asset Code", "Asset Name", "Category", "Installed Date", "State", "Location", "Specification"]
@@ -123,6 +123,7 @@ export const ManageAssetComponent: React.FC<Props> = (props: Props) => {
 			}, ...tableAsset.filter(a => a.assetCode !== newAsset.assetCode)]
 		}
 		window.history.replaceState({}, '')
+		header.forEach(h => { if (h.value === param.sort.split(",")[0]) { h.isCurrentlySorted = true } else { h.isCurrentlySorted = false } })
 	}
 
 	// button

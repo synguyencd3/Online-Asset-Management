@@ -1,8 +1,7 @@
-import { faSortDown, faSortUp } from '@fortawesome/free-solid-svg-icons'
-import '../../App.css'
+import { faArrowDownAZ, faArrowDownZA } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { useState } from 'react'
-import { Col, Container, Row, Table } from "react-bootstrap";
+import { RefAttributes, useState } from 'react'
+import { Col, Container, OverlayTrigger, Row, Table, Tooltip, TooltipProps } from "react-bootstrap";
 import { TableHeaderModel } from '../../models/TableHeaderModel'
 import { FunctionalIconModel } from '../../models/FunctionalIconModel'
 
@@ -49,6 +48,13 @@ export const TableComponent = ({ headers, datas, auxData, buttons, setSortParam,
 		let t = h.value + "," + (h.direction ? "asc" : "desc")
 		setSortParam((p: any) => ({ ...p, sort: t }));
 	}
+
+	const renderTooltip = (props: JSX.IntrinsicAttributes & TooltipProps & RefAttributes<HTMLDivElement>, dir: boolean) => (
+		<Tooltip id="button-tooltip" {...props}>
+			Click to Sort {dir ? " Descending" : " Ascending"}
+		</Tooltip>
+	);
+
 	return (
 		<>
 			<Container style={{ maxWidth: "100%", width: "100%" }}>
@@ -59,13 +65,16 @@ export const TableComponent = ({ headers, datas, auxData, buttons, setSortParam,
 								<th key={h.name} className={""} style={h.style}>
 									{h.name.length > 0 ?
 										<div className={'table-header header-border ' + (h.isCurrentlySorted ? "sorting-header" : "")}>
-											{h.name}
+											<div>
+												{h.name}
+											</div>
 											{h.sort ?
-												<FontAwesomeIcon values={h.name}
-													icon={h.direction ? faSortDown : faSortUp}
-													// icon={ faSort}
-													onClick={() => { onClickSort(h, index); }} style={{ marginLeft: "10px" }} />
-												: ""}
+												<OverlayTrigger placement="top" delay={{ show: 0, hide: 0 }} overlay={(props) => renderTooltip(props, h.direction)}>
+													<div className='' style={{ marginLeft: "10px" }}>
+														<FontAwesomeIcon className='' values={h.name} icon={h.direction ? faArrowDownAZ : faArrowDownZA} onClick={() => { onClickSort(h, index); }} style={{}} />
+													</div>
+												</OverlayTrigger> : "\u200B"
+											}
 										</div>
 										: '\u200B'
 									}

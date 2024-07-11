@@ -154,6 +154,7 @@ export const ManageUserComponent = (props: Props) => {
 			}
 		})
 		window.history.replaceState({}, '')
+		header.forEach(h => { if (h.value === param.sort.split(",")[0]) { h.isCurrentlySorted = true } else { h.isCurrentlySorted = false } })
 	}
 
 	// button
