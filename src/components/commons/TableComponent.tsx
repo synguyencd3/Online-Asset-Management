@@ -112,13 +112,14 @@ export const TableComponent = ({ headers, datas, auxData, buttons, setSortParam,
 									<Row className='g-3 justify-content-center'>
 										{buttons?.map((button: FunctionalIconModel, bIndex) => (
 											<Col key={bIndex} name={'table_icon_' + button.icon.iconName} className='d-flex justify-content-end'>
-												<FontAwesomeIcon
-													size='lg'
-													className={disableButton[index][bIndex] ? "disable-icon" : "normal-icon"}
-													icon={button.icon}
-													onClick={(e) => { disableButton[index][bIndex] ? () => { } : button.onClickfunction(e, auxData[index], data) }}
-													fontWeight={700}
-													style={button.style} />
+												<button name={'table_icon_' + button.icon.iconName} style={{ border: "0", backgroundColor: "transparent" }} onClick={(e) => { disableButton[index][bIndex] ? () => { } : button.onClickfunction(e, auxData[index], data) }}>
+													<FontAwesomeIcon
+														size='lg'
+														className={disableButton[index][bIndex] ? "disable-icon" : "normal-icon"}
+														icon={button.icon}
+														fontWeight={700}
+														style={button.style} />
+												</button>
 											</Col>
 										))}
 									</Row>
