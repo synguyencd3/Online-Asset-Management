@@ -64,7 +64,7 @@ export const DropdownFilterComponent = (props: Props) => {
 	return (
 		<Dropdown as={ButtonGroup} style={props.style}>
 			{/* do NOT remove Overlay Trigger */}
-			<OverlayTrigger placement="top" delay={{ show: 150, hide: 150 }} overlay={renderTooltip}>
+			<OverlayTrigger placement="top" delay={{ show: 150, hide: 0 }} overlay={renderTooltip}>
 				<Dropdown.Toggle
 					className='d-flex align-items-center justify-content-between'
 					variant='outline-dark'

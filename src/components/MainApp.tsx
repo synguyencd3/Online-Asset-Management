@@ -5,7 +5,7 @@ import { ManageAssetComponent } from './admin/asset/ManageAssetComponent';
 import { ManageAssignmentComponent } from './admin/assignment/ManageAssignmentComponent';
 import { AdminHomeComponent } from './admin/home/AdminHomeComponent';
 import { ReportComponent } from './admin/report/ReportComponent';
-import { RequestReturningConponent } from './admin/returning/RequestReturningConponent';
+import { RequestReturningConponent } from './admin/returning/RequestReturningComponent';
 import { ManageUserComponent } from './admin/user/ManageUserComponent';
 import { PermissionCheck } from './auth/PermissionCheckComponent';
 import { CreateUserComponent } from './admin/user/CreateUserComponent';

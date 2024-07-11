@@ -208,7 +208,7 @@ export const UserHomeComponent: React.FC<Props> = (props: Props) => {
                         </Row> :
                         <>
                             <Row>
-                                <TableComponent headers={header} datas={formatRecordList(assignmentResponse?.content!)} setSortString={setParam} auxData={assignmentResponse?.content!} auxHeader={modalHeader} buttons={buttons} showModalCell={showModalCell} setDummy={() => { }} setModalData={setModalData} setModalShow={setModalDetailShow} pre_button={undefined} disableButton={setDisableButtonState(assignmentResponse?.content!)} />
+                                <TableComponent headers={header} datas={formatRecordList(assignmentResponse?.content!)} setSortParam={setParam} auxData={assignmentResponse?.content!} auxHeader={modalHeader} buttons={buttons} showModalCell={showModalCell} setDummy={() => { }} setModalData={setModalData} setModalShow={setModalDetailShow} pre_button={undefined} disableButton={setDisableButtonState(assignmentResponse?.content!)} />
                             </Row>
                             <PaginationComponent currentPage={param.page} totalPage={assignmentResponse?.totalPage!} setParamsFunction={setParam} perPage={param.size} fixPageSize={false} containerRef={undefined} />
                         </>

@@ -58,6 +58,7 @@ export const ReportComponent: React.FC<Props> = (props: Props) => {
             onError: ((err) => message.error(err.response.data.message))
         }
     )
+    header.forEach(h => { if (h.value === param.sort.split(",")[0]) { h.isCurrentlySorted = true } else { h.isCurrentlySorted = false } })
 
     // Step 2: Convert the data to a worksheet
     const convertToWorksheet = (data: any[]): XLSX.WorkSheet => {
@@ -126,7 +127,7 @@ export const ReportComponent: React.FC<Props> = (props: Props) => {
                         </Row> :
                         <>
                             <Row>
-                                <TableComponent headers={header} setSortString={setParam} datas={reportResponse?.content as ReportModel[]} auxData={reportResponse?.content as ReportModel[]} auxHeader={auxHeader} buttons={[]} showModalCell={[]} setDummy={() => { }} setModalData={() => { }} setModalShow={() => { }} pre_button={undefined} disableButton={[]} />
+                                <TableComponent headers={header} setSortParam={setParam} datas={reportResponse?.content as ReportModel[]} auxData={reportResponse?.content as ReportModel[]} auxHeader={auxHeader} buttons={[]} showModalCell={[]} setDummy={() => { }} setModalData={() => { }} setModalShow={() => { }} pre_button={undefined} disableButton={[]} />
                             </Row>
                             <PaginationComponent currentPage={param.page} totalPage={reportResponse?.totalPage!} setParamsFunction={setParam} perPage={param.size} fixPageSize={false} containerRef={undefined} />
                         </>

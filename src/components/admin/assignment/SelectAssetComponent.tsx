@@ -124,7 +124,7 @@ export const SelectAssetComponent = (props: Props) => {
 							</Row> :
 							<>
 								<Row>
-									<TableComponent headers={header} datas={tableAsset} auxData={tableAsset} auxHeader={[]} buttons={[]} setSortString={handleSetParam} showModalCell={[]} setDummy={()=>{}} setModalData={() => { }} setModalShow={undefined} pre_button={preButton} setSelect={setSelected} disableButton={[]}  ></TableComponent>
+									<TableComponent headers={header} datas={tableAsset} auxData={tableAsset} auxHeader={[]} buttons={[]} setSortParam={handleSetParam} showModalCell={[]} setDummy={()=>{}} setModalData={() => { }} setModalShow={undefined} pre_button={preButton} setSelect={setSelected} disableButton={[]}  ></TableComponent>
 								</Row>
 								<PaginationComponent currentPage={param.page} totalPage={asset.totalPage} perPage={param.size} setParamsFunction={handleSetParam} fixPageSize={false} containerRef={containerRef} ></PaginationComponent>
 							</>

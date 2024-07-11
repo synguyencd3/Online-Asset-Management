@@ -36,7 +36,7 @@ const header: TableHeaderModel[] = [
     { name: 'State', value: "status", sort: true, direction: true, colStyle: {}, isCurrentlySorted: false, style: {} },
 ]
 
-let filterState:DropdownFilterModel[] = [
+let filterState: DropdownFilterModel[] = [
     { label: "Completed", value: "COMPLETED", defaultChecked: true },
     { label: "Waiting for returning", value: "WAITING_FOR_RETURNING", defaultChecked: true }
 ];
@@ -109,6 +109,7 @@ export const RequestReturningConponent: React.FC<Props> = (props: Props) => {
     };
 
     const formatRecordList = (records: ReturningModel[]) => {
+        header.forEach(h => { if (h.value === param.sort.split(",")[0]) { h.isCurrentlySorted = true } else { h.isCurrentlySorted = false } })
         return records.map((record: ReturningModel) => {
             return {
                 id: record.id,
@@ -121,6 +122,7 @@ export const RequestReturningConponent: React.FC<Props> = (props: Props) => {
                 state: uppercaseStatusToText(record.state)
             };
         });
+
     };
 
     const {
@@ -220,7 +222,7 @@ export const RequestReturningConponent: React.FC<Props> = (props: Props) => {
                                 </p>
                             </Row>
                             <Row>
-                                <TableComponent headers={header} datas={formatRecordList(returningResponse?.content!)} setSortString={setParam} auxData={returningResponse?.content!} auxHeader={auxHeader} buttons={buttons} showModalCell={[]} setDummy={() => { }} setModalData={() => { }} setModalShow={() => { }} pre_button={undefined} disableButton={setDisableButtonState(returningResponse?.content!)} />
+                                <TableComponent headers={header} datas={formatRecordList(returningResponse?.content!)} setSortParam={setParam} auxData={returningResponse?.content!} auxHeader={auxHeader} buttons={buttons} showModalCell={[]} setDummy={() => { }} setModalData={() => { }} setModalShow={() => { }} pre_button={undefined} disableButton={setDisableButtonState(returningResponse?.content!)} />
                             </Row>
                             <PaginationComponent currentPage={param.page} totalPage={returningResponse?.totalPage!} setParamsFunction={setParam} perPage={param.size} fixPageSize={false} containerRef={undefined} />
                         </>

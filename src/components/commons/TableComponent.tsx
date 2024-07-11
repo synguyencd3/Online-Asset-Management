@@ -1,14 +1,13 @@
-import { faSortDown, faSortUp } from '@fortawesome/free-solid-svg-icons'
-import '../../App.css'
+import { faArrowDownAZ, faArrowDownZA } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { useState } from 'react'
-import { Col, Container, Row, Table } from "react-bootstrap";
+import { RefAttributes, useState } from 'react'
+import { Col, Container, OverlayTrigger, Row, Table, Tooltip, TooltipProps } from "react-bootstrap";
 import { TableHeaderModel } from '../../models/TableHeaderModel'
 import { FunctionalIconModel } from '../../models/FunctionalIconModel'
 
 type Props = {
 	headers: TableHeaderModel[];
-	setSortString: any;
+	setSortParam: any;
 	datas: Object[]
 
 	//auxData and auxHeader item should have exact index as data
@@ -25,7 +24,7 @@ type Props = {
 	disableButton: boolean[][]
 }
 
-export const TableComponent = ({ headers, datas, auxData, buttons, setSortString, showModalCell, setModalData, setModalShow, pre_button, setSelect, disableButton }: Props) => {
+export const TableComponent = ({ headers, datas, auxData, buttons, setSortParam, showModalCell, setModalData, setModalShow, pre_button, setSelect, disableButton }: Props) => {
 	const [header, setHeader] = useState(headers);
 	const cellCLickStyle = 'cell text-truncate'
 	const handleClick = (e: React.MouseEvent<any>, key: object) => {
@@ -47,8 +46,15 @@ export const TableComponent = ({ headers, datas, auxData, buttons, setSortString
 		header[index] = h;
 		setHeader([...header]);
 		let t = h.value + "," + (h.direction ? "asc" : "desc")
-		setSortString((sortString: any) => ({ ...sortString, sort: t }));
+		setSortParam((p: any) => ({ ...p, sort: t }));
 	}
+
+	const renderTooltip = (props: JSX.IntrinsicAttributes & TooltipProps & RefAttributes<HTMLDivElement>, dir: boolean) => (
+		<Tooltip id="button-tooltip" {...props}>
+			Click to Sort {dir ? " Descending" : " Ascending"}
+		</Tooltip>
+	);
+
 	return (
 		<>
 			<Container style={{ maxWidth: "100%", width: "100%" }}>
@@ -59,13 +65,16 @@ export const TableComponent = ({ headers, datas, auxData, buttons, setSortString
 								<th key={h.name} className={""} style={h.style}>
 									{h.name.length > 0 ?
 										<div className={'table-header header-border ' + (h.isCurrentlySorted ? "sorting-header" : "")}>
-											{h.name}
+											<div>
+												{h.name}
+											</div>
 											{h.sort ?
-												<FontAwesomeIcon values={h.name}
-													icon={h.direction ? faSortDown : faSortUp}
-													// icon={ faSort}
-													onClick={() => { onClickSort(h, index); }} style={{ marginLeft: "10px" }} />
-												: ""}
+												<OverlayTrigger placement="top" delay={{ show: 0, hide: 0 }} overlay={(props) => renderTooltip(props, h.direction)}>
+													<div className='' style={{ marginLeft: "10px" }}>
+														<FontAwesomeIcon className='' values={h.name} icon={h.direction ? faArrowDownAZ : faArrowDownZA} onClick={() => { onClickSort(h, index); }} style={{}} />
+													</div>
+												</OverlayTrigger> : "\u200B"
+											}
 										</div>
 										: '\u200B'
 									}
@@ -102,7 +111,7 @@ export const TableComponent = ({ headers, datas, auxData, buttons, setSortString
 								<td className='last-cell '>
 									<Row className='g-3 justify-content-center'>
 										{buttons?.map((button: FunctionalIconModel, bIndex) => (
-											<Col key={bIndex} id={'table_icon_' + bIndex + index} className='d-flex justify-content-end'>
+											<Col key={bIndex} name={'table_icon_' + button.icon.iconName} className='d-flex justify-content-end'>
 												<FontAwesomeIcon
 													size='lg'
 													className={disableButton[index][bIndex] ? "disable-icon" : "normal-icon"}
