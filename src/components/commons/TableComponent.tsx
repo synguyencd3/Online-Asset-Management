@@ -62,7 +62,7 @@ export const TableComponent = ({ headers, datas, auxData, buttons, setSortParam,
 					<thead id='table-header'>
 						<tr>
 							{headers?.map((h, index) => (
-								<th key={h.name} className={""} style={h.style}>
+								<th key={h.name} className={""} style={h.colStyle}>
 									{h.name.length > 0 ?
 										<div className={'table-header header-border ' + (h.isCurrentlySorted ? "sorting-header" : "")}>
 											<div>
@@ -99,7 +99,7 @@ export const TableComponent = ({ headers, datas, auxData, buttons, setSortParam,
 										} else {
 											return (
 												<td key={idx} className='' style={headers[idx].colStyle}>
-													<div className='cellnoClick text-truncate'>
+													<div className='cellnoClick'>
 														{value?.toString() || '\u200B'}
 													</div>
 												</td>
@@ -109,7 +109,7 @@ export const TableComponent = ({ headers, datas, auxData, buttons, setSortParam,
 									)
 								}
 								<td className='last-cell '>
-									<Row className='g-3 justify-content-center'>
+									<Row className='g-3 justify-content-center' >
 										{buttons?.map((button: FunctionalIconModel, bIndex) => (
 											<Col key={bIndex} name={'table_icon_' + button.icon.iconName} className='d-flex justify-content-end'>
 												<button name={'table_icon_' + button.icon.iconName} style={{ border: "0", backgroundColor: "transparent" }} onClick={(e) => { disableButton[index][bIndex] ? () => { } : button.onClickfunction(e, auxData[index], data) }}>
