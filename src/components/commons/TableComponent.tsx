@@ -111,7 +111,7 @@ export const TableComponent = ({ headers, datas, auxData, buttons, setSortParam,
 								<td className='last-cell '>
 									<Row className='g-3 justify-content-center'>
 										{buttons?.map((button: FunctionalIconModel, bIndex) => (
-											<Col key={bIndex} id={'table_icon_' + bIndex + index} className='d-flex justify-content-end'>
+											<Col key={bIndex} name={'table_icon_' + button.icon.iconName} className='d-flex justify-content-end'>
 												<FontAwesomeIcon
 													size='lg'
 													className={disableButton[index][bIndex] ? "disable-icon" : "normal-icon"}
