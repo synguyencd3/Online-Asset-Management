@@ -139,7 +139,7 @@ export const RequestReturningConponent: React.FC<Props> = (props: Props) => {
         () => { return getRequestForReturningSWR(param) },
         {
             revalidateOnFocus: false,
-            onError: ((err) => message.error(err.response.data.message))
+            onError: ((err) => messageApi.error(err.response ? err.response.data.message : "Failed To Get Return Requests"))
         }
     );
 
@@ -162,22 +162,19 @@ export const RequestReturningConponent: React.FC<Props> = (props: Props) => {
     }
 
     const responseReturningRequest = async (id: number, status: boolean) => {
-        messageApi.open({
-            type: 'loading',
-            content: status === true ? 'Completing returning request...' : 'Cancelling returning request...',
-        })
-            .then(async () => {
-                await sendResponseReturningRequest(id, status)
-                    .then((res: any) => {
-                        if (res.status === 200) {
-                            message.success(res.data.message);
-                            mutateReturning();
-                        }
-                    })
-                    .catch((err) => {
-                        message.error(err.response.data.message);
-                    })
+        messageApi.loading({ content: status ? 'Completing' : 'Cancelling' + ' Return Requests...', key: 'sendResponseReturningRequest', duration: 0 });
+
+        await sendResponseReturningRequest(id, status)
+            .then((res: any) => {
+                if (res.status === 200) {
+                    messageApi.success(res.data.message);
+                    mutateReturning();
+                }
             })
+            .catch((err) => {
+                messageApi.error(err.response ? err.response.data.message : "Failed To " + status ? 'Complete' : 'Cancel' + " Return Request");
+            })
+        messageApi.destroy("sendResponseReturningRequest");
     }
 
     return (

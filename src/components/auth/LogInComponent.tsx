@@ -10,7 +10,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
 interface LoginProps {
-    setIsLoggedIn: (state: boolean, roleId: number) => void, 
+    setIsLoggedIn: (state: boolean, roleId: number) => void,
     setUsername: (username: string) => void
 }
 
@@ -39,39 +39,32 @@ export const LogInComponent: React.FC<LoginProps> = ({ setIsLoggedIn, setUsernam
                 password: values.password,
             };
             setLoading(true);
-
-            messageApi.open({
-                type: 'loading',
-                content: 'Logging in...'
-            })
-                .then(async () => {
-                    await login(logInData)
-                        .then((res) => {
-                            if (res.status == 200) {
-                                const loginResponse: LogInResponseModel = {
-                                    username: res.data.data.username ?? 'username',
-                                    roleId: res.data.data.roleId,
-                                    location: res.data.data.location
-                                }
-                                setUsername(loginResponse.username);
-                                sessionStorage.setItem('isLoggedIn', 'true');
-                                sessionStorage.setItem('isFirstLogin', res.data.data.isChangePassword);
-                                sessionStorage.setItem('username', res.data.data.username);
-                                sessionStorage.setItem('roleId', res.data.data.roleId);
-                                sessionStorage.setItem('location', res.data.data.location);
-                                setIsLoggedIn(true, Number(res.data.data.roleId));
-                                message.success(res.data.message);
-                            }
-                        })
-                        .catch((err) => {
-                            setLoading(false);
-                            if (err.response.status === 401) {
-                                message.error(err.response.data.message);
-                            }
-                            if (err.response.status == 403) {
-                                message.error('You do not have permission to access this page!');
-                            }
-                        });
+            await login(logInData)
+                .then((res) => {
+                    if (res.status == 200) {
+                        const loginResponse: LogInResponseModel = {
+                            username: res.data.data.username ?? 'username',
+                            roleId: res.data.data.roleId,
+                            location: res.data.data.location
+                        }
+                        setUsername(loginResponse.username);
+                        sessionStorage.setItem('isLoggedIn', 'true');
+                        sessionStorage.setItem('isFirstLogin', res.data.data.isChangePassword);
+                        sessionStorage.setItem('username', res.data.data.username);
+                        sessionStorage.setItem('roleId', res.data.data.roleId);
+                        sessionStorage.setItem('location', res.data.data.location);
+                        setIsLoggedIn(true, Number(res.data.data.roleId));
+                        message.success(res.data.message);
+                    }
+                })
+                .catch((err) => {
+                    setLoading(false);
+                    if (err.response?.status === 401) {
+                        message.error(err.response.data.message);
+                    }
+                    if (err.response.status == 403) {
+                        message.error('You do not have permission to access this page!');
+                    }
                 });
         }
     });
@@ -132,7 +125,7 @@ export const LogInComponent: React.FC<LoginProps> = ({ setIsLoggedIn, setUsernam
                             className="mx-4 text-white"
                             type="submit"
                             style={{ minWidth: "90px", backgroundColor: ColorPalette.PRIMARY_COLOR, border: 'none' }}
-                            disabled={!formik.isValid || !formik.dirty || loading === true }>
+                            disabled={!formik.isValid || !formik.dirty || loading === true}>
                             Login
                         </Button>
                     </Col>
