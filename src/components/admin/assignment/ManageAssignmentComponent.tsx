@@ -14,7 +14,6 @@ import { AssignmentForTableModel } from "../../../models/AssignmentForTable";
 import { deleteAssignmentById, getAssignments, getAssignmentsUrl,} from "../../../services/AssignmentService";
 import useSWR from "swr";
 import { PageResponseModel } from "../../../models/PageableModel";
-import { message } from "antd";
 import { AssignmentModelComponent } from "./AssignmentModalComponent";
 import { toDateString, uppercaseStatusToText } from "../../../utils/utils";
 import { BreadcrumbComponent } from "../../commons/BreadcrumbComponent";
@@ -25,6 +24,7 @@ import { createReturningRequest } from "../../../services/ReturningService";
 import { TableHeaderModel } from "../../../models/TableHeaderModel";
 import { DropdownFilterModel } from "../../../models/DropdownFilterModel";
 import { AssignmentGetParams } from "../../../models/AssignmentModel";
+import useMessage from "antd/es/message/useMessage";
 
 const header: TableHeaderModel[] = [
 	{ name: "No.", value: "id", sort: true, direction: true, colStyle: { width: "fit-content" }, isCurrentlySorted: false, style: {} },
@@ -61,7 +61,7 @@ interface ConfirmModalData {
 export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
 	const navigate = useNavigate();
 	const location = useLocation();
-	const [messageApi, contextHolder] = message.useMessage();
+	const [messageApi, contextHolder] = useMessage();
 
 	useEffect(() => {
 		props.setHeaderTitle(
@@ -138,7 +138,7 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
 			.then(async () => {
 				await deleteAssignmentById(assignmentId)
 					.then((response) => {
-						message.success(response.data.message);
+						messageApi.success(response.data.message);
 						if (newAssignment) {
 							navigate(location.pathname, {
 								state: { newAssignment: undefined },
@@ -147,7 +147,7 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
 						mutateAssignment();
 					})
 					.catch((error) => {
-						message.error(error.response ? error.response.data.message : "Failed to Delete Assignment");
+						messageApi.error(error.response ? error.response.data.message : "Failed to Delete Assignment");
 					});
 			});
 	};
@@ -162,7 +162,7 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
 			.then(async () => {
 				await createReturningRequest(assignmentId)
 					.then((response) => {
-						message.success(response.data.message);
+						messageApi.success(response.data.message);
 						if (newAssignment) {
 							navigate(location.pathname, {
 								state: { newAssignment: undefined },
@@ -171,7 +171,7 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
 						mutateAssignment();
 					})
 					.catch((error) => {
-						message.error(error.response ? error.response.data.message : "Failed to Create Return Request");
+						messageApi.error(error.response ? error.response.data.message : "Failed to Create Return Request");
 					});
 			});
 	};
@@ -255,7 +255,7 @@ export const ManageAssignmentComponent: React.FC<Props> = (props: Props) => {
 	buttons.push(editIcon, deleteIcon, refreshIcon);
 
 	if (assignmentError) {
-		message.error(assignmentError.message);
+		messageApi.error(assignmentError.message);
 		return <LoaderComponent></LoaderComponent>;
 	}
 
