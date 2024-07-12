@@ -75,7 +75,8 @@ export const HeaderComponent: React.FC<HeaderComponentProps> = ({ username, titl
 
     return (
         <>
-            <Navbar className="navbar" style={{ position: 'sticky', top: 0, zIndex: 10, backgroundColor: ColorPalette.PRIMARY_COLOR, height: '90px' }}>
+            {/* <Navbar className="navbar" style={{ position: 'sticky', top: 0, zIndex: 10, backgroundColor: ColorPalette.PRIMARY_COLOR, height: '90px' }}> */}
+            <Navbar className="navbar" style={{ zIndex: 10, backgroundColor: ColorPalette.PRIMARY_COLOR, height: '90px' }}>
                 {contextHolder}
                 <Container fluid className='d-flex justify-content-between'>
                     <div id='navigate-bar' className='d-flex align-items-center ps-5'>

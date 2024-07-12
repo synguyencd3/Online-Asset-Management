@@ -61,7 +61,8 @@
 
 @media (min-width: 992px) {
   aside {
-    position: fixed !important;
+    /* position: fixed !important; */
+    position: relative !important;
   }
   
   .sidebar-column,
@@ -70,14 +71,15 @@
       max-width: 100%;
   }
 
-  .main-column {
+  /* .main-column {
     margin-left: 16.6667%;
-  }
+  } */
 }
 
 @media (min-width: 1200px) {
   aside {
-    position: fixed !important;
+    /* position: fixed !important; */
+    position: relative !important;
   }
   
   .sidebar-column,
@@ -86,7 +88,7 @@
       max-width: 100%;
   }
 
-  .main-column {
+  /* .main-column {
     margin-left: 16.6667%;
-  }
+  } */
 }
